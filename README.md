@@ -1,5 +1,5 @@
 ## appsettings.json template
-
+```json
 {
     "Logging": {
         "LogLevel": {
@@ -27,3 +27,4 @@
       }
     }
 }
+```
