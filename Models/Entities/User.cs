@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace electro_shop_backend.Models.Entities
 {
-    public class User : IdentityUser
+    public class User : IdentityUser // nho doi ca trong applicationdbcontext tu dbcontext thanh identitydbcontext
     {
         public int user_id { get; set; }
         [Required]
