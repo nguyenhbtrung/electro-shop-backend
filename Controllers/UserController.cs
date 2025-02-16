@@ -1,20 +1,57 @@
-﻿using electro_shop_backend.Models.Entities;
+﻿using electro_shop_backend.Models.DTOs.User;
+using electro_shop_backend.Models.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace electro_shop_backend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController
+    public class UserController : ControllerBase
     {
-        [HttpGet]
-        public IEnumerable<User> Get()
+        private readonly UserManager<User> _userManager;
+        public UserController(UserManager<User> userManager)
         {
-            return new List<User>
+            _userManager = userManager;
+        }
+
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody] RegisterDTO registerDTO)
+        {
+            try
             {
-                new User { Id = "1", UserName = "John Doe" },
-                new User { Id = "2", UserName = "Jane Doe" },
-            };
+                if(!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+                var user = new User
+                {
+                    UserName = registerDTO.UserName,
+                    Email = registerDTO.Email
+                };
+                var createUser = await _userManager.CreateAsync(user, registerDTO.Password);
+
+                if (createUser.Succeeded)
+                {
+                    var userRole = await _userManager.AddToRoleAsync(user, "User");
+                    if (userRole.Succeeded)
+                    {
+                        return Ok("Register success");
+                    }
+                    else
+                    {
+                        return StatusCode(500, userRole.Errors);
+                    }
+                }
+                else
+                {
+                    return StatusCode(500, createUser.Errors);
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
     }
 }

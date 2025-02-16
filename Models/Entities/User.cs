@@ -23,7 +23,7 @@ public partial class User : IdentityUser
     [StringLength(255)]
     public string? AvatarImg { get; set; }
 
-    [Column("role")]
+    [Column("role")] // thua cot nay nay, xoa kieu gi
     [StringLength(50)]
     public string? Role { get; set; }
 

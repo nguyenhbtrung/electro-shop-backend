@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using electro_shop_backend.Models.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 namespace electro_shop_backend.Data;
 
@@ -54,6 +55,13 @@ public partial class ApplicationDbContext : IdentityDbContext<User>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+        List<IdentityRole> roles = new List<IdentityRole>
+        {
+            new IdentityRole { Id = "Admin", Name = "Admin", NormalizedName = "ADMIN" },
+            new IdentityRole { Id = "User", Name = "User", NormalizedName = "USER" }
+        }; 
+        modelBuilder.Entity<IdentityRole>().HasData(roles);
 
         modelBuilder.Entity<Banner>(entity =>
         {
