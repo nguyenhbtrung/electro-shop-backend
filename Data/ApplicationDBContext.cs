@@ -19,6 +19,5 @@ namespace electro_shop_backend.Data
             // Add your customizations after calling base.OnModelCreating(builder);
         }
 
-        public DbSet<User> Users { get; set; }
     }
 }

@@ -12,8 +12,8 @@ namespace electro_shop_backend.Controllers
         {
             return new List<User>
             {
-                new User { Id = 1, Name = "John Doe" },
-                new User { Id = 2, Name = "Jane Doe" },
+                new User { Id = "1", UserName = "John Doe" },
+                new User { Id = "2", UserName = "Jane Doe" },
             };
         }
     }
