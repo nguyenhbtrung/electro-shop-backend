@@ -1,6 +1,8 @@
 ﻿using electro_shop_backend.Exceptions;
 using electro_shop_backend.Helpers;
 using electro_shop_backend.Models.DTOs.Discount;
+using electro_shop_backend.Models.Entities;
+using electro_shop_backend.Models.Mappers;
 using electro_shop_backend.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -64,7 +66,7 @@ namespace electro_shop_backend.Controllers
             try
             {
                 var result = await _discountService.CreateDiscountAsync(requestDto);
-                return Ok(result);
+                return CreatedAtAction(nameof(GetDiscountById), new { discountId = result.DiscountId }, result.ToDiscountDto());
             }
             catch (Exception ex)
             {
@@ -95,5 +97,25 @@ namespace electro_shop_backend.Controllers
                 return StatusCode(500);
             }
         }
+
+        [HttpDelete("{discountId}")]
+        public async Task<IActionResult> DeleteDiscount([FromRoute] int discountId)
+        {
+            try
+            {
+                await _discountService.DeleteDiscountAsync(discountId);
+                return NoContent();
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi không xác định xảy ra trong DiscountController.");
+                return StatusCode(500);
+            }
+        }
+
     }
 }

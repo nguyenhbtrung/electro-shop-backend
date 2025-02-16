@@ -2,6 +2,7 @@
 using electro_shop_backend.Exceptions;
 using electro_shop_backend.Helpers;
 using electro_shop_backend.Models.DTOs.Discount;
+using electro_shop_backend.Models.Entities;
 using electro_shop_backend.Models.Mappers;
 using electro_shop_backend.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -18,14 +19,32 @@ namespace electro_shop_backend.Services
             _context = context;
         }
 
-        public async Task<DiscountDto> CreateDiscountAsync(CreateDiscountRequestDto requestDto)
+        public async Task<Discount> CreateDiscountAsync(CreateDiscountRequestDto requestDto)
         {
             try
             {
                 var discount = requestDto.ToDiscountFromCreate();
                 await _context.Discounts.AddAsync(discount);
                 await _context.SaveChangesAsync();
-                return discount.ToDiscountDto();
+                return discount;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task DeleteDiscountAsync(int discountId)
+        {
+            try
+            {
+                var discount = await _context.Discounts.FirstOrDefaultAsync(d => d.DiscountId == discountId);
+                if (discount == null)
+                {
+                    throw new NotFoundException("Không tìm thấy discount");
+                }
+                _context.Discounts.Remove(discount);
+                await _context.SaveChangesAsync();
             }
             catch (Exception)
             {
@@ -37,7 +56,7 @@ namespace electro_shop_backend.Services
         {
             try
             {
-                var discount = await _context.Discounts.FirstOrDefaultAsync(d => d.DiscountId == discountId);
+                var discount = await _context.Discounts.AsNoTracking().FirstOrDefaultAsync(d => d.DiscountId == discountId);
                 if (discount == null)
                 {
                     throw new NotFoundException("Không tìm thấy discount");
