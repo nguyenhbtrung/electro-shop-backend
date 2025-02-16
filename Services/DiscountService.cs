@@ -78,5 +78,28 @@ namespace electro_shop_backend.Services
                 throw;
             }
         }
+
+        public async Task<DiscountDto> UpdateDiscountAsync(int discountId, CreateDiscountRequestDto requestDto)
+        {
+            try
+            {
+                var discount = await _context.Discounts.FirstOrDefaultAsync(d => d.DiscountId == discountId);
+                if (discount == null)
+                {
+                    throw new NotFoundException("Không tìm thấy discount");
+                }
+                discount.Name = requestDto.Name;
+                discount.DiscountType = requestDto.DiscountType;
+                discount.DiscountValue = requestDto.DiscountValue;
+                discount.StartDate = requestDto.StartDate;
+                discount.EndDate = requestDto.EndDate;
+                await _context.SaveChangesAsync();
+                return discount.ToDiscountDto();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
     }
 }

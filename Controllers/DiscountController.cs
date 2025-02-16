@@ -72,5 +72,28 @@ namespace electro_shop_backend.Controllers
                 return StatusCode(500);
             }
         }
+
+        [HttpPut("{discountId}")]
+        public async Task<IActionResult> UpdateDiscount([FromRoute] int discountId, [FromBody] CreateDiscountRequestDto requestDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            try
+            {
+                var result = await _discountService.UpdateDiscountAsync(discountId, requestDto);
+                return Ok(result);
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi không xác định xảy ra trong DiscountController.");
+                return StatusCode(500);
+            }
+        }
     }
 }
