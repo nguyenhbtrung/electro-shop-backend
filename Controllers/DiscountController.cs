@@ -1,4 +1,5 @@
-﻿using electro_shop_backend.Models.DTOs.Discount;
+﻿using electro_shop_backend.Helpers;
+using electro_shop_backend.Models.DTOs.Discount;
 using electro_shop_backend.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -16,6 +17,21 @@ namespace electro_shop_backend.Controllers
         {
             _discountService = discountService;
             _logger = logger;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetDiscounts([FromQuery] DiscountQuery discountQuery)
+        {
+            try
+            {
+                var result = await _discountService.GetDiscountsAsync(discountQuery);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi không xác định xảy ra trong DiscountController.");
+                return StatusCode(500);
+            }
         }
 
         [HttpPost]
