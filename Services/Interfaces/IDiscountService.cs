@@ -8,5 +8,7 @@ namespace electro_shop_backend.Services.Interfaces
     {
         Task<DiscountDto> CreateDiscountAsync(CreateDiscountRequestDto requestDto);
         Task<ICollection<DiscountDto>> GetDiscountsAsync(DiscountQuery discountQuery);
+        Task<DiscountDto> GetDiscountByIdAsync(int discountId);
+        
     }
 }

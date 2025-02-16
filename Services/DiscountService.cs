@@ -1,4 +1,5 @@
 ﻿using electro_shop_backend.Data;
+using electro_shop_backend.Exceptions;
 using electro_shop_backend.Helpers;
 using electro_shop_backend.Models.DTOs.Discount;
 using electro_shop_backend.Models.Mappers;
@@ -24,6 +25,23 @@ namespace electro_shop_backend.Services
                 var discount = requestDto.ToDiscountFromCreate();
                 await _context.Discounts.AddAsync(discount);
                 await _context.SaveChangesAsync();
+                return discount.ToDiscountDto();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<DiscountDto> GetDiscountByIdAsync(int discountId)
+        {
+            try
+            {
+                var discount = await _context.Discounts.FirstOrDefaultAsync(d => d.DiscountId == discountId);
+                if (discount == null)
+                {
+                    throw new NotFoundException("Không tìm thấy discount");
+                }
                 return discount.ToDiscountDto();
             }
             catch (Exception)
