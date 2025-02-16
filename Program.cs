@@ -1,5 +1,7 @@
 using electro_shop_backend.Data;
 using electro_shop_backend.Models.Entities;
+using electro_shop_backend.Services;
+using electro_shop_backend.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -55,6 +57,9 @@ builder.Services.AddAuthentication(options =>
             )
         };
     });
+
+
+builder.Services.AddScoped<IDiscountService, DiscountService>();
 
 var app = builder.Build();
 // Configure the HTTP request pipeline.
