@@ -60,7 +60,7 @@ builder.Services.AddAuthentication(options =>
 
 
 builder.Services.AddScoped<IDiscountService, DiscountService>();
-
+builder.Services.AddScoped<IProductService, ProductService>();
 var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
