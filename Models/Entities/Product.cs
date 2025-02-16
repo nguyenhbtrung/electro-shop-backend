@@ -10,6 +10,7 @@ namespace electro_shop_backend.Models.Entities;
 public partial class Product
 {
     [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     [Column("product_id")]
     public int ProductId { get; set; }
 
