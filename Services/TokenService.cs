@@ -17,7 +17,7 @@ namespace electro_shop_backend.Services
         {
             _userManager = userManager;
             _config = config;
-            _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JWT:SingingKey"]));
+            _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JWT:SigningKey"]));
         }
         public async Task<string> createToken(User user)
         {

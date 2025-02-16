@@ -1,5 +1,6 @@
 ﻿using electro_shop_backend.Models.DTOs.User;
 using electro_shop_backend.Models.Entities;
+using electro_shop_backend.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,9 +11,11 @@ namespace electro_shop_backend.Controllers
     public class UserController : ControllerBase
     {
         private readonly UserManager<User> _userManager;
-        public UserController(UserManager<User> userManager)
+        private readonly ITokenService _tokenService;
+        public UserController(UserManager<User> userManager, ITokenService tokenService)
         {
             _userManager = userManager;
+            _tokenService = tokenService;
         }
 
         [HttpPost("register")]
@@ -36,7 +39,14 @@ namespace electro_shop_backend.Controllers
                     var userRole = await _userManager.AddToRoleAsync(user, "User");
                     if (userRole.Succeeded)
                     {
-                        return Ok("Register success");
+                        var token = await _tokenService.createToken(user);
+                        var newUserDTO = new NewUserDTO
+                        {
+                            UserName = user.UserName,
+                            Email = user.Email,
+                            Token = token
+                        };
+                        return Ok(new { message = "Register success", user = newUserDTO });
                     }
                     else
                     {
