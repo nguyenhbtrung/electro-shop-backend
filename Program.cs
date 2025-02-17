@@ -23,7 +23,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddIdentity<User, IdentityRole>(options =>
 {
-    options.SignIn.RequireConfirmedAccount = true; // can phai confirm email khi dang ky
+    //options.SignIn.RequireConfirmedAccount = true; // can phai confirm email khi dang ky
     options.Password.RequireDigit = true; // password phai co it nhat 1 chu so
     options.Password.RequireLowercase = true; // password phai co it nhat 1 chu thuong
     options.Password.RequireNonAlphanumeric = true; // password phai co it nhat 1 ky tu dac biet
