@@ -1,9 +1,6 @@
 ﻿using electro_shop_backend.Models.DTOs.User;
-using electro_shop_backend.Models.Entities;
 using electro_shop_backend.Services.Interfaces;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace electro_shop_backend.Controllers
 {
@@ -11,60 +8,22 @@ namespace electro_shop_backend.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly UserManager<User> _userManager;
-        private readonly ITokenService _tokenService;
-        private readonly SignInManager<User> _signInManager;
-        public UserController(UserManager<User> userManager, ITokenService tokenService, SignInManager<User> signInManager)
+        private readonly IUserService _userService;
+
+        public UserController(IUserService userService)
         {
-            _userManager = userManager;
-            _tokenService = tokenService;
-            _signInManager = signInManager;
+            _userService = userService;
+
         }
 
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDTO registerDTO)
         {
-            try
+            if (!ModelState.IsValid)
             {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-                var user = new User
-                {
-                    UserName = registerDTO.UserName,
-                    Email = registerDTO.Email
-                };
-                var createUser = await _userManager.CreateAsync(user, registerDTO.Password);
-
-                if (createUser.Succeeded)
-                {
-                    var userRole = await _userManager.AddToRoleAsync(user, "User");
-                    if (userRole.Succeeded)
-                    {
-                        var token = await _tokenService.createToken(user);
-                        var newUserDTO = new NewUserDTO
-                        {
-                            UserName = user.UserName,
-                            Email = user.Email,
-                            Token = token
-                        };
-                        return Ok(new { message = "Register success", user = newUserDTO });
-                    }
-                    else
-                    {
-                        return StatusCode(500, userRole.Errors);
-                    }
-                }
-                else
-                {
-                    return StatusCode(500, createUser.Errors);
-                }
+                return BadRequest(ModelState);
             }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
+            return await _userService.RegisterAsync(registerDTO);
         }
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginDTO loginDTO)
@@ -73,26 +32,18 @@ namespace electro_shop_backend.Controllers
             {
                 return BadRequest(ModelState);
             }
-            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == loginDTO.UserName.ToLower());
-            if (user == null)
-            {
-                return Unauthorized("User not found");
-            }
+            return await _userService.LoginAsync(loginDTO);
+        }
 
-            var result = await _signInManager.CheckPasswordSignInAsync(user, loginDTO.Password, false);
-            if (!result.Succeeded)
-            {
-                return Unauthorized("Password incorrect!");
-            }
-
-            return Ok(
-                new NewUserDTO
-                {
-                    UserName = user.UserName,
-                    Email = user.Email,
-                    Token = await _tokenService.createToken(user)
-                }
-            );
+        [HttpGet]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            return await _userService.GetAllUsersAsync();
+        }
+        [HttpGet("{userName}")]
+        public async Task<IActionResult> GetUser(string userName)
+        {
+            return await _userService.GetUserAsync(userName);
         }
     }
 }

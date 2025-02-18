@@ -61,7 +61,9 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddScoped<IDiscountService, DiscountService>();
 builder.Services.AddScoped<IProductService, ProductService>();
-builder.Services.AddScoped<ITokenService, TokenService>();  
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
+
 
 var app = builder.Build();
 // Configure the HTTP request pipeline.
