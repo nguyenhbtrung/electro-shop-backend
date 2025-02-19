@@ -40,13 +40,15 @@ namespace electro_shop_backend.Services
                     if (userRole.Succeeded)
                     {
                         var token = await _tokenService.createToken(user);
+                        var roles = await _userManager.GetRolesAsync(user);
+                        var role = roles.FirstOrDefault();
                         return new OkObjectResult(
                             new NewUserDTO
                             {
                                 UserName = user.UserName,
                                 Email = user.Email,
                                 Token = token,
-                                Roles = "User"
+                                Roles = role
                             });
                     }
                     else
@@ -100,11 +102,11 @@ namespace electro_shop_backend.Services
         public async Task<IActionResult> GetAllUsersAsync()
         {
             var users = await _userManager.Users.ToListAsync();
-            var userDtos = new List<UserForAdminDTO>();
+            var userDtos = new List<ViewUserForAdminDTO>();
             foreach (var user in users) {
                 var roles = await _userManager.GetRolesAsync(user);
                 var role = roles.FirstOrDefault();
-                userDtos.Add(new UserForAdminDTO
+                userDtos.Add(new ViewUserForAdminDTO
                 {
                     UserName = user.UserName,
                     FullName = user.FullName,
@@ -130,7 +132,7 @@ namespace electro_shop_backend.Services
             }
             var roles = await _userManager.GetRolesAsync(user);
             var role = roles.FirstOrDefault();
-            var userForAdminDTO = new UserForAdminDTO
+            var userForAdminDTO = new ViewUserForAdminDTO
             {
                 UserName = user.UserName,
                 FullName = user.FullName,
@@ -155,7 +157,6 @@ namespace electro_shop_backend.Services
             }
             user.FullName = userForAdminDTO.FullName;
             user.Address = userForAdminDTO.Address;
-            user.Email = userForAdminDTO.Email;
             user.PhoneNumber = userForAdminDTO.PhoneNumber;
             user.AvatarImg = userForAdminDTO.AvatarImg;
             var result = await _userManager.UpdateAsync(user);
@@ -175,7 +176,6 @@ namespace electro_shop_backend.Services
             }
             user.FullName = userForAdminDTO.FullName;
             user.Address = userForAdminDTO.Address;
-            user.Email = userForAdminDTO.Email;
             user.PhoneNumber = userForAdminDTO.PhoneNumber;
             user.AvatarImg = userForAdminDTO.AvatarImg;
             user.UserStatus = userForAdminDTO.UserStatus;

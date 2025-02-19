@@ -69,8 +69,8 @@ namespace electro_shop_backend.Controllers
             }
             return await _userService.AdminUpdateUserAsync(userForAdminDTO);
         }
-        [HttpDelete]
-        [Authorize(Policy = "AdminPolicy")]
+        [HttpDelete("user")]
+        [Authorize(Policy = "UserPolicy")]
         public async Task<IActionResult> DeleteUser(string userName)
         {
             var authenticatedUserName = User.Identity.Name;
@@ -78,6 +78,12 @@ namespace electro_shop_backend.Controllers
             {
                 return Unauthorized("You can only delete your own account.");
             }
+            return await _userService.DeleteUserAsync(userName);
+        }
+        [HttpDelete("admin")]
+        [Authorize(Policy = "AdminPolicy")]
+        public async Task<IActionResult> AdminDeleteUser(string userName)
+        {
             return await _userService.DeleteUserAsync(userName);
         }
     }
