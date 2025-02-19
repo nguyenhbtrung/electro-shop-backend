@@ -12,6 +12,7 @@ namespace electro_shop_backend.Models.Mappers
                 Name = requestDto.Name,
                 Info = requestDto.Info,
                 Price = requestDto.Price,
+                Stock = requestDto.Stock,
             };
         }
 
