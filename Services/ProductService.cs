@@ -20,7 +20,7 @@ namespace electro_shop_backend.Services
             _context = context;
         }
 
-        public async Task<List<AllProductDto>> GetAllProductIdsAndNamesAsync()
+        public async Task<List<AllProductDto>> GetAllProductsIdsAndNamesAsync()
         {
             return await _context.Products
                 .AsNoTracking()

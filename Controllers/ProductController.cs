@@ -22,7 +22,7 @@ namespace electro_shop_backend.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllProducts()
         {
-            var products = await _productService.GetAllProductIdsAndNamesAsync();
+            var products = await _productService.GetAllProductsIdsAndNamesAsync();
             return Ok(products);
         }
 
