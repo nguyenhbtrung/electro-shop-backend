@@ -10,6 +10,7 @@ namespace electro_shop_backend.Services.Interfaces
         Task<IActionResult> GetAllUsersAsync();
         Task<IActionResult> GetUserAsync(string userName);
         Task<IActionResult> UpdateUserAsync(UserForAdminDTO userForAdminDTO);
+        Task<IActionResult> AdminUpdateUserAsync(UserForAdminDTO userForAdminDTO);
         Task<IActionResult> DeleteUserAsync(string userName);
     }
 }

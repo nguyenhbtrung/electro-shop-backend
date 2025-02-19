@@ -80,6 +80,11 @@ namespace electro_shop_backend.Services
 
             var roles = await _userManager.GetRolesAsync(user);
             var role = roles.FirstOrDefault();
+            
+            if(user.UserStatus == "Banned")
+            {
+                return new UnauthorizedObjectResult("User is banned");
+            }
 
             return new OkObjectResult(
                 new NewUserDTO
@@ -153,7 +158,6 @@ namespace electro_shop_backend.Services
             user.Email = userForAdminDTO.Email;
             user.PhoneNumber = userForAdminDTO.PhoneNumber;
             user.AvatarImg = userForAdminDTO.AvatarImg;
-            user.UserStatus = userForAdminDTO.UserStatus;
             var result = await _userManager.UpdateAsync(user);
             if (result.Succeeded)
             {
@@ -161,6 +165,44 @@ namespace electro_shop_backend.Services
             }
             return new ObjectResult(result.Errors) { StatusCode = 500 };
         }
+
+        public async Task<IActionResult> AdminUpdateUserAsync(UserForAdminDTO userForAdminDTO)
+        {
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == userForAdminDTO.UserName);
+            if (user == null)
+            {
+                return new UnauthorizedObjectResult("User not found");
+            }
+            user.FullName = userForAdminDTO.FullName;
+            user.Address = userForAdminDTO.Address;
+            user.Email = userForAdminDTO.Email;
+            user.PhoneNumber = userForAdminDTO.PhoneNumber;
+            user.AvatarImg = userForAdminDTO.AvatarImg;
+            user.UserStatus = userForAdminDTO.UserStatus;
+            var roles = await _userManager.GetRolesAsync(user);
+            var role = roles.FirstOrDefault();
+            if (role != userForAdminDTO.Roles)
+            {
+                var removeRole = await _userManager.RemoveFromRoleAsync(user, role);
+                if (!removeRole.Succeeded)
+                {
+                    return new ObjectResult(removeRole.Errors) { StatusCode = 500 };
+                }
+                var addRole = await _userManager.AddToRoleAsync(user, userForAdminDTO.Roles);
+                if (!addRole.Succeeded)
+                {
+                    return new ObjectResult(addRole.Errors) { StatusCode = 500 };
+                }
+            }
+            var result = await _userManager.UpdateAsync(user);
+            if (result.Succeeded)
+            {
+                return new OkObjectResult("User updated successfully");
+            }
+            return new ObjectResult(result.Errors) { StatusCode = 500 };
+        }
+
+
         public async Task<IActionResult> DeleteUserAsync(string userName)
         {
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == userName);
