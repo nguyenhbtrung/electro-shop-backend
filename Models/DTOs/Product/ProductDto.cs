@@ -1,5 +1,4 @@
-﻿using electro_shop_backend.Models.Entities;
-
+﻿
 namespace electro_shop_backend.Models.DTOs.Product
 {
     public class ProductDto
