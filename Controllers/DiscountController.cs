@@ -4,6 +4,7 @@ using electro_shop_backend.Models.DTOs.Discount;
 using electro_shop_backend.Models.Entities;
 using electro_shop_backend.Models.Mappers;
 using electro_shop_backend.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,6 +24,7 @@ namespace electro_shop_backend.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = "AdminPolicy")]
         public async Task<IActionResult> GetDiscounts([FromQuery] DiscountQuery discountQuery)
         {
             try
@@ -38,6 +40,7 @@ namespace electro_shop_backend.Controllers
         }
 
         [HttpGet("{discountId}")]
+        [Authorize(Policy = "AdminPolicy")]
         public async Task<IActionResult> GetDiscountById([FromRoute] int discountId)
         {
             try
@@ -57,6 +60,7 @@ namespace electro_shop_backend.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "AdminPolicy")]
         public async Task<IActionResult> CreateDiscount([FromBody] CreateDiscountRequestDto requestDto)
         {
             if (!ModelState.IsValid)
@@ -76,6 +80,7 @@ namespace electro_shop_backend.Controllers
         }
 
         [HttpPut("{discountId}")]
+        [Authorize(Policy = "AdminPolicy")]
         public async Task<IActionResult> UpdateDiscount([FromRoute] int discountId, [FromBody] CreateDiscountRequestDto requestDto)
         {
             if (!ModelState.IsValid)
@@ -99,6 +104,7 @@ namespace electro_shop_backend.Controllers
         }
 
         [HttpDelete("{discountId}")]
+        [Authorize(Policy = "AdminPolicy")]
         public async Task<IActionResult> DeleteDiscount([FromRoute] int discountId)
         {
             try
