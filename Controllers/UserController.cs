@@ -1,5 +1,6 @@
 ﻿using electro_shop_backend.Models.DTOs.User;
 using electro_shop_backend.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace electro_shop_backend.Controllers
@@ -36,11 +37,13 @@ namespace electro_shop_backend.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = "AdminPolicy")]
         public async Task<IActionResult> GetAllUsers()
         {
             return await _userService.GetAllUsersAsync();
         }
         [HttpGet("{userName}")]
+        [Authorize(Policy = "UserPolicy")]
         public async Task<IActionResult> GetUser(string userName)
         {
             return await _userService.GetUserAsync(userName);

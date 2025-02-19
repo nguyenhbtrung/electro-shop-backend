@@ -28,7 +28,9 @@ namespace electro_shop_backend.Services
                 var user = new User
                 {
                     UserName = registerDTO.UserName,
-                    Email = registerDTO.Email
+                    Email = registerDTO.Email,
+                    CreatedAt = DateTime.UtcNow,
+                    UserStatus = "Active"
                 };
                 var createUser = await _userManager.CreateAsync(user, registerDTO.Password);
 
@@ -89,11 +91,29 @@ namespace electro_shop_backend.Services
                 }
             );
         }
-
+        
         public async Task<IActionResult> GetAllUsersAsync()
         {
             var users = await _userManager.Users.ToListAsync();
-            return new OkObjectResult(users);
+            var userDtos = new List<UserForAdminDTO>();
+            foreach (var user in users) {
+                var roles = await _userManager.GetRolesAsync(user);
+                var role = roles.FirstOrDefault();
+                userDtos.Add(new UserForAdminDTO
+                {
+                    UserName = user.UserName,
+                    FullName = user.FullName,
+                    Address = user.Address,
+                    Email = user.Email,
+                    Roles = role,
+                    EmailConfirmed = user.EmailConfirmed,
+                    PhoneNumber = user.PhoneNumber,
+                    AvatarImg = user.AvatarImg,
+                    UserStatus = user.UserStatus,
+                    CreatedAt = user.CreatedAt ?? DateTime.MinValue
+                });
+            }
+            return new OkObjectResult(userDtos);
         }
 
         public async Task<IActionResult> GetUserAsync(string userName)
@@ -105,14 +125,55 @@ namespace electro_shop_backend.Services
             }
             var roles = await _userManager.GetRolesAsync(user);
             var role = roles.FirstOrDefault();
-            return new OkObjectResult(
-                new NewUserDTO
-                {
-                    UserName = user.UserName,
-                    Email = user.Email,
-                    Roles = role
-                }
-            );
+            var userForAdminDTO = new UserForAdminDTO
+            {
+                UserName = user.UserName,
+                FullName = user.FullName,
+                Address = user.Address,
+                Email = user.Email,
+                Roles = role,
+                EmailConfirmed = user.EmailConfirmed,
+                PhoneNumber = user.PhoneNumber,
+                AvatarImg = user.AvatarImg,
+                UserStatus = user.UserStatus,
+                CreatedAt = user.CreatedAt ?? DateTime.MinValue
+            };
+            return new OkObjectResult(userForAdminDTO);
+        }
+
+        public async Task<IActionResult> UpdateUserAsync(UserForAdminDTO userForAdminDTO)
+        {
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == userForAdminDTO.UserName);
+            if (user == null)
+            {
+                return new UnauthorizedObjectResult("User not found");
+            }
+            user.FullName = userForAdminDTO.FullName;
+            user.Address = userForAdminDTO.Address;
+            user.Email = userForAdminDTO.Email;
+            user.PhoneNumber = userForAdminDTO.PhoneNumber;
+            user.AvatarImg = userForAdminDTO.AvatarImg;
+            user.UserStatus = userForAdminDTO.UserStatus;
+            var result = await _userManager.UpdateAsync(user);
+            if (result.Succeeded)
+            {
+                return new OkObjectResult("User updated successfully");
+            }
+            return new ObjectResult(result.Errors) { StatusCode = 500 };
+        }
+        public async Task<IActionResult> DeleteUserAsync(string userName)
+        {
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == userName);
+            if (user == null)
+            {
+                return new UnauthorizedObjectResult("User not found");
+            }
+            var result = await _userManager.DeleteAsync(user);
+            if (result.Succeeded)
+            {
+                return new OkObjectResult("User deleted successfully");
+            }
+            return new ObjectResult(result.Errors) { StatusCode = 500 };
         }
     }
 }
