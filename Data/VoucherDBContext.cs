@@ -1,13 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
-namespace electro_shop_backend.Models.Entities;
+namespace electro_shop_backend.Data;
 
-public class VoucherModel
+[Table("Voucher")]
+public class VoucherDBContext
 {
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)] // Tự động tăng
+    public int VoucherId { get; set; }
+
     [Required]
     [StringLength(50)]
     public string VoucherCode { get; set; }  // Mã voucher
@@ -43,4 +46,18 @@ public class VoucherModel
 
     [Required]
     public DateTime EndDate { get; set; }  // Ngày hết hạn
+
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public DateTime CreateDate { get; set; } = DateTime.Now;  // Ngày tạo
+}
+
+public class MyDbContext : DbContext
+{
+    public MyDbContext(DbContextOptions<MyDbContext> options) : base(options)
+    {
+    }
+
+    #region DbSet
+    public DbSet<VoucherDBContext> Vouchers { get; set; }
+    #endregion
 }
