@@ -50,7 +50,7 @@ public partial class ApplicationDbContext : IdentityDbContext<User>
 
     public virtual DbSet<ReturnReason> ReturnReasons { get; set; }
 
-    public virtual DbSet<VoucherDBContext> Vouchers { get; set; }
+    public virtual DbSet<Voucher> Vouchers { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -217,11 +217,11 @@ public partial class ApplicationDbContext : IdentityDbContext<User>
             entity.HasKey(e => e.ReasonId).HasName("PK__Return_R__846BB55471535E7D");
         });
 
-        modelBuilder.Entity<VoucherDBContext>(entity =>
+        modelBuilder.Entity<Voucher>(entity =>
         {
             entity.HasKey(e => e.VoucherId).HasName("PK__Voucher__80B6FFA89952A5CC");
 
-            entity.Property(e => e.CreateDate).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.CreatedDate).HasDefaultValueSql("(getdate())");
             entity.Property(e => e.UsageCount).HasDefaultValue(0);
         });
 

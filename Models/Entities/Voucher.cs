@@ -6,41 +6,51 @@ using Microsoft.EntityFrameworkCore;
 
 namespace electro_shop_backend.Models.Entities;
 
-public class VoucherModel
+[Table("Voucher")]
+[Index("VoucherCode", Name = "UQ__Voucher__217310691457CDB9", IsUnique = true)]
+public partial class Voucher
 {
-    [Required]
+    [Key]
+    [Column("voucher_id")]
+    public int VoucherId { get; set; }
+
+    [Column("voucher_code")]
     [StringLength(50)]
-    public string VoucherCode { get; set; }  // Mã voucher
+    public string? VoucherCode { get; set; }
 
-    [Required]
+    [Column("voucher_name")]
+    [StringLength(100)]
+    public string? VoucherName { get; set; }
+
+    [Column("voucher_type")]
     [StringLength(50)]
-    public string VoucherName { get; set; }  // Tên voucher
+    public string? VoucherType { get; set; }
 
-    [Required]
-    [StringLength(10)]
-    public string VoucherType { get; set; }  // Kiểu giảm giá ('percentage' hoặc 'fixed')
+    [Column("discount_value", TypeName = "decimal(18, 2)")]
+    public decimal? DiscountValue { get; set; }
 
-    [Required]
-    [Column(TypeName = "decimal(10,2)")]
-    public decimal DiscountValue { get; set; }  // Giá trị giảm giá
+    [Column("min_order_value", TypeName = "decimal(18, 2)")]
+    public decimal? MinOrderValue { get; set; }
 
-    [Column(TypeName = "decimal(10,2)")]
-    public decimal MinOrderValue { get; set; } = 0;  // Giá trị đơn hàng tối thiểu
+    [Column("max_discount", TypeName = "decimal(18, 2)")]
+    public decimal? MaxDiscount { get; set; }
 
-    [Column(TypeName = "decimal(10,2)")]
-    public decimal? MaxDiscount { get; set; }  // Giới hạn giảm giá tối đa
+    [Column("usage_limit")]
+    public int? UsageLimit { get; set; }
 
-    public int? UsageLimit { get; set; }  // Tổng số lần sử dụng
+    [Column("usage_count")]
+    public int? UsageCount { get; set; }
 
-    public int? UsageCount { get; set; }  // Số lần voucher đã được sử dụng
+    [Column("voucher_status")]
+    [StringLength(50)]
+    public string? VoucherStatus { get; set; }
 
-    [Required]
-    [StringLength(20)]
-    public string VoucherStatus { get; set; } = "active";  // Trạng thái voucher (active/disable)
+    [Column("start_date", TypeName = "datetime")]
+    public DateTime? StartDate { get; set; }
 
-    [Required]
-    public DateTime StartDate { get; set; }  // Ngày bắt đầu hiệu lực
+    [Column("end_date", TypeName = "datetime")]
+    public DateTime? EndDate { get; set; }
 
-    [Required]
-    public DateTime EndDate { get; set; }  // Ngày hết hạn
+    [Column("created_date", TypeName = "datetime")]
+    public DateTime? CreatedDate { get; set; }
 }
