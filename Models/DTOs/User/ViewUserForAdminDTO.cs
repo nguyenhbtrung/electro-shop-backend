@@ -12,6 +12,6 @@
         public string PhoneNumber { get; set; }
         public string AvatarImg { get; set; }
         public string UserStatus { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public DateTime? CreatedAt { get; set; }
     }
 }

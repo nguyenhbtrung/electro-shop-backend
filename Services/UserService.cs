@@ -1,6 +1,7 @@
 ﻿using electro_shop_backend.Data;
 using electro_shop_backend.Models.DTOs.User;
 using electro_shop_backend.Models.Entities;
+using electro_shop_backend.Models.Mappers;
 using electro_shop_backend.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -42,14 +43,12 @@ namespace electro_shop_backend.Services
                         var token = await _tokenService.createToken(user);
                         var roles = await _userManager.GetRolesAsync(user);
                         var role = roles.FirstOrDefault();
-                        return new OkObjectResult(
-                            new NewUserDTO
-                            {
-                                UserName = user.UserName,
-                                Email = user.Email,
-                                Token = token,
-                                Roles = role
-                            });
+
+                        var newUserDTO = UserMapper.ToNewUserDTOFromUser(user);
+                        newUserDTO.Roles = role;
+                        newUserDTO.Token = await _tokenService.createToken(user);
+
+                        return new OkObjectResult(newUserDTO);
                     }
                     else
                     {
@@ -87,16 +86,11 @@ namespace electro_shop_backend.Services
             {
                 return new UnauthorizedObjectResult("User is banned");
             }
+            var newUserDTO = UserMapper.ToNewUserDTOFromUser(user);
+            newUserDTO.Roles = role;
+            newUserDTO.Token = await _tokenService.createToken(user);
 
-            return new OkObjectResult(
-                new NewUserDTO
-                {
-                    UserName = user.UserName,
-                    Email = user.Email,
-                    Token = await _tokenService.createToken(user),
-                    Roles = role
-                }
-            );
+            return new OkObjectResult(newUserDTO);
         }
         
         public async Task<IActionResult> GetAllUsersAsync()
@@ -106,19 +100,9 @@ namespace electro_shop_backend.Services
             foreach (var user in users) {
                 var roles = await _userManager.GetRolesAsync(user);
                 var role = roles.FirstOrDefault();
-                userDtos.Add(new ViewUserForAdminDTO
-                {
-                    UserName = user.UserName,
-                    FullName = user.FullName,
-                    Address = user.Address,
-                    Email = user.Email,
-                    Roles = role,
-                    EmailConfirmed = user.EmailConfirmed,
-                    PhoneNumber = user.PhoneNumber,
-                    AvatarImg = user.AvatarImg,
-                    UserStatus = user.UserStatus,
-                    CreatedAt = user.CreatedAt ?? DateTime.MinValue
-                });
+                var userForAdminDTO = UserMapper.ToViewUserForAdminDTOFromUser(user);
+                userForAdminDTO.Roles = role;
+                userDtos.Add(userForAdminDTO);
             }
             return new OkObjectResult(userDtos);
         }
@@ -132,19 +116,8 @@ namespace electro_shop_backend.Services
             }
             var roles = await _userManager.GetRolesAsync(user);
             var role = roles.FirstOrDefault();
-            var userForAdminDTO = new ViewUserForAdminDTO
-            {
-                UserName = user.UserName,
-                FullName = user.FullName,
-                Address = user.Address,
-                Email = user.Email,
-                Roles = role,
-                EmailConfirmed = user.EmailConfirmed,
-                PhoneNumber = user.PhoneNumber,
-                AvatarImg = user.AvatarImg,
-                UserStatus = user.UserStatus,
-                CreatedAt = user.CreatedAt ?? DateTime.MinValue
-            };
+            var userForAdminDTO = UserMapper.ToViewUserForAdminDTOFromUser(user);
+            userForAdminDTO.Roles = role;
             return new OkObjectResult(userForAdminDTO);
         }
 

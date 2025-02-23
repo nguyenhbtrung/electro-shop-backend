@@ -221,8 +221,11 @@ public partial class ApplicationDbContext : IdentityDbContext<User>
         {
             entity.HasKey(e => e.VoucherId).HasName("PK__Voucher__80B6FFA89952A5CC");
 
-            entity.Property(e => e.CreatedDate).HasDefaultValueSql("(getdate())");
-            entity.Property(e => e.UsageCount).HasDefaultValue(0);
+            entity.Property(e => e.StartDate).HasDefaultValueSql("GETDATE()");
+
+            entity.Property(e => e.EndDate).HasDefaultValueSql("DATEADD(day, 7, GETDATE())");
+
+            entity.Property(e => e.CreatedDate).HasDefaultValueSql("GETDATE()");
         });
 
         OnModelCreatingPartial(modelBuilder);
