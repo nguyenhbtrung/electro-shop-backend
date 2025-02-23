@@ -21,7 +21,7 @@ public partial class ProductViewHistory
     public int? ProductId { get; set; }
 
     [Column("time_stamp", TypeName = "datetime")]
-    public DateTime? TimeStamp { get; set; }
+    public DateTime? TimeStamp { get; set; } = DateTime.Now;
 
     [ForeignKey("ProductId")]
     [InverseProperty("ProductViewHistories")]
