@@ -2,6 +2,7 @@
 using electro_shop_backend.Models.DTOs.Category;
 using electro_shop_backend.Services;
 using electro_shop_backend.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace electro_shop_backend.Controllers
@@ -29,6 +30,7 @@ namespace electro_shop_backend.Controllers
             return Ok(category);
         }
         [HttpPost]
+        [Authorize(Policy = "AdminPolicy")]
         public async Task<IActionResult> CreateCategory([FromBody] CreateCategoryRequestDto requestDto)
         {
             if (!ModelState.IsValid)
@@ -39,6 +41,7 @@ namespace electro_shop_backend.Controllers
             return Ok(result);
         }
         [HttpPut("{id}")]
+        [Authorize(Policy = "AdminPolicy")]
         public async Task<IActionResult> UpdateCategory(int id, [FromBody] UpdateCategoryRequestDto requestDto)
         {
             if (!ModelState.IsValid)
@@ -59,6 +62,7 @@ namespace electro_shop_backend.Controllers
             }
         }
         [HttpDelete("{id}")]
+        [Authorize(Policy = "AdminPolicy")]
         public async Task<IActionResult> DeleteCategory(int id)
         {
             try

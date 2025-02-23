@@ -1,11 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using electro_shop_backend.Models.Entities;
 using electro_shop_backend.Services.Interfaces;
 using electro_shop_backend.Models.DTOs.Product;
-using electro_shop_backend.Services;
-using Microsoft.Extensions.Logging;
 using electro_shop_backend.Exceptions;
+using Microsoft.AspNetCore.Authorization;
 
 namespace electro_shop_backend.Controllers
 {
@@ -34,6 +31,7 @@ namespace electro_shop_backend.Controllers
             return Ok(product);
         }
         [HttpPost]
+        [Authorize(Policy ="AdminPolicy")]
         public async Task<IActionResult> CreateProduct([FromBody] CreateProductRequestDto requestDto)
         {
             if (!ModelState.IsValid)
@@ -44,6 +42,7 @@ namespace electro_shop_backend.Controllers
             return Ok(result);
         }
         [HttpPut("{id}")]
+        [Authorize(Policy = "AdminPolicy")]
         public async Task<IActionResult> UpdateProduct(int id, [FromBody] UpdateProductRequestDto requestDto)
         {
             if (!ModelState.IsValid)
@@ -64,6 +63,7 @@ namespace electro_shop_backend.Controllers
             }
         }
         [HttpDelete("{id}")]
+        [Authorize(Policy = "AdminPolicy")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
             try
