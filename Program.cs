@@ -103,7 +103,7 @@ builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IDiscountService, DiscountService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IProductViewHistoryService, ProductViewHistoryService>();
-
+builder.Services.AddScoped<IVoucherService, VoucherService>();
 
 var app = builder.Build();
 // Configure the HTTP request pipeline.
