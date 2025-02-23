@@ -46,7 +46,7 @@ namespace electro_shop_backend.Services
 
                         var newUserDTO = UserMapper.ToNewUserDTOFromUser(user);
                         newUserDTO.Roles = role;
-                        newUserDTO.Token = await _tokenService.createToken(user),
+                        newUserDTO.Token = await _tokenService.createToken(user);
 
                         return new OkObjectResult(newUserDTO);
                     }
@@ -88,7 +88,7 @@ namespace electro_shop_backend.Services
             }
             var newUserDTO = UserMapper.ToNewUserDTOFromUser(user);
             newUserDTO.Roles = role;
-            newUserDTO.Token = await _tokenService.createToken(user),
+            newUserDTO.Token = await _tokenService.createToken(user);
 
             return new OkObjectResult(newUserDTO);
         }
