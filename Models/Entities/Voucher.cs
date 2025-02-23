@@ -11,46 +11,54 @@ namespace electro_shop_backend.Models.Entities;
 public partial class Voucher
 {
     [Key]
-    [Column("voucher_id")]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    [Column("voucher_id")] 
     public int VoucherId { get; set; }
 
+    [Required]
+    [StringLength(50)]
     [Column("voucher_code")]
-    [StringLength(50)]
-    public string? VoucherCode { get; set; }
+    public string VoucherCode { get; set; }  // Mã voucher
 
+    [StringLength(50)]
     [Column("voucher_name")]
-    [StringLength(100)]
-    public string? VoucherName { get; set; }
+    public string? VoucherName { get; set; }  // Tên voucher
 
+    [Required]
+    [StringLength(10)]
     [Column("voucher_type")]
-    [StringLength(50)]
-    public string? VoucherType { get; set; }
+    public string VoucherType { get; set; }  // Kiểu giảm giá ('percentage' hoặc 'fixed')
 
-    [Column("discount_value", TypeName = "decimal(18, 2)")]
-    public decimal? DiscountValue { get; set; }
+    [Required]
+    [Column("discount_value", TypeName = "decimal(10,2)")]
+    public decimal DiscountValue { get; set; }  // Giá trị giảm giá
 
-    [Column("min_order_value", TypeName = "decimal(18, 2)")]
-    public decimal? MinOrderValue { get; set; }
+    [Column("min_order_value", TypeName = "decimal(10,2)")]
+    public decimal MinOrderValue { get; set; } = 0;  // Giá trị đơn hàng tối thiểu
 
-    [Column("max_discount", TypeName = "decimal(18, 2)")]
-    public decimal? MaxDiscount { get; set; }
+    [Column("max_discount", TypeName = "decimal(10,2)")]
+    public decimal? MaxDiscount { get; set; }  // Giới hạn giảm giá tối đa
 
     [Column("usage_limit")]
-    public int? UsageLimit { get; set; }
+    public int? UsageLimit { get; set; }  // Tổng số lần sử dụng
 
     [Column("usage_count")]
-    public int? UsageCount { get; set; }
+    public int? UsageCount { get; set; } = 0;  // Số lần voucher đã được sử dụng
 
+    [Required]
+    [StringLength(20)]
     [Column("voucher_status")]
-    [StringLength(50)]
-    public string? VoucherStatus { get; set; }
+    public string VoucherStatus { get; set; } = "active";  // Trạng thái voucher (active/disable)
 
-    [Column("start_date", TypeName = "datetime")]
-    public DateTime? StartDate { get; set; }
+    [Required]
+    [Column("start_date")]
+    public DateTime StartDate { get; set; } // Ngày bắt đầu hiệu lực
 
-    [Column("end_date", TypeName = "datetime")]
-    public DateTime? EndDate { get; set; }
+    [Required]
+    [Column("end_date")]
+    public DateTime EndDate { get; set; }  // Ngày hết hạn
 
-    [Column("created_date", TypeName = "datetime")]
-    public DateTime? CreatedDate { get; set; }
+    [Required]
+    [Column("created_date")]
+    public DateTime CreatedDate { get; set; }  // Ngày tạo
 }
