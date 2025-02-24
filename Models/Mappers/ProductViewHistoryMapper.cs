@@ -11,7 +11,8 @@ namespace electro_shop_backend.Models.Mappers
             {
                 HistoryId = productViewHistory.HistoryId,
                 UserId = productViewHistory.UserId,
-                ProductId = productViewHistory.ProductId
+                ProductId = productViewHistory.ProductId,
+                TimeStamp = productViewHistory.TimeStamp
             };
         }
     }

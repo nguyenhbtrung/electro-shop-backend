@@ -24,6 +24,7 @@ namespace electro_shop_backend.Services
                 {
                     VoucherId = item.VoucherId,
                     VoucherName = item.VoucherName,
+                    VoucherCode = item.VoucherCode,
                     VoucherStatus = item.VoucherStatus
                 })
                 .ToListAsync();
