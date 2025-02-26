@@ -104,6 +104,7 @@ builder.Services.AddScoped<IDiscountService, DiscountService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IProductViewHistoryService, ProductViewHistoryService>();
 builder.Services.AddScoped<IVoucherService, VoucherService>();
+builder.Services.AddScoped<IBannerService, BannerService>();
 //builder.Services.AddScoped<IRatingService, RatingService>();
 
 var app = builder.Build();
