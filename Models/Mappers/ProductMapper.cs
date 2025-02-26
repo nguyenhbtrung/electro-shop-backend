@@ -27,6 +27,7 @@ namespace electro_shop_backend.Models.Mappers
                 Stock = product.Stock,
                 RatingCount = product.RatingCount,
                 AverageRating = product.AverageRating,
+                ProductImages = new()
             };
         }
         public static void UpdateProductFromDto(this Product product, UpdateProductRequestDto requestDto) // Cập nhật

@@ -15,29 +15,30 @@ namespace electro_shop_backend.Services
         {
             _context = context;
         }
-        public async Task<List<ProductImageDto>> GetProductImageAsync()
+        public async Task<ProductImageDto> CreateProductImageAsync(int productId,CreateProductImageDto requestDto)
         {
-            var productimage = await _context.ProductImages
+            var product = await _context.Products
                 .AsNoTracking()
-                .FirstOrDefaultAsync();
-            if (productimage == null) return null;
-            var productImageDto =ProductImageMapper.ToProductImageDto(productimage);
-            return new List<ProductImageDto> { productImageDto };
-        }
-        public async Task<ProductImageDto> CreateProductImageAsync(CreateProductImageDto requestDto)
-        {
-            try
+                .FirstOrDefaultAsync(p => p.ProductId == productId);
+
+            if (product == null)
             {
-                var productimage = requestDto.ToProductImageFromCreate();
-                await _context.ProductImages.AddAsync(productimage);
-                await _context.SaveChangesAsync();
-                return productimage.ToProductImageDto();
+                throw new KeyNotFoundException("Product not found");
             }
-            catch (Exception)
+
+            var newProductImage = new ProductImage
             {
-                throw;
-            }
+                ProductId = productId,
+                ImageUrl = requestDto.ImageUrl!
+            };
+
+            _context.ProductImages.Add(newProductImage);
+            await _context.SaveChangesAsync();
+
+            return ProductImageMapper.ToProductImageDto(newProductImage);
         }
+
+
         public async Task<bool> DeleteProductImageAsync(int id)
         {
             var productimage = await _context.ProductImages.FindAsync(id);

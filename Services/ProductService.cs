@@ -1,6 +1,7 @@
 ﻿using electro_shop_backend.Data;
 using electro_shop_backend.Exceptions;
 using electro_shop_backend.Models.DTOs.Product;
+using electro_shop_backend.Models.Entities;
 using electro_shop_backend.Models.Mappers;
 using electro_shop_backend.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -16,7 +17,6 @@ namespace electro_shop_backend.Services
         {
             _context = context;
         }
-
         public async Task<List<AllProductDto>> GetAllProductsIdsAndNamesAsync()
         {
             return await _context.Products
@@ -28,16 +28,18 @@ namespace electro_shop_backend.Services
                 })
                 .ToListAsync();
         }
-
         public async Task<ProductDto?> GetProductByIdAsync(int productId)
         {
             var product = await _context.Products
             .AsNoTracking()
+            .Include(p => p.ProductImages)
             .FirstOrDefaultAsync(p => p.ProductId == productId); 
 
             if (product == null) return null;
-
-            var productDto = ProductMapper.ToProductDto(product); 
+            var productDto = ProductMapper.ToProductDto(product);
+            productDto.ProductImages = product.ProductImages
+                .Select(ProductImageMapper.ToProductImageDto)
+                .ToList();
             return productDto;
         }
         public async Task<ProductDto> CreateProductAsync(CreateProductRequestDto requestDto)

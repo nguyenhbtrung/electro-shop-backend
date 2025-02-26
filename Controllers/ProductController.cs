@@ -14,10 +14,12 @@ namespace electro_shop_backend.Controllers
         private readonly IProductService _productService;
         private readonly IProductImageService _productimageService;
 
-        public ProductController(IProductService productService)
+        public ProductController(IProductService productService, IProductImageService productImageService)
         {
             _productService = productService;
+            _productimageService = productImageService;
         }
+
         [HttpGet]
         public async Task<IActionResult> GetAllProducts()
         {
@@ -68,13 +70,13 @@ namespace electro_shop_backend.Controllers
         }
         [HttpPost("{id}/Image")]
         [Authorize(Policy = "AdminPolicy")]
-        public async Task<IActionResult> CreateProductImage([FromBody] CreateProductImageDto requestDto)
+        public async Task<IActionResult> CreateProductImage(int id ,[FromBody] CreateProductImageDto requestDto)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            var result = await _productimageService.CreateProductImageAsync(requestDto);
+            var result = await _productimageService.CreateProductImageAsync(id,requestDto);
             return Ok(result);
         }
 
@@ -103,7 +105,7 @@ namespace electro_shop_backend.Controllers
             try
             {
                 var result = await _productimageService.DeleteProductImageAsync(id);
-                return result ? NoContent() : NotFound("Không tìm thấy sản phẩm.");
+                return result ? NoContent() : NotFound("Không tìm thấy ảnh sản phẩm.");
             }
             catch (NotFoundException ex)
             {
@@ -111,7 +113,7 @@ namespace electro_shop_backend.Controllers
             }
             catch (Exception)
             {
-                return StatusCode(500, "Lỗi khi xóa sản phẩm.");
+                return StatusCode(500, "Lỗi khi xóa ảnh sản phẩm.");
             }
         }
     }
