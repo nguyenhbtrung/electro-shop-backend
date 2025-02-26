@@ -62,7 +62,7 @@ namespace electro_shop_backend.Services
         {
             try
             {
-                var voucher = requestDto.ToVoucherFromCreate();
+                var voucher = requestDto.ToVoucherFromCreateVoucherDto();
                 await _context.Vouchers.AddAsync(voucher);
                 await _context.SaveChangesAsync();
                 return voucher.ToVoucherDto();

@@ -25,7 +25,7 @@ namespace electro_shop_backend.Models.Mappers
             };
         }
 
-        public static Voucher ToVoucherFromCreate(this CreateVoucherRequestDto requestDto) // Tạo voucher
+        public static Voucher ToVoucherFromCreateVoucherDto(this CreateVoucherRequestDto requestDto) // Tạo voucher
         {
             return new Voucher
             {

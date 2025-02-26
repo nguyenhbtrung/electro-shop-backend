@@ -11,7 +11,6 @@ namespace electro_shop_backend.Models.Entities;
 public partial class Voucher
 {
     [Key]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     [Column("voucher_id")] 
     public int VoucherId { get; set; }
 
