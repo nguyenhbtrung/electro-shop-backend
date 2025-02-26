@@ -1,6 +1,7 @@
 ﻿using electro_shop_backend.Data;
 using electro_shop_backend.Exceptions;
 using electro_shop_backend.Models.DTOs.ProductImage;
+using electro_shop_backend.Models.Entities;
 using electro_shop_backend.Models.Mappers;
 using electro_shop_backend.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -16,14 +17,12 @@ namespace electro_shop_backend.Services
         }
         public async Task<List<ProductImageDto>> GetProductImageAsync()
         {
-            return await _context.ProductImages
+            var productimage = await _context.ProductImages
                 .AsNoTracking()
-                .Select(p => new ProductImageDto
-                {
-                    ProductImageId = p.ProductImageId,
-                    ImageUrl = p.ImageUrl
-                })
-                .ToListAsync();
+                .FirstOrDefaultAsync();
+            if (productimage == null) return null;
+            var productImageDto =ProductImageMapper.ToProductImageDto(productimage);
+            return new List<ProductImageDto> { productImageDto };
         }
         public async Task<ProductImageDto> CreateProductImageAsync(CreateProductImageDto requestDto)
         {

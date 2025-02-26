@@ -1,13 +1,10 @@
 ﻿using electro_shop_backend.Data;
 using electro_shop_backend.Exceptions;
 using electro_shop_backend.Models.DTOs.Product;
-using electro_shop_backend.Models.Entities;
 using electro_shop_backend.Models.Mappers;
 using electro_shop_backend.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+
 
 namespace electro_shop_backend.Services
 {
@@ -34,20 +31,14 @@ namespace electro_shop_backend.Services
 
         public async Task<ProductDto?> GetProductByIdAsync(int productId)
         {
-            return await _context.Products
-                .AsNoTracking()
-                .Where(p => p.ProductId == productId)
-                .Select(p => new ProductDto
-                {
-                    ProductId = p.ProductId,
-                    Name = p.Name,
-                    Info = p.Info,
-                    Price = p.Price,
-                    Stock = p.Stock,
-                    RatingCount = p.RatingCount,
-                    AverageRating = p.AverageRating
-                })
-                .FirstOrDefaultAsync();
+            var product = await _context.Products
+            .AsNoTracking()
+            .FirstOrDefaultAsync(p => p.ProductId == productId); 
+
+            if (product == null) return null;
+
+            var productDto = ProductMapper.ToProductDto(product); 
+            return productDto;
         }
         public async Task<ProductDto> CreateProductAsync(CreateProductRequestDto requestDto)
         {
