@@ -4,10 +4,10 @@
     {
         public int CartId { get; set; }
 
-        public int UserId { get; set; }
+        public string? UserId { get; set; }
 
-        public DateTime TimeStamp { get; set; }
+        public DateTime? TimeStamp { get; set; }
 
-        public List<CartItemDto> CartItems { get; set; }
+        public List<CartItemDto> CartItems { get; set; } = new List<CartItemDto>();
     }
 }

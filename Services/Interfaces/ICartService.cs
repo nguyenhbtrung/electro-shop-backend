@@ -2,17 +2,24 @@
 
 namespace electro_shop_backend.Services.Interfaces
 {
-    public class ICartService
+    public interface ICartService
     {
-        Task<List<CartDto>> GetAllCartSyncs();
+        Task<List<CartDto>> GetAllCartASyncs();
 
-        Task<CartItemDto> AddToCartAsync(AddToCartDto requestDto);
+        Task<CartItemDto> AddToCartAsync(string userId, int productId, int quantity);
 
-        Task<List<CartItemDto>> GetCartByUserIdAsync(int userId);
+        Task<List<CartItemDto>> GetCartByUserIdAsync(string userId);
+
+        Task<List<CartItemDto>> GetCartByUserIdForAdminAsync(string userId);
         Task<List<CartItemDto>> GetCartByCartIdAsync(int cartId);
 
-        Task<CartItemDto> UpdateCartItemAsync(int cartItemId, UpdateCartItemRequestDto requestDto);
-        Task<CartItemDto> RemoveCartItemAsync(int cartItemId);
-        Task<bool> DeleteCartItemAsync(int cartItemId);
+        Task<CartItemDto> UpdateCartItemQuantityAsync(string userid, int cartItemId, int quantity);
+        Task<CartItemDto> UpdateCartItemQuantityForAdminAsync(string userid, int cartItemId, int quantity);
+
+        Task<bool> DeleteCartAsync(string userId);
+        Task<bool> DeleteCartItemAsync(string userId, int cartItemId);
+
+        Task<bool> DeleteCartAdminAsync(string userId);
+        Task<bool> DeleteCartItemAdminAsync(string userId, int cartItemId);
     }
 }

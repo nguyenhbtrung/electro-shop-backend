@@ -107,6 +107,7 @@ builder.Services.AddScoped<IVoucherService, VoucherService>();
 builder.Services.AddScoped<IBannerService, BannerService>();
 builder.Services.AddScoped<IRatingService, RatingService>();
 builder.Services.AddScoped<IProductImageService, ProductImageService>();
+builder.Services.AddScoped<ICartService, CartService>();
 
 var app = builder.Build();
 // Configure the HTTP request pipeline.
