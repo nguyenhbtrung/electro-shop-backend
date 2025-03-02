@@ -12,6 +12,7 @@ namespace electro_shop_backend.Models.Mappers
             {
                 CartId = cart.CartId,
                 UserId = cart.UserId,
+                UserName = cart.User?.UserName,
                 TimeStamp = cart.TimeStamp,
                 CartItems = cart.CartItems
                 .Select(item => new CartItemDto

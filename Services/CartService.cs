@@ -6,7 +6,7 @@ using electro_shop_backend.Models.Mappers;
 using electro_shop_backend.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace electro_shop_backend.Services.Interfaces
+namespace electro_shop_backend.Services
 {
     public class CartService : ICartService
     {
@@ -22,6 +22,7 @@ namespace electro_shop_backend.Services.Interfaces
             return await _context.Carts
                 .AsNoTracking()
                 .Include(cartitem => cartitem.CartItems)
+                .Include(username => username.User)
                 .Select(cart => cart.ToCartDto())
                 .ToListAsync();
         }
