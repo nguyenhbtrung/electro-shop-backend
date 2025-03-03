@@ -32,6 +32,9 @@ public partial class Product
     [Column("average_rating")]
     public double? AverageRating { get; set; }
 
+    [Column("brand_id")]
+    public int BrandId { get; set; }
+
     [InverseProperty("Product")]
     public virtual ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
 
@@ -53,4 +56,8 @@ public partial class Product
     [ForeignKey("ProductId")]
     [InverseProperty("Products")]
     public virtual ICollection<Category> Categories { get; set; } = new List<Category>();
+
+    [ForeignKey("BrandId")]
+    [InverseProperty("Products")]
+    public virtual Brand? Brand { get; set; }
 }

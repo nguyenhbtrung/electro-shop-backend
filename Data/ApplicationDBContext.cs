@@ -52,6 +52,8 @@ public partial class ApplicationDbContext : IdentityDbContext<User>
 
     public virtual DbSet<Voucher> Vouchers { get; set; }
 
+    public virtual DbSet<Brand> Brands { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -125,12 +127,23 @@ public partial class ApplicationDbContext : IdentityDbContext<User>
             entity.HasOne(d => d.Order).WithMany(p => p.Payments).HasConstraintName("FK__Payment__order_i__5812160E");
         });
 
+        modelBuilder.Entity<Brand>(entity =>
+        {
+            entity.HasKey(e => e.BrandId).HasName("PK__Brand__5E5A8E27B91E7337");
+        });
+
         modelBuilder.Entity<Product>(entity =>
         {
             entity.HasKey(e => e.ProductId).HasName("PK__Product__47027DF5BB06DC67");
 
             entity.Property(e => e.AverageRating).HasDefaultValue(0.0);
             entity.Property(e => e.RatingCount).HasDefaultValue(0);
+
+            entity.HasOne(d => d.Brand)
+                .WithMany(p => p.Products)
+                .HasForeignKey(d => d.BrandId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Product__BrandId__46E78A0C");
 
             entity.HasMany(d => d.Categories).WithMany(p => p.Products)
                 .UsingEntity<Dictionary<string, object>>(
