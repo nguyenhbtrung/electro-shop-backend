@@ -29,5 +29,19 @@ namespace electro_shop_backend.Models.Mappers
                 Email = user.Email
             };
         }
+
+        public static User ToUserFromAdminAddUserDTO (this AdminAddUserDTO adminAddUserDTO)
+        {
+            return new User()
+            {
+                UserName = adminAddUserDTO.UserName,
+                Email = adminAddUserDTO.Email,
+                PhoneNumber = adminAddUserDTO.PhoneNumber,
+                FullName = adminAddUserDTO.FullName,
+                Address = adminAddUserDTO.Address,
+                AvatarImg = adminAddUserDTO.AvatarImg,
+                UserStatus = adminAddUserDTO.UserStatus
+            };
+        }
     }
 }

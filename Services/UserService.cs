@@ -65,18 +65,63 @@ namespace electro_shop_backend.Services
                 return new ObjectResult(ex) { StatusCode = 500 };
             }
         }
+
+        public async Task<IActionResult> AddUser(AdminAddUserDTO adminAddUserDTO)
+        {
+            try
+            {
+                var user = adminAddUserDTO.ToUserFromAdminAddUserDTO();
+                user.CreatedAt = DateTime.UtcNow;
+                var createUser = await _userManager.CreateAsync(user, adminAddUserDTO.Password);
+                if(createUser.Succeeded)
+                {
+                    if(adminAddUserDTO.Role == "Admin")
+                    {
+                        var userRole = await _userManager.AddToRoleAsync(user, adminAddUserDTO.Role);
+                        if (userRole.Succeeded)
+                        {
+                            return new OkObjectResult("User added successfully");
+                        }
+                        else
+                        {
+                            return new ObjectResult("User created but add role error: " + userRole.Errors) { StatusCode = 500 };
+                        }
+                    }
+                    else
+                    {
+                        var userRole = await _userManager.AddToRoleAsync(user, "User");
+                        if (userRole.Succeeded)
+                        {
+                            return new OkObjectResult("User added successfully");
+                        }
+                        else
+                        {
+                            return new ObjectResult("User created but add role error: " + userRole.Errors) { StatusCode = 500 };
+                        }
+                    }
+                }
+                else
+                {
+                    return new ObjectResult("User create not success: " + createUser.Errors) { StatusCode = 500 };
+                }
+            }
+            catch (Exception ex)
+            {
+                return new ObjectResult(ex) { StatusCode = 500 };
+            }
+        }
         public async Task<IActionResult> LoginAsync (LoginDTO loginDTO)
         {
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == loginDTO.UserName.ToLower());
             if (user == null)
             {
-                return new UnauthorizedObjectResult("User not found");
+                return new UnauthorizedObjectResult("UserName or Password is incorrect!");
             }
 
             var result = await _signInManager.CheckPasswordSignInAsync(user, loginDTO.Password, false);
             if (!result.Succeeded)
             {
-                return new UnauthorizedObjectResult("Password incorrect!");
+                return new UnauthorizedObjectResult("UserName or Password is incorrect!");
             }
 
             var roles = await _userManager.GetRolesAsync(user);
