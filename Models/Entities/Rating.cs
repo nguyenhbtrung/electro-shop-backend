@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using electro_shop_backend.Models.DTOs.Rating;
 using Microsoft.EntityFrameworkCore;
 
 namespace electro_shop_backend.Models.Entities;
@@ -38,4 +39,9 @@ public partial class Rating
     [ForeignKey("UserId")]
     [InverseProperty("Ratings")]
     public virtual User User { get; set; } = null!;
+
+    internal RatingDto ToRatingDto()
+    {
+        throw new NotImplementedException();
+    }
 }

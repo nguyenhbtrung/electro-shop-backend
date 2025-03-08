@@ -1,4 +1,5 @@
 ﻿using electro_shop_backend.Data;
+using electro_shop_backend.Exceptions;
 using electro_shop_backend.Models.DTOs.Rating;
 using electro_shop_backend.Models.Entities;
 using electro_shop_backend.Models.Mappers;
@@ -22,8 +23,8 @@ namespace electro_shop_backend.Services
                 .AsNoTracking()
                 .Select(p => new AllRatingDto
                 {
-                    UserId = p.UserId,
-                    ProductId = p.ProductId
+                    ProductId = p.ProductId,
+                    UserId = p.UserId
                 })
                 .ToListAsync();
         }
@@ -34,14 +35,58 @@ namespace electro_shop_backend.Services
                 .Where(p => p.ProductId == ProductId)
                 .Select(p => new RatingDto
                 {
-                    UserId = p.UserId,
                     ProductId = p.ProductId,
+                    UserId = p.UserId,
                     RatingScore = p.RatingScore,
                     RatingContent = p.RatingContent,
                     Status = p.Status,
                     TimeStamp = p.TimeStamp,
                 })
                 .FirstOrDefaultAsync();
+        }
+        public async Task<RatingDto> CreateRatingAsync(CreateRatingRequestDto requestDto)
+        {
+            try
+            {
+                var rating = requestDto.ToRatingFromCreate();
+                await _context.Ratings.AddAsync(rating);
+                await _context.SaveChangesAsync();
+                return rating.ToRatingDto();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        public async Task<RatingDto> UpdateRatingAsync(int productId, UpdateRatingDto requestDto)
+        {
+            var rating = await _context.Ratings.FindAsync(productId);
+            if (rating == null)
+            {
+                throw new NotFoundException("Rating not found");
+            }
+            rating.RatingScore = requestDto.RatingScore;
+            rating.RatingContent = requestDto.RatingContent;
+            rating.Status = requestDto.Status;
+            rating.TimeStamp = requestDto.TimeStamp;
+            await _context.SaveChangesAsync();
+            return rating.ToRatingDto();
+        }
+        public async Task<bool> DeleteRatingAsync(int id)
+        {
+            var rating = await _context.Ratings.FindAsync(id);
+            if (rating == null)
+            {
+                throw new NotFoundException("Rating not found");
+            }
+            _context.Ratings.Remove(rating);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        Task<RatingDto> IRatingService.DeleteRatingAsync(int productId)
+        {
+            throw new NotImplementedException();
         }
     }
 }
