@@ -33,7 +33,7 @@ public partial class Product
     public double? AverageRating { get; set; }
 
     [Column("brand_id")]
-    public int BrandId { get; set; }
+    public int? BrandId { get; set; }
 
     [InverseProperty("Product")]
     public virtual ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
