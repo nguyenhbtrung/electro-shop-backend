@@ -44,11 +44,11 @@ namespace electro_shop_backend.Services
                 })
                 .FirstOrDefaultAsync();
         }
-        public async Task<RatingDto> CreateRatingAsync(CreateRatingRequestDto requestDto)
+        public async Task<RatingDto> CreateRatingAsync(string userId, CreateRatingRequestDto requestDto)
         {
             try
             {
-                var rating = requestDto.ToRatingFromCreate();
+                var rating = requestDto.ToRatingFromCreate(userId);
                 await _context.Ratings.AddAsync(rating);
                 await _context.SaveChangesAsync();
                 return rating.ToRatingDto();

@@ -1,6 +1,9 @@
-﻿using electro_shop_backend.Models.DTOs.Rating;
+﻿using electro_shop_backend.Extensions;
+using electro_shop_backend.Models.DTOs.Rating;
+using electro_shop_backend.Models.Entities;
 using electro_shop_backend.Services;
 using electro_shop_backend.Services.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace electro_shop_backend.Controllers
@@ -10,11 +13,14 @@ namespace electro_shop_backend.Controllers
     public class RatingController : ControllerBase
     {
         private readonly IRatingService _ratingService;
+        private readonly UserManager<User> _userManager;
 
-        public RatingController(IRatingService ratingService)
+        public RatingController(IRatingService ratingService, UserManager<User> userManager)
         {
             _ratingService = ratingService;
+            _userManager = userManager;
         }
+
         [HttpGet]
         public async Task<IActionResult> GetAllRating()
         {
@@ -31,11 +37,18 @@ namespace electro_shop_backend.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateRating([FromBody] CreateRatingRequestDto requestDto)
         {
+            var username = User.GetUsername();
+            var user = await _userManager.FindByNameAsync(username);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            var result = await _ratingService.CreateRatingAsync(requestDto);
+            var result = await _ratingService.CreateRatingAsync(user.Id, requestDto);
             return Ok(result);
         }
         [HttpPut("{ProductId}")]
