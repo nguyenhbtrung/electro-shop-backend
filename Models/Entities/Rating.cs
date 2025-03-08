@@ -39,9 +39,4 @@ public partial class Rating
     [ForeignKey("UserId")]
     [InverseProperty("Ratings")]
     public virtual User User { get; set; } = null!;
-
-    internal RatingDto ToRatingDto()
-    {
-        throw new NotImplementedException();
-    }
 }

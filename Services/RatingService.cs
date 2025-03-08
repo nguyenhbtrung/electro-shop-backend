@@ -24,11 +24,14 @@ namespace electro_shop_backend.Services
                 .Select(p => new AllRatingDto
                 {
                     ProductId = p.ProductId,
-                    UserId = p.UserId
+                    UserId = p.UserId,
+                    RatingScore = p.RatingScore,
+                    RatingContent = p.RatingContent,
+                    TimeStamp = p.TimeStamp,
                 })
                 .ToListAsync();
         }
-        public async Task<RatingDto?> GetRatingAsync(int ProductId)
+        public async Task<List<RatingDto>> GetRatingAsync(int ProductId)
         {
             return await _context.Ratings
             .AsNoTracking()
@@ -42,7 +45,7 @@ namespace electro_shop_backend.Services
                     Status = p.Status,
                     TimeStamp = p.TimeStamp,
                 })
-                .FirstOrDefaultAsync();
+                .ToListAsync();
         }
         public async Task<RatingDto> CreateRatingAsync(string userId, CreateRatingRequestDto requestDto)
         {
@@ -58,6 +61,8 @@ namespace electro_shop_backend.Services
                 throw;
             }
         }
+
+        //đợi huy r fix update + delete (user)
         public async Task<RatingDto> UpdateRatingAsync(int productId, UpdateRatingDto requestDto)
         {
             var rating = await _context.Ratings.FindAsync(productId);

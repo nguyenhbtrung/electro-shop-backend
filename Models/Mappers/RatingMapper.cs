@@ -17,5 +17,17 @@ namespace electro_shop_backend.Models.Mappers
                 TimeStamp = requestDto.TimeStamp,
             };
         }
+        public static RatingDto ToRatingDto(this Rating requestDto)
+        {
+            return new RatingDto
+            {
+                ProductId = requestDto.ProductId,
+                UserId = requestDto.UserId,
+                RatingScore = requestDto.RatingScore,
+                RatingContent = requestDto.RatingContent,
+                Status = requestDto.Status,
+                TimeStamp = requestDto.TimeStamp,
+            };
+        }
     }
 }

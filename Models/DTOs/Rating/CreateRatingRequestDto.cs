@@ -5,8 +5,6 @@ namespace electro_shop_backend.Models.DTOs.Rating
     public class CreateRatingRequestDto
     {
         public int ProductId { get; set; }
-        public string UserId { get; set; }
-
         [Required]
         [Range(1, 5, ErrorMessage = "Điểm đánh giá phải từ 1 đến 5.")]
         public int RatingScore { get; set; }
@@ -15,10 +13,5 @@ namespace electro_shop_backend.Models.DTOs.Rating
         public string RatingContent { get; set; }
         public string Status { get; set; }
         public DateTime? TimeStamp { get; set; }
-
-        internal Entities.Rating ToRatingFromCreate()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

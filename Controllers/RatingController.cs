@@ -54,6 +54,8 @@ namespace electro_shop_backend.Controllers
         [HttpPut("{ProductId}")]
         public async Task<IActionResult> UpdateRating(int ProductId, [FromBody] UpdateRatingDto requestDto)
         {
+            var username = User.GetUsername();
+            var user = await _userManager.FindByNameAsync(username);
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
             try
