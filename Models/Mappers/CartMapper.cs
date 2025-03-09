@@ -1,5 +1,4 @@
 using electro_shop_backend.Models.DTOs.Cart;
-using electro_shop_backend.Models.DTOs.Voucher;
 using electro_shop_backend.Models.Entities;
 
 namespace electro_shop_backend.Models.Mappers
@@ -25,14 +24,16 @@ namespace electro_shop_backend.Models.Mappers
             };
         }
 
-        public static CartItemDto ToCartItemDto(this CartItem cartitem) 
+        public static CartItemDto ToCartItemDto(this CartItem cartitem)
         {
             return new CartItemDto
             {
                 CartId = cartitem.CartId,
                 CartItemId = cartitem.CartItemId,
                 ProductId = cartitem.ProductId,
-                Quantity = cartitem.Quantity
+                Quantity = cartitem.Quantity,
+                ProductName = cartitem.Product?.Name,
+                ProductImage = cartitem.Product?.ProductImages.FirstOrDefault()?.ImageUrl
             };
         }
     }

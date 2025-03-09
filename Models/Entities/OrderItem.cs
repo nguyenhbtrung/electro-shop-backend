@@ -19,8 +19,15 @@ public partial class OrderItem
     [Column("product_id")]
     public int? ProductId { get; set; }
 
+    [Column("product_name")]
+    [StringLength(255)]
+    public string ProductName { get; set; } = null!;
+
     [Column("quantity")]
     public int Quantity { get; set; }
+
+    [Column("price", TypeName = "decimal(18, 2)")]
+    public decimal Price { get; set; }
 
     [ForeignKey("OrderId")]
     [InverseProperty("OrderItems")]

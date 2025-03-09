@@ -11,7 +11,6 @@ public partial class Cart
 {
     [Key]
     [Column("cart_id")]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int CartId { get; set; }
 
     [Column("user_id")]

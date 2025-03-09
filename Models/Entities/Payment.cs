@@ -19,9 +19,12 @@ public partial class Payment
     [Column("amount", TypeName = "decimal(18, 2)")]
     public decimal Amount { get; set; }
 
+    [Column("payment_method")]
+    public string? PaymentMethod { get; set; } // COD, Bank, Momo, ZaloPay
+
     [Column("payment_status")]
     [StringLength(50)]
-    public string? PaymentStatus { get; set; }
+    public string? PaymentStatus { get; set; } // Pending, Success, Failed
 
     [Column("transaction_time", TypeName = "datetime")]
     public DateTime? TransactionTime { get; set; }

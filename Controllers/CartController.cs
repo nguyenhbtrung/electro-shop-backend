@@ -33,7 +33,7 @@ namespace electro_shop_backend.Controllers
             return Ok(listCart);
         }
 
-        [HttpPost("user/cart/addtocart")]
+        [HttpPost("user/addtocart")]
         [Authorize(Policy = "UserPolicy")]
         public async Task<IActionResult> AddToCartAsync(int productId, int quantity)
         {
@@ -54,7 +54,7 @@ namespace electro_shop_backend.Controllers
             }
         }
 
-        [HttpGet("user/cart/viewcart")]
+        [HttpGet("user/viewcart")]
         [Authorize(Policy = "UserPolicy")]
         public async Task<IActionResult> GetCartByUserIdAsync()
         {
@@ -69,7 +69,7 @@ namespace electro_shop_backend.Controllers
             return Ok(cart);
         }
 
-        [HttpGet("admin/cart/userid/{userId}")]
+        [HttpGet("admin/getcartbyuserid/{userId}")]
         public async Task<IActionResult> GetCartByUserIdForAdminAsync(string userId)
         {
             var cart = await _cartService.GetCartByUserIdForAdminAsync(userId);
@@ -77,7 +77,7 @@ namespace electro_shop_backend.Controllers
             return Ok(cart);
         }
 
-        [HttpGet("admin/cart/cartid/{cartId}")]
+        [HttpGet("admin/getcartbycartid/{cartId}")]
         public async Task<IActionResult> GetCartByCartIdAsync(int cartId)
         {
             var cart = await _cartService.GetCartByCartIdAsync(cartId);
@@ -85,7 +85,7 @@ namespace electro_shop_backend.Controllers
             return Ok(cart);
         }
 
-        [HttpPut("user/cartitem/edit/{cartItemId}")]
+        [HttpPut("user/editcartitem/{cartItemId}")]
         [Authorize(Policy = "UserPolicy")]
         public async Task<IActionResult> UpdateCartItemQuantityAsync(int cartItemId, int quantity)
         {
@@ -106,7 +106,7 @@ namespace electro_shop_backend.Controllers
             }
         }
 
-        [HttpPut("admin/cartitem/edit/{cartItemId}")]
+        [HttpPut("admin/editcartitem/{cartItemId}")]
         public async Task<IActionResult> UpdateCartItemQuantityAsync(string userId, int cartItemId, int quantity)
         {
             try
@@ -120,7 +120,7 @@ namespace electro_shop_backend.Controllers
             }
         }
 
-        [HttpDelete("user/cart/delete")]
+        [HttpDelete("user/delete")]
         [Authorize(Policy = "UserPolicy")]
         public async Task<IActionResult> DeleteCartAsync()
         {
@@ -141,7 +141,7 @@ namespace electro_shop_backend.Controllers
             }
         }
 
-        [HttpDelete("user/cartItem/delete/{cartItemId}")]
+        [HttpDelete("user/deletecartitem/{cartItemId}")]
         [Authorize(Policy = "UserPolicy")]
         public async Task<IActionResult> DeleteCartItemAsync(int cartItemId)
         {
@@ -162,7 +162,7 @@ namespace electro_shop_backend.Controllers
             }
         }
 
-        [HttpDelete("admin/cart/delete")]
+        [HttpDelete("admin/deletecart")]
         public async Task<IActionResult> DeleteCartAdminAsync(string userId)
         {
             try
@@ -176,7 +176,7 @@ namespace electro_shop_backend.Controllers
             }
         }
 
-        [HttpDelete("admin/cartItem/delete/{cartItemId}")]
+        [HttpDelete("admin/deletecartitem/{cartItemId}")]
         public async Task<IActionResult> DeleteCartItemAdminAsync(string userId, int cartItemId)
         {
             try

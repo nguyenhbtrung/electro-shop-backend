@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using electro_shop_backend.Data;
 
@@ -11,9 +12,11 @@ using electro_shop_backend.Data;
 namespace electro_shop_backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250309102725_UpdateOrderItems")]
+    partial class UpdateOrderItems
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -227,26 +230,6 @@ namespace electro_shop_backend.Migrations
                         .HasName("PK__Banner__10373C34A2F1E5F2");
 
                     b.ToTable("Banner");
-                });
-
-            modelBuilder.Entity("electro_shop_backend.Models.Entities.Brand", b =>
-                {
-                    b.Property<int>("BrandId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("brand_id");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BrandId"));
-
-                    b.Property<string>("BrandName")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
-                        .HasColumnName("brand_name");
-
-                    b.HasKey("BrandId")
-                        .HasName("PK__Brand__5E5A8E27B91E7337");
-
-                    b.ToTable("Brand");
                 });
 
             modelBuilder.Entity("electro_shop_backend.Models.Entities.Cart", b =>
@@ -521,10 +504,6 @@ namespace electro_shop_backend.Migrations
                         .HasDefaultValue(0.0)
                         .HasColumnName("average_rating");
 
-                    b.Property<int?>("BrandId")
-                        .HasColumnType("int")
-                        .HasColumnName("brand_id");
-
                     b.Property<string>("Info")
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("info");
@@ -551,8 +530,6 @@ namespace electro_shop_backend.Migrations
 
                     b.HasKey("ProductId")
                         .HasName("PK__Product__47027DF5BB06DC67");
-
-                    b.HasIndex("BrandId");
 
                     b.ToTable("Product");
                 });
@@ -1100,16 +1077,6 @@ namespace electro_shop_backend.Migrations
                     b.Navigation("Order");
                 });
 
-            modelBuilder.Entity("electro_shop_backend.Models.Entities.Product", b =>
-                {
-                    b.HasOne("electro_shop_backend.Models.Entities.Brand", "Brand")
-                        .WithMany("Products")
-                        .HasForeignKey("BrandId")
-                        .HasConstraintName("FK__Product__BrandId__46E78A0C");
-
-                    b.Navigation("Brand");
-                });
-
             modelBuilder.Entity("electro_shop_backend.Models.Entities.ProductDiscount", b =>
                 {
                     b.HasOne("electro_shop_backend.Models.Entities.Discount", "Discount")
@@ -1198,11 +1165,6 @@ namespace electro_shop_backend.Migrations
                     b.Navigation("OrderItem");
 
                     b.Navigation("Return");
-                });
-
-            modelBuilder.Entity("electro_shop_backend.Models.Entities.Brand", b =>
-                {
-                    b.Navigation("Products");
                 });
 
             modelBuilder.Entity("electro_shop_backend.Models.Entities.Cart", b =>
