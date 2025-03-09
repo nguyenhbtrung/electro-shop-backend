@@ -36,14 +36,14 @@ namespace electro_shop_backend.Controllers
             return Ok(product);
         }
 
-        [HttpGet("/by_user")]
+        [HttpGet("by_user")]
         public async Task<IActionResult> GetAllProductsByUser([FromQuery] ProductQuery productQuery)
         {
             var products = await _productService.GetAllProductsByUserAsync(productQuery);
             return Ok(products);
         }
 
-        [HttpGet("/discounted")]
+        [HttpGet("discounted")]
         public async Task<IActionResult> GetDiscountedProducts([FromQuery] ProductQuery productQuery)
         {
             var products = await _productService.GetDiscountedProductsAsync(productQuery);
