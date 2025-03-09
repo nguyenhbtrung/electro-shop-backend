@@ -35,6 +35,20 @@ namespace electro_shop_backend.Controllers
             return Ok(product);
         }
 
+        [HttpGet("/by_user")]
+        public async Task<IActionResult> GetAllProductsByUser()
+        {
+            var products = await _productService.GetAllProductsByUserAsync();
+            return Ok(products);
+        }
+
+        [HttpGet("/discounted")]
+        public async Task<IActionResult> GetDiscountedProducts()
+        {
+            var products = await _productService.GetDiscountedProductsAsync();
+            return Ok(products);
+        }
+
 
         [HttpPost]
         [Authorize(Policy ="AdminPolicy")]
