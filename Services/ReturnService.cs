@@ -49,7 +49,6 @@ namespace electro_shop_backend.Services
                     Status = requestDto.Status,
                     ReturnMethod = requestDto.ReturnMethod,
                     Address = requestDto.Address,
-                    AdminComment = requestDto.AdminComment,
                     TimeStamp = requestDto.TimeStamp ?? DateTime.Now
                 };
                 await _context.Returns.AddAsync(returnEntity);
