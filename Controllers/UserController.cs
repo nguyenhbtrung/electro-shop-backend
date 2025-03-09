@@ -27,7 +27,7 @@ namespace electro_shop_backend.Controllers
             return await _userService.RegisterAsync(registerDTO);
         }
 
-        [HttpPost("adduser")]
+        [HttpPost("addUser")]
         [Authorize(Policy = "AdminPolicy")]
         public async Task<IActionResult> AddUser([FromBody] AdminAddUserDTO adminAddUserDTO)
         {
