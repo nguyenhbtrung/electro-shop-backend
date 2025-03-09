@@ -31,7 +31,7 @@ namespace electro_shop_backend.Services
                 })
                 .ToListAsync();
         }
-        public async Task<List<RatingDto>> GetRatingAsync(int ProductId)
+        public async Task<List<RatingDto>> GetRatingByProductIdAsync(int ProductId)
         {
             return await _context.Ratings
             .AsNoTracking()
@@ -40,6 +40,22 @@ namespace electro_shop_backend.Services
                 {
                     ProductId = p.ProductId,
                     UserId = p.UserId,
+                    RatingScore = p.RatingScore,
+                    RatingContent = p.RatingContent,
+                    Status = p.Status,
+                    TimeStamp = p.TimeStamp,
+                })
+                .ToListAsync();
+        }
+        public async Task<List<RatingDto>> GetRatingByUserIdAsync(string userId)
+        {
+            return await _context.Ratings
+            .AsNoTracking()
+                .Where(p => p.UserId == userId)
+                .Select(p => new RatingDto
+                {
+                    UserId = p.UserId,
+                    ProductId = p.ProductId,
                     RatingScore = p.RatingScore,
                     RatingContent = p.RatingContent,
                     Status = p.Status,
@@ -62,36 +78,34 @@ namespace electro_shop_backend.Services
             }
         }
 
-        //đợi huy r fix update + delete (user)
-        public async Task<RatingDto> UpdateRatingAsync(int productId, UpdateRatingDto requestDto)
+        public async Task<RatingDto> UpdateRatingAsync(int productId, UpdateRatingDto requestDto, string userId)
         {
-            var rating = await _context.Ratings.FindAsync(productId);
+            var rating = await _context.Ratings
+                .FirstOrDefaultAsync(r => r.ProductId == productId && r.UserId == userId);
             if (rating == null)
             {
-                throw new NotFoundException("Rating not found");
+                throw new NotFoundException("You can only change your own rating.");
             }
             rating.RatingScore = requestDto.RatingScore;
             rating.RatingContent = requestDto.RatingContent;
             rating.Status = requestDto.Status;
             rating.TimeStamp = requestDto.TimeStamp;
+
             await _context.SaveChangesAsync();
             return rating.ToRatingDto();
         }
-        public async Task<bool> DeleteRatingAsync(int id)
+
+        public async Task<bool> DeleteRatingAsync(int productId, string userId)
         {
-            var rating = await _context.Ratings.FindAsync(id);
+            var rating = await _context.Ratings
+                .FirstOrDefaultAsync(r => r.ProductId == productId && r.UserId == userId);
             if (rating == null)
             {
-                throw new NotFoundException("Rating not found");
+                throw new NotFoundException("You can only change your own rating.");
             }
             _context.Ratings.Remove(rating);
             await _context.SaveChangesAsync();
             return true;
-        }
-
-        Task<RatingDto> IRatingService.DeleteRatingAsync(int productId)
-        {
-            throw new NotImplementedException();
         }
     }
 }
