@@ -22,7 +22,10 @@ namespace electro_shop_backend.Services
                 .Select(p => new AllCategoryDto
                 {
                     CategoryId = p.CategoryId,
-                    Name = p.Name
+                    Name = p.Name,
+                    Description = p.Description,
+                    ParentCategoryId = p.ParentCategoryId,
+                    ImageUrl = p.ImageUrl,
                 })
                 .ToListAsync();
         }
