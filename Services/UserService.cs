@@ -52,6 +52,7 @@ namespace electro_shop_backend.Services
                     }
                     else
                     {
+                        var result = await _userManager.DeleteAsync(user);
                         return new ObjectResult(userRole.Errors) { StatusCode = 500 };
                     }
                 }
@@ -96,7 +97,8 @@ namespace electro_shop_backend.Services
                         }
                         else
                         {
-                            return new ObjectResult("User created but add role error: " + userRole.Errors) { StatusCode = 500 };
+                            var result = await _userManager.DeleteAsync(user);
+                            return new ObjectResult(userRole.Errors) { StatusCode = 500 };
                         }
                     }
                 }
