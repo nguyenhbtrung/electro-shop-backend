@@ -54,10 +54,26 @@ namespace electro_shop_backend.Controllers
         {
             return await _userService.GetAllUsersAsync();
         }
-        [HttpGet("{userName}")]
+        [HttpGet("admin/{userName}")]
         [Authorize(Policy = "AdminPolicy")]
+        public async Task<IActionResult> AdminGetUser(string userName)
+        {
+            return await _userService.GetUserAsync(userName);
+        }
+
+        [HttpGet("user/{userName}")]
+        [Authorize(Policy = "UserPolicy")]
         public async Task<IActionResult> GetUser(string userName)
         {
+            if(userName == null)
+            {
+                return BadRequest("User name is required.");
+            }
+            var authenticatedUserName = User.Identity.Name;
+            if (authenticatedUserName != userName)
+            {
+                return Unauthorized("You can only view your own account.");
+            }
             return await _userService.GetUserAsync(userName);
         }
 
