@@ -28,6 +28,13 @@ namespace electro_shop_backend.Controllers
             var category = await _categoryService.GetCategoryTreeAsync();
             return Ok(category);
         }
+        [HttpGet("{id}/Product")]
+        public async Task<IActionResult> GetAllProdcutByCategoryId(int id)
+        {
+            var category = await _categoryService.GetAllProductsByCategoryIdAsync(id);
+            if (category == null) return NotFound("Không tìm thấy danh mục sản phẩm");
+            return Ok(category);
+        }
         [HttpGet("{id}")]
         public async Task<IActionResult> GetCategoryById(int id)
         {
