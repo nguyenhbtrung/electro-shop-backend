@@ -22,6 +22,12 @@ namespace electro_shop_backend.Controllers
             var category = await _categoryService.GetAllCategoriesIdsAndNamesAsync();
             return Ok(category);
         }
+        [HttpGet("tree")]
+        public async Task<IActionResult> GetAllCategoriesTree()
+        {
+            var category = await _categoryService.GetCategoryTreeAsync();
+            return Ok(category);
+        }
         [HttpGet("{id}")]
         public async Task<IActionResult> GetCategoryById(int id)
         {

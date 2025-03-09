@@ -78,5 +78,27 @@ namespace electro_shop_backend.Services
             await _context.SaveChangesAsync();
             return true;
         }
+
+        public async Task<List<CategoryTreeDto>> GetCategoryTreeAsync()
+        {
+            var parentCategories = await _context.Categories
+                .Where(c => c.ParentCategoryId == null)
+                .Include(c => c.InverseParentCategory)
+                .ToListAsync();
+
+            var result = parentCategories.Select(c => new CategoryTreeDto
+            {
+                CategoryId = c.CategoryId,
+                Name = c.Name,
+                Childs = c.InverseParentCategory.Select(child => new CategoryTreeDto
+                {
+                    CategoryId = child.CategoryId,
+                    Name = child.Name
+                }).ToList()
+            }).ToList();
+
+            return result;
+
+        }
     }
 }
