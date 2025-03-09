@@ -33,12 +33,16 @@ namespace electro_shop_backend.Services
             var product = await _context.Products
             .AsNoTracking()
             .Include(p => p.ProductImages)
+            .Include(p => p.Categories)
             .FirstOrDefaultAsync(p => p.ProductId == productId); 
 
             if (product == null) return null;
             var productDto = ProductMapper.ToProductDto(product);
             productDto.ProductImages = product.ProductImages
                 .Select(ProductImageMapper.ToProductImageDto)
+                .ToList();
+            productDto.Categories = product.Categories
+                .Select(CategoryMapper.ToCategoryIdDto)
                 .ToList();
             return productDto;
         }
@@ -47,6 +51,13 @@ namespace electro_shop_backend.Services
             try
             {
                 var product = requestDto.ToProductFromCreate();
+                if (requestDto.CategoryIds != null && requestDto.CategoryIds.Any())
+                {
+                    var categories = await _context.Categories
+                        .Where(c => requestDto.CategoryIds.Contains(c.CategoryId))
+                        .ToListAsync();
+                    product.Categories = categories;
+                }
                 await _context.Products.AddAsync(product);
                 await _context.SaveChangesAsync();
                 return product.ToProductDto();

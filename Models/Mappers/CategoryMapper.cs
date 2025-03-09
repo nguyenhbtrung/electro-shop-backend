@@ -16,6 +16,13 @@ namespace electro_shop_backend.Models.Mappers
                 ImageUrl = category.ImageUrl,
             };
         }
+        public static CategoryIdDto ToCategoryIdDto(this Category category) //shows
+        {
+            return new CategoryIdDto
+            {
+                CategoryId = category.CategoryId,
+            };
+        }
         public static Category ToCategoryFromCreate(this CreateCategoryRequestDto requestDto)//tạo
         {
             return new Category

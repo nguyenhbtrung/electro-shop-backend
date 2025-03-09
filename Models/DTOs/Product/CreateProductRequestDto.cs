@@ -17,5 +17,6 @@ namespace electro_shop_backend.Models.DTOs.Product
 
         [Required]
         public int Stock { get; set; }
+        public List<int> CategoryIds { get; set; } = new();
     }
 }
