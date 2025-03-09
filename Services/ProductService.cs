@@ -1,5 +1,6 @@
 ﻿using electro_shop_backend.Data;
 using electro_shop_backend.Exceptions;
+using electro_shop_backend.Helpers;
 using electro_shop_backend.Models.DTOs.Product;
 using electro_shop_backend.Models.Entities;
 using electro_shop_backend.Models.Mappers;
@@ -101,14 +102,18 @@ namespace electro_shop_backend.Services
             return true;
         }
 
-        public async Task<List<ProductCardDto>> GetAllProductsByUserAsync()
+        public async Task<List<ProductCardDto>> GetAllProductsByUserAsync(ProductQuery productQuery)
         {
+            int skipNumber = (productQuery.PageNumber - 1) * productQuery.PageSize;
+
             // Query sản phẩm, bao gồm các quan hệ cần thiết
             var products = await _context.Products
                 .Include(p => p.ProductImages)
                 .Include(p => p.Ratings)
                 .Include(p => p.ProductDiscounts)
                     .ThenInclude(pd => pd.Discount)
+                .Skip(skipNumber)
+                .Take(productQuery.PageSize)
                 .ToListAsync();
 
             var productDtos = products.Select(product =>
@@ -151,6 +156,7 @@ namespace electro_shop_backend.Services
 
                 return new ProductCardDto
                 {
+                    ProductId = product.ProductId,
                     Name = product.Name,
                     Images = product.ProductImages?
                                 .Where(pi => !string.IsNullOrWhiteSpace(pi.ImageUrl))
@@ -167,10 +173,11 @@ namespace electro_shop_backend.Services
             return productDtos;
         }
 
-        public async Task<List<ProductCardDto>> GetDiscountedProductsAsync()
+        public async Task<List<ProductCardDto>> GetDiscountedProductsAsync(ProductQuery productQuery)
         {
             // Lấy thời điểm hiện tại
             var now = DateTime.Now;
+            int skipNumber = (productQuery.PageNumber - 1) * productQuery.PageSize;
 
             // Query các sản phẩm có discount đang hiệu lực
             var products = await _context.Products
@@ -182,6 +189,8 @@ namespace electro_shop_backend.Services
                           pd.Discount != null &&
                           pd.Discount.StartDate <= now &&
                           pd.Discount.EndDate >= now))
+                .Skip(skipNumber)
+                .Take(productQuery.PageSize)
                 .ToListAsync();
 
             var productDtos = products.Select(product =>
@@ -230,6 +239,7 @@ namespace electro_shop_backend.Services
 
                 return new ProductCardDto
                 {
+                    ProductId = product.ProductId,
                     Name = product.Name,
                     Images = product.ProductImages?
                                 .Where(pi => !string.IsNullOrWhiteSpace(pi.ImageUrl))

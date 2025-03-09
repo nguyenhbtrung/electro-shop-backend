@@ -2,6 +2,7 @@
 {
     public class ProductCardDto
     {
+        public int ProductId { get; set; }
         public string? Name { get; set; }
 
         public List<string> Images { get; set; } = new List<string>();

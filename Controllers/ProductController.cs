@@ -4,6 +4,7 @@ using electro_shop_backend.Models.DTOs.Product;
 using electro_shop_backend.Models.DTOs.ProductImage;
 using electro_shop_backend.Exceptions;
 using Microsoft.AspNetCore.Authorization;
+using electro_shop_backend.Helpers;
 
 namespace electro_shop_backend.Controllers
 {
@@ -36,16 +37,16 @@ namespace electro_shop_backend.Controllers
         }
 
         [HttpGet("/by_user")]
-        public async Task<IActionResult> GetAllProductsByUser()
+        public async Task<IActionResult> GetAllProductsByUser([FromQuery] ProductQuery productQuery)
         {
-            var products = await _productService.GetAllProductsByUserAsync();
+            var products = await _productService.GetAllProductsByUserAsync(productQuery);
             return Ok(products);
         }
 
         [HttpGet("/discounted")]
-        public async Task<IActionResult> GetDiscountedProducts()
+        public async Task<IActionResult> GetDiscountedProducts([FromQuery] ProductQuery productQuery)
         {
-            var products = await _productService.GetDiscountedProductsAsync();
+            var products = await _productService.GetDiscountedProductsAsync(productQuery);
             return Ok(products);
         }
 
