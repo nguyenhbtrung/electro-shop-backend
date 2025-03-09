@@ -6,7 +6,6 @@ using electro_shop_backend.Models.Mappers;
 using electro_shop_backend.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-
 namespace electro_shop_backend.Services
 {
     public class ProductService : IProductService
@@ -17,16 +16,27 @@ namespace electro_shop_backend.Services
         {
             _context = context;
         }
-        public async Task<List<AllProductDto>> GetAllProductsIdsAndNamesAsync()
+        public async Task<List<ProductDto>> GetAllProductsAsync()
         {
-            return await _context.Products
+            var products = await _context.Products
                 .AsNoTracking()
-                .Select(p => new AllProductDto
-                {
-                    ProductId = p.ProductId,
-                    Name = p.Name
-                })
+                .Include(p => p.ProductImages)
+                .Include(p => p.Categories)
                 .ToListAsync();
+
+            var productDtos = products.Select(p =>
+            {
+                var productDto = ProductMapper.ToProductDto(p);
+                productDto.ProductImages = p.ProductImages
+                    .Select(ProductImageMapper.ToProductImageDto)
+                    .ToList();
+                productDto.Categories = p.Categories
+                    .Select(CategoryMapper.ToCategoryIdDto)
+                    .ToList();
+                return productDto;
+            }).ToList();
+
+            return productDtos;
         }
         public async Task<ProductDto?> GetProductByIdAsync(int productId)
         {
@@ -80,17 +90,16 @@ namespace electro_shop_backend.Services
         }
         public async Task<bool> DeleteProductAsync(int id)
         {
-            var product = await _context.Products.FindAsync(id);
+            var product = await _context.Products.Include(p => p.Categories).FirstOrDefaultAsync(p => p.ProductId == id);
             if (product == null)
             {
                 throw new NotFoundException("Không tìm thấy sản phẩm.");
             }
-
+            product.Categories.Clear();
             _context.Products.Remove(product);
             await _context.SaveChangesAsync();
             return true;
         }
-
     }
 }
 

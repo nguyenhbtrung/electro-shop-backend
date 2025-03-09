@@ -7,7 +7,7 @@ namespace electro_shop_backend.Services.Interfaces
 {
     public interface IProductService
     {
-        Task<List<AllProductDto>> GetAllProductsIdsAndNamesAsync();
+        Task<List<ProductDto>> GetAllProductsAsync();
         Task<ProductDto?> GetProductByIdAsync(int productId);
         Task<ProductDto> CreateProductAsync(CreateProductRequestDto requestDto);
         Task<ProductDto> UpdateProductAsync(int id,UpdateProductRequestDto requestDto);

@@ -21,6 +21,7 @@ namespace electro_shop_backend.Models.Mappers
             return new CategoryIdDto
             {
                 CategoryId = category.CategoryId,
+                Name = category.Name,
             };
         }
         public static Category ToCategoryFromCreate(this CreateCategoryRequestDto requestDto)//tạo

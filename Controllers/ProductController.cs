@@ -23,7 +23,7 @@ namespace electro_shop_backend.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllProducts()
         {
-            var products = await _productService.GetAllProductsIdsAndNamesAsync();
+            var products = await _productService.GetAllProductsAsync();
             return Ok(products);
         }
 
@@ -93,9 +93,9 @@ namespace electro_shop_backend.Controllers
             {
                 return NotFound(ex.Message);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return StatusCode(500, "Lỗi khi xóa sản phẩm.");
+                return new ObjectResult(e);
             }
         }
         [HttpDelete("{id}/Image")]
