@@ -79,6 +79,29 @@ namespace electro_shop_backend.Controllers
             }
         }
 
+        [HttpPost("apply")]
+        [Authorize(Policy = "AdminPolicy")]
+        public async Task<IActionResult> ApplyDiscountToProducts([FromBody] ApplyDiscountDto requestDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            try
+            {
+                await _discountService.ApplyDiscountToProductsAsync(requestDto);
+                return Ok(new { Message = "Khuyến mãi đã được áp dụng thành công." });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { Message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "Có lỗi xảy ra khi áp dụng khuyến mãi.", Error = ex.Message });
+            }
+        }
+
         [HttpPut("{discountId}")]
         [Authorize(Policy = "AdminPolicy")]
         public async Task<IActionResult> UpdateDiscount([FromRoute] int discountId, [FromBody] CreateDiscountRequestDto requestDto)
