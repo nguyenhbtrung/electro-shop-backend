@@ -81,15 +81,15 @@ namespace electro_shop_backend.Controllers
             try
             {
                 var result = await _categoryService.DeleteCategoryAsync(id);
-                return result ? NoContent() : NotFound("Không tìm thấy sản phẩm.");
+                return result ? NoContent() : NotFound("Không tìm thấy danh mục sản phẩm.");
             }
             catch (NotFoundException ex)
             {
                 return NotFound(ex.Message);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return StatusCode(500, "Lỗi khi xóa sản phẩm.");
+                return StatusCode(500, $"Lỗi khi xóa danh mục sản phẩm: {e.Message}");
             }
         }
     }
