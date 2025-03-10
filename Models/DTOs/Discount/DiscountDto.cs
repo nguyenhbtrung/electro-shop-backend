@@ -17,5 +17,6 @@ namespace electro_shop_backend.Models.DTOs.Discount
         public DateTime? StartDate { get; set; }
 
         public DateTime? EndDate { get; set; }
+        public int ProductCount { get; set; }
     }
 }

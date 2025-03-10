@@ -19,6 +19,39 @@ namespace electro_shop_backend.Services
             _context = context;
         }
 
+        public async Task ApplyDiscountToProductsAsync(ApplyDiscountDto discountDto)
+        {
+            var discount = await _context.Discounts.FindAsync(discountDto.DiscountId);
+            if (discount == null)
+            {
+                throw new ArgumentException("Discount không tồn tại.");
+            }
+
+            foreach (var productId in discountDto.ProductIds)
+            {
+                var product = await _context.Products.FindAsync(productId);
+                if (product == null)
+                {
+                    continue;
+                }
+
+                bool exists = await _context.ProductDiscounts
+                    .AnyAsync(x => x.ProductId == productId && x.DiscountId == discountDto.DiscountId);
+                if (!exists)
+                {
+                    var productDiscount = new ProductDiscount
+                    {
+                        ProductId = productId,
+                        DiscountId = discountDto.DiscountId
+                    };
+
+                    await _context.ProductDiscounts.AddAsync(productDiscount);
+                }
+            }
+
+            await _context.SaveChangesAsync();
+        }
+
         public async Task<Discount> CreateDiscountAsync(CreateDiscountRequestDto requestDto)
         {
             try
@@ -83,7 +116,8 @@ namespace electro_shop_backend.Services
                         DiscountType = d.DiscountType,
                         DiscountValue = d.DiscountValue,
                         StartDate = d.StartDate,
-                        EndDate = d.EndDate
+                        EndDate = d.EndDate,
+                        ProductCount = d.ProductDiscounts.Count()
                     })
                     .OrderByDescending(d => d.StartDate)
                     .Skip(skipNumber)

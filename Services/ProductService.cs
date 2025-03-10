@@ -1,6 +1,7 @@
 ﻿using electro_shop_backend.Data;
 using electro_shop_backend.Exceptions;
 using electro_shop_backend.Helpers;
+using electro_shop_backend.Models.DTOs.Discount;
 using electro_shop_backend.Models.DTOs.Product;
 using electro_shop_backend.Models.Entities;
 using electro_shop_backend.Models.Mappers;
@@ -254,6 +255,40 @@ namespace electro_shop_backend.Services
             }).ToList();
 
             return productDtos;
+        }
+
+        public async Task<ProductGroupedDto> GetProductsByDiscountIdAsync(int? discountId, string? search)
+        {
+            IQueryable<Product> query = _context.Products.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                query = query.Where(p => p.Name.Contains(search));
+            }
+
+            List<Product> selectedProducts = new List<Product>();
+            List<Product> availableProducts = new List<Product>();
+
+            if (discountId.HasValue)
+            {
+                selectedProducts = await query
+                    .Where(p => p.ProductDiscounts.Any(pd => pd.DiscountId == discountId.Value))
+                    .ToListAsync();
+
+                availableProducts = await query
+                    .Where(p => !p.ProductDiscounts.Any(pd => pd.DiscountId == discountId.Value))
+                    .ToListAsync();
+            }
+            else
+            {
+                availableProducts = await query.ToListAsync();
+            }
+
+            return new ProductGroupedDto
+            {
+                Available = availableProducts.Select(p => p.ToProductDto()),
+                Selected = selectedProducts.Select(p => p.ToProductDto())
+            };
         }
     }
 }

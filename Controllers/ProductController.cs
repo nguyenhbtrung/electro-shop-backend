@@ -36,6 +36,13 @@ namespace electro_shop_backend.Controllers
             return Ok(product);
         }
 
+        [HttpGet("by_discount")]
+        public async Task<IActionResult> GetProductsByDiscountId([FromQuery] int? discount_id, [FromQuery] string? search)
+        {
+            var products = await _productService.GetProductsByDiscountIdAsync(discount_id, search);
+            return Ok(products);
+        }
+
         [HttpGet("by_user")]
         public async Task<IActionResult> GetAllProductsByUser([FromQuery] ProductQuery productQuery)
         {
