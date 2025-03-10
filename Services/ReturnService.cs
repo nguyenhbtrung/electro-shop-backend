@@ -18,7 +18,7 @@ namespace electro_shop_backend.Services
             _context = context;
         }
 
-        public async Task<List<AllReturnDto>> GetAllReturngAsync()
+        public async Task<List<AllReturnDto>> GetAllReturnAsync()
         {
             return await _context.Returns
                 .AsNoTracking()
@@ -36,6 +36,7 @@ namespace electro_shop_backend.Services
                 })
                 .ToListAsync();
         }
+
         public async Task<ReturnDto> CreateReturnAsync(int returnId, CreateReturnRequestDto requestDto)
         {
             try
@@ -60,6 +61,7 @@ namespace electro_shop_backend.Services
                 throw;
             }
         }
+
         public async Task<ReturnDto> UpdateReturnAsync(int returnId, UpdateReturnDto requestDto)
         {
             var returnEntity = await _context.Returns
@@ -72,6 +74,7 @@ namespace electro_shop_backend.Services
             await _context.SaveChangesAsync();
             return returnEntity.ToReturnDto();
         }
+
         public async Task<bool> DeleteReturnAsync(int returnId)
         {
             var returnEntity = await _context.Returns

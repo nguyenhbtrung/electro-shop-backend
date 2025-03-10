@@ -28,7 +28,7 @@ namespace electro_shop_backend.Controllers
         [Authorize(Policy = "AdminPolicy")]
         public async Task<IActionResult> GetAllReturn()
         {
-            var returns = await _returnService.GetAllReturngAsync();
+            var returns = await _returnService.GetAllReturnAsync();
             return Ok(returns);
         }
 
