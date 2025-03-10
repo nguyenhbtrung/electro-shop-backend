@@ -119,6 +119,7 @@ builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IReturnService, ReturnService>();
 builder.Services.AddScoped<IReturnReasonService, ReturnReasonService>();
+builder.Services.AddScoped<IBrandService, BrandService>();
 
 var app = builder.Build();
 // Configure the HTTP request pipeline.
