@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace electro_shop_backend.Models.Entities;
 
 [Table("Payment")]
-public partial class Payment
+public partial class Payment // Lưu lịch sử thanh toán
 {
     [Key]
     [Column("payment_id")]
@@ -15,6 +15,9 @@ public partial class Payment
 
     [Column("order_id")]
     public int? OrderId { get; set; }
+
+    [Column("TransactionId")]
+    public string? TransactionId { get; set; } // Mã giao dịch từ cổng thanh toán nếu thanh toán online
 
     [Column("amount", TypeName = "decimal(18, 2)")]
     public decimal Amount { get; set; }
@@ -26,8 +29,17 @@ public partial class Payment
     [StringLength(50)]
     public string? PaymentStatus { get; set; } // Pending, Success, Failed
 
-    [Column("transaction_time", TypeName = "datetime")]
-    public DateTime? TransactionTime { get; set; }
+    [Column("created_time", TypeName = "datetime")]
+    public DateTime? CreatedAt { get; set; }
+
+    [Column("paid_time", TypeName = "datetime")]
+    public DateTime? PaidAt { get; set; }
+
+    [Column("error_code")]
+    public string? ErrorCode { get; set; }
+
+    [Column("error_message")]
+    public string? ErrorMessage { get; set; }
 
     [ForeignKey("OrderId")]
     [InverseProperty("Payments")]

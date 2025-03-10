@@ -122,7 +122,7 @@ public partial class ApplicationDbContext : IdentityDbContext<User>
         {
             entity.HasKey(e => e.PaymentId).HasName("PK__Payment__ED1FC9EAE0EEEFC3");
 
-            entity.Property(e => e.TransactionTime).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
 
             entity.HasOne(d => d.Order).WithMany(p => p.Payments).HasConstraintName("FK__Payment__order_i__5812160E");
         });
