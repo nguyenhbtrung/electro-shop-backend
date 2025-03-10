@@ -230,6 +230,11 @@ namespace electro_shop_backend.Services
             {
                 return new UnauthorizedObjectResult("User not found");
             }
+            var rating = await _context.Ratings.Where(r => r.UserId == user.Id).ToListAsync();
+            foreach (var r in rating)
+            {
+                _context.Ratings.Remove(r);
+            }
             var result = await _userManager.DeleteAsync(user);
             if (result.Succeeded)
             {
