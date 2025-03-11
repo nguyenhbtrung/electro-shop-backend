@@ -8,8 +8,7 @@ namespace electro_shop_backend.Services.Interfaces
 
         Task<CartItemDto> AddToCartAsync(string userId, int productId, int quantity);
 
-        Task<List<CartItemDto>> GetCartByUserIdAsync(string userId);
-
+        Task<List<UserCartDto>> GetCartByUserIdAsync(string userId);
         Task<List<CartItemDto>> GetCartByUserIdForAdminAsync(string userId);
         Task<List<CartItemDto>> GetCartByCartIdAsync(int cartId);
 

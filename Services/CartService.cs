@@ -68,19 +68,19 @@ namespace electro_shop_backend.Services
             return cartItem.ToCartItemDto(); 
         }
 
-        public async Task<List<CartItemDto>> GetCartByUserIdAsync(string userId)
+        public async Task<List<UserCartDto>> GetCartByUserIdAsync(string userId)
         {
             var cart = await _context.Carts
-                .Include(cartitem => cartitem.CartItems)
+                .Include(cart => cart.CartItems)
+                .ThenInclude(cartitem => cartitem.Product)
                 .FirstOrDefaultAsync(cart => cart.UserId == userId);
 
             if (cart == null)
             {
                 throw new NotFoundException("Cart not found");
             }
-            return cart.CartItems.Select(cartitem => cartitem.ToCartItemDto()).ToList();
+            return cart.CartItems.Select(cartitem => cartitem.UserCartDto()).ToList();
         }
-
 
         public async Task<List<CartItemDto>> GetCartByUserIdForAdminAsync(string userId)
         {

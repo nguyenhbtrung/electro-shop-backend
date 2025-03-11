@@ -17,10 +17,22 @@ namespace electro_shop_backend.Models.Mappers
                 .Select(item => new CartItemDto
                 {
                     CartItemId = item.CartItemId,
-                    CartId = item.CartId,
+                    ProductImage = item.Product?.ProductImages.FirstOrDefault()?.ImageUrl,
+                    ProductName = item.Product?.Name,
                     ProductId = item.ProductId,
                     Quantity = item.Quantity,
                 }).ToList()
+            };
+        }
+
+        public static UserCartDto UserCartDto(this CartItem cartitem)
+        {
+            return new UserCartDto
+            {
+                Price = cartitem.Product?.Price ?? 0,
+                Quantity = cartitem.Quantity,
+                ProductName = cartitem.Product?.Name,
+                ProductImage = cartitem.Product?.ProductImages.FirstOrDefault()?.ImageUrl
             };
         }
 
