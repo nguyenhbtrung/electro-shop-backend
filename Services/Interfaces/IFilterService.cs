@@ -6,6 +6,6 @@ namespace electro_shop_backend.Services.Interfaces
 {
     public interface IFilterService
     {
-        Task<List<ProductCardDto>> FindProductByNameAsync(string productName);
+        Task<List<ProductCardDto>> FindProductByNameAsync(string productName, int n = 50);
     }
 }

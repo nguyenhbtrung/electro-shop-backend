@@ -1,14 +1,9 @@
 ﻿using electro_shop_backend.Data;
 using electro_shop_backend.Helpers;
 using electro_shop_backend.Models.DTOs.Product;
-using electro_shop_backend.Models.Entities;
 using electro_shop_backend.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
+using System.Text.RegularExpressions;
 namespace electro_shop_backend.Services
 {
     public class FilterService : IFilterService
@@ -19,38 +14,52 @@ namespace electro_shop_backend.Services
             _context = context;
         }
 
-        public async Task<List<ProductCardDto>> FindProductByNameAsync(string productName)
+        public async Task<List<ProductCardDto>> FindProductByNameAsync(string productName, int n = 50)
         {
+            if (string.IsNullOrEmpty(productName))
+            {
+                return new List<ProductCardDto>();
+            }
+            var processedQuery = productName.ToLower();
+            processedQuery = Regex.Replace(processedQuery, "[^a-zA-Z0-9]", "");
             var products = await _context.Products
                 .Include(p => p.ProductImages)
-                .Include(p => p.Categories)
                 .Include(p => p.Ratings)
                 .Include(p => p.ProductDiscounts)
-                .ThenInclude(pd => pd.Discount)
-                .Where(p => p.Name.ToLower().Contains(productName.ToLower()))
+                    .ThenInclude(pd => pd.Discount)
                 .ToListAsync();
-            var productDtos = products.Select(product =>
+            var searchList = new List<ProductCardDto>();
+
+            foreach (var product in products)
             {
-                var (discountedPrice, discountType, discountValue) = ProductCalculationValue.CalculateDiscount(product);
-                double avgRating = ProductCalculationValue.CalculateAverageRating(product);
+                var processedName = product.Name.ToLower();
+                processedName = Regex.Replace(processedName, "[^a-zA-Z0-9\\s]", "");
 
-                return new ProductCardDto
+                if (processedName.Contains(processedQuery))
                 {
-                    ProductId = product.ProductId,
-                    Name = product.Name,
-                    Images = product.ProductImages?
-                                .Where(pi => !string.IsNullOrWhiteSpace(pi.ImageUrl))
-                                .Select(pi => pi.ImageUrl)
-                                .ToList() ?? new List<string>(),
-                    OriginalPrice = product.Price,
-                    DiscountedPrice = discountedPrice,
-                    DiscountType = discountType,
-                    DiscountValue = discountValue,
-                    AverageRating = avgRating
-                };
-            }).ToList();
+                    var (discountedPrice, discountType, discountValue) = ProductCalculationValue.CalculateDiscount(product);
+                    double avgRating = ProductCalculationValue.CalculateAverageRating(product);
 
-            return productDtos;
+                    var dto = new ProductCardDto
+                    {
+                        ProductId = product.ProductId,
+                        Name = product.Name,
+                        Images = product.ProductImages?
+                                    .Where(pi => !string.IsNullOrWhiteSpace(pi.ImageUrl))
+                                    .Select(pi => pi.ImageUrl)
+                                    .ToList() ?? new List<string>(),
+                        OriginalPrice = product.Price,
+                        DiscountedPrice = discountedPrice,
+                        DiscountType = discountType,
+                        DiscountValue = discountValue,
+                        AverageRating = avgRating
+                    };
+
+                    searchList.Add(dto);
+                }
+            }
+
+            return searchList.Take(n - 1).ToList();
         }
     }
 }
