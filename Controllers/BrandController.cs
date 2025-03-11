@@ -1,5 +1,6 @@
 ﻿using electro_shop_backend.Exceptions;
 using electro_shop_backend.Models.DTOs.Brand;
+using electro_shop_backend.Models.Entities;
 using electro_shop_backend.Services;
 using electro_shop_backend.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -71,6 +72,14 @@ namespace electro_shop_backend.Controllers
             {
                 return StatusCode(500, $"Lỗi khi xóa nhãn hàng: {e.Message}");
             }
+        }
+        //các api khác CRUD
+        [HttpGet("{id}/Product")]
+        public async Task<IActionResult> GetAllProdcutByBrandId(int id)
+        {
+            var brand =await _brandService.GetAllProdcutByBrandIdAsync(id);
+            if (brand == null) return NotFound("Không tìm thấy nhãn hàng naò");
+            return Ok(brand);
         }
     }
 }

@@ -24,6 +24,7 @@ namespace electro_shop_backend.Services
                 .AsNoTracking()
                 .Include(p => p.ProductImages)
                 .Include(p => p.Categories)
+                .Include(p=>p.Brand)
                 .ToListAsync();
 
             var productDtos = products.Select(p =>
@@ -35,6 +36,7 @@ namespace electro_shop_backend.Services
                 productDto.Categories = p.Categories
                     .Select(CategoryMapper.ToCategoryIdDto)
                     .ToList();
+                productDto.Brand = p.Brand != null ? BrandMapper.ToBrandDto(p.Brand) : null;
                 return productDto;
             }).ToList();
 
@@ -56,6 +58,7 @@ namespace electro_shop_backend.Services
             productDto.Categories = product.Categories
                 .Select(CategoryMapper.ToCategoryIdDto)
                 .ToList();
+            productDto.Brand =product.Brand!=null?BrandMapper.ToBrandDto(product.Brand) : null;
             return productDto;
         }
         public async Task<ProductDto> CreateProductAsync(CreateProductRequestDto requestDto)
@@ -69,6 +72,14 @@ namespace electro_shop_backend.Services
                         .Where(c => requestDto.CategoryIds.Contains(c.CategoryId))
                         .ToListAsync();
                     product.Categories = categories;
+
+                }
+                if (requestDto.BrandId > 0)
+                {
+                    var brand = await _context.Brands
+                        .FirstOrDefaultAsync(c => c.BrandId == requestDto.BrandId);
+
+                    product.Brand = brand;
                 }
                 await _context.Products.AddAsync(product);
                 await _context.SaveChangesAsync();
