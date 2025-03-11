@@ -1,15 +1,21 @@
-﻿namespace electro_shop_backend.Models.DTOs.Return
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace electro_shop_backend.Models.DTOs.Return
 {
     public class CreateReturnRequestDto
     {
-        public int ReturnId { get; set; }
+        [Required]
         public int? OrderId { get; set; }
+        [Required]
         public string? Reason { get; set; }
+        [Required]
         public string? Detail { get; set; }
+        [Required]
         public string? Status { get; set; }
+        [Required]
         public string? ReturnMethod { get; set; }
+        [Required]
         public string? Address { get; set; }
-        public string? AdminComment { get; set; }
         public DateTime? TimeStamp { get; set; }
     }
 }

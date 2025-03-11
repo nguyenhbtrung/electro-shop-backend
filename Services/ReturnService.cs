@@ -37,21 +37,11 @@ namespace electro_shop_backend.Services
                 .ToListAsync();
         }
 
-        public async Task<ReturnDto> CreateReturnAsync(int returnId, CreateReturnRequestDto requestDto)
+        public async Task<ReturnDto> CreateReturnAsync(CreateReturnRequestDto requestDto)
         {
             try
             {
-                var returnEntity = new Return
-                {
-                    ReturnId = returnId,
-                    OrderId = requestDto.OrderId,
-                    Reason = requestDto.Reason,
-                    Detail = requestDto.Detail,
-                    Status = requestDto.Status,
-                    ReturnMethod = requestDto.ReturnMethod,
-                    Address = requestDto.Address,
-                    TimeStamp = requestDto.TimeStamp ?? DateTime.Now
-                };
+                var returnEntity = requestDto.CreateReturnDto();
                 await _context.Returns.AddAsync(returnEntity);
                 await _context.SaveChangesAsync();
                 return returnEntity.ToReturnDto();
@@ -65,12 +55,12 @@ namespace electro_shop_backend.Services
         public async Task<ReturnDto> UpdateReturnAsync(int returnId, UpdateReturnDto requestDto)
         {
             var returnEntity = await _context.Returns
-                .FirstOrDefaultAsync(r => r.ReturnId == returnId);
+                .FindAsync(returnId);
             if (returnEntity == null)
             {
                 throw new NotFoundException("Not found");
             }
-
+            requestDto.UpdateReturnDto(returnEntity);
             await _context.SaveChangesAsync();
             return returnEntity.ToReturnDto();
         }

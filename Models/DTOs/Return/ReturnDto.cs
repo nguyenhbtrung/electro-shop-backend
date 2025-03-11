@@ -1,7 +1,10 @@
-﻿namespace electro_shop_backend.Models.DTOs.Return
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace electro_shop_backend.Models.DTOs.Return
 {
     public class ReturnDto
     {
+        [Required]
         public int ReturnId { get; set; }
         public int? OrderId { get; set; }
         public string? Reason { get; set; }

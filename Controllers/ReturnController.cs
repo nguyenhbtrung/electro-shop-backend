@@ -46,7 +46,7 @@ namespace electro_shop_backend.Controllers
             {
                 return BadRequest(ModelState);
             }
-            var result = await _returnService.CreateReturnAsync(int.Parse(user.Id), requestDto);
+            var result = await _returnService.CreateReturnAsync(requestDto);
             return Ok(result);
         }
 
