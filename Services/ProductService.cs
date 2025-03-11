@@ -130,41 +130,8 @@ namespace electro_shop_backend.Services
 
             var productDtos = products.Select(product =>
             {
-                // Tính trung bình ratings (giả sử mỗi Rating có thuộc tính RatingValue)
-                double avgRating = 0;
-                if (product.Ratings != null && product.Ratings.Any())
-                {
-                    avgRating = product.Ratings.Average(r => r.RatingScore);
-                }
-
-                // Lấy discount hiện hành (ở ví dụ này, ta xét trường hợp đơn giản: chọn discount đầu tiên nếu tồn tại)
-                var productDiscount = product.ProductDiscounts.FirstOrDefault(pd => pd.Discount != null);
-                string discountType = string.Empty;
-                decimal discountValue = 0;
-                decimal discountedPrice = product.Price;
-
-                if (productDiscount != null && productDiscount.Discount != null)
-                {
-                    discountType = productDiscount.Discount.DiscountType;
-                    discountValue = productDiscount.Discount.DiscountValue ?? 0;
-
-                    // Nếu kiểu giảm theo phần trăm
-                    if (string.Equals(discountType, "Percentage", StringComparison.OrdinalIgnoreCase))
-                    {
-                        discountedPrice = product.Price * (1 - discountValue / 100);
-                    }
-                    // Nếu kiểu giảm cố định
-                    else if (string.Equals(discountType, "Flat Amount", StringComparison.OrdinalIgnoreCase))
-                    {
-                        discountedPrice = product.Price - discountValue;
-                    }
-
-                    // Đảm bảo giá không âm
-                    if (discountedPrice < 0)
-                    {
-                        discountedPrice = 0;
-                    }
-                }
+                var (discountedPrice, discountType, discountValue) = ProductCalculationValue.CalculateDiscount(product);
+                double avgRating = ProductCalculationValue.CalculateAverageRating(product);
 
                 return new ProductCardDto
                 {
@@ -207,47 +174,8 @@ namespace electro_shop_backend.Services
 
             var productDtos = products.Select(product =>
             {
-                // Tính trung bình từ danh sách Rating (giả sử mỗi Rating có thuộc tính RatingValue)
-                double avgRating = 0;
-                if (product.Ratings != null && product.Ratings.Any())
-                {
-                    avgRating = product.Ratings.Average(r => r.RatingScore);
-                }
-
-                // Lấy discount hiệu lực (ví dụ: lấy discount đầu tiên thỏa mãn)
-                var effectiveDiscount = product.ProductDiscounts
-                    .Where(pd => pd.Discount != null &&
-                                 pd.Discount.StartDate <= now &&
-                                 pd.Discount.EndDate >= now)
-                    .Select(pd => pd.Discount)
-                    .FirstOrDefault();
-
-                string discountType = string.Empty;
-                decimal discountValue = 0;
-                decimal discountedPrice = product.Price;
-
-                if (effectiveDiscount != null)
-                {
-                    discountType = effectiveDiscount.DiscountType;
-                    discountValue = effectiveDiscount.DiscountValue ?? 0;
-
-                    // Nếu discount theo phần trăm
-                    if (string.Equals(discountType, "Percentage", StringComparison.OrdinalIgnoreCase))
-                    {
-                        discountedPrice = product.Price * (1 - discountValue / 100);
-                    }
-                    // Nếu discount cố định
-                    else if (string.Equals(discountType, "Flat Amount", StringComparison.OrdinalIgnoreCase))
-                    {
-                        discountedPrice = product.Price - discountValue;
-                    }
-
-                    // Đảm bảo giá không âm
-                    if (discountedPrice < 0)
-                    {
-                        discountedPrice = 0;
-                    }
-                }
+                var (discountedPrice, discountType, discountValue) = ProductCalculationValue.CalculateDiscount(product);
+                double avgRating = ProductCalculationValue.CalculateAverageRating(product);
 
                 return new ProductCardDto
                 {
