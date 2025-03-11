@@ -59,6 +59,18 @@ namespace electro_shop_backend.Controllers
             }
         }
 
+        [HttpGet("{discountId}/products")]
+        //[Authorize(Policy = "AdminPolicy")]
+        public async Task<IActionResult> GetDiscountProducts(int discountId)
+        {
+            var result = await _discountService.GetDiscountedProductsAsync(discountId);
+            if (result == null)
+            {
+                return NotFound();
+            }
+            return Ok(result);
+        }
+
         [HttpPost]
         [Authorize(Policy = "AdminPolicy")]
         public async Task<IActionResult> CreateDiscount([FromBody] CreateDiscountRequestDto requestDto)

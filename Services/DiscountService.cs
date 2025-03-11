@@ -2,6 +2,7 @@
 using electro_shop_backend.Exceptions;
 using electro_shop_backend.Helpers;
 using electro_shop_backend.Models.DTOs.Discount;
+using electro_shop_backend.Models.DTOs.Product;
 using electro_shop_backend.Models.Entities;
 using electro_shop_backend.Models.Mappers;
 using electro_shop_backend.Services.Interfaces;
@@ -100,6 +101,36 @@ namespace electro_shop_backend.Services
             {
                 throw;
             }
+        }
+
+        public async Task<DiscountProductsResponseDto> GetDiscountedProductsAsync(int discountId)
+        {
+            
+            var products = await _context.Products
+                .Include(p => p.Brand)
+                .Include(p => p.ProductImages)
+                .ToListAsync();
+
+            var selectedProductIds = await _context.Set<ProductDiscount>()
+                .Where(pd => pd.DiscountId == discountId)
+                .Select(pd => pd.ProductId)
+                .ToListAsync();
+
+            var productDtos = products.Select(p => new DiscountedProductDto
+            {
+                Id = p.ProductId,
+                Name = p.Name,
+                Price = p.Price,
+                Stock = p.Stock,
+                Brand = p.Brand?.BrandName ?? string.Empty,
+                Image = p.ProductImages.FirstOrDefault()?.ImageUrl ?? string.Empty
+            }).ToList();
+
+            return new DiscountProductsResponseDto
+            {
+                Products = productDtos,
+                SelectedProductIds = selectedProductIds
+            };
         }
 
         public async Task<ICollection<DiscountDto>> GetDiscountsAsync(DiscountQuery discountQuery)
