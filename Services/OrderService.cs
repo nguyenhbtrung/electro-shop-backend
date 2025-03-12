@@ -49,10 +49,10 @@ namespace electro_shop_backend.Services
                 .ToListAsync();
         }
 
-        public async Task<OrderDto> CreateOrderAsync(string userId, List<int> selectedCartItemIds, string voucherCode)
+        public async Task<OrderDto> CreateOrderAsync(string userId, List<int> selectedProductIds, string voucherCode)
         {
             var cartitems = await _context.CartItems
-                .Where(item => selectedCartItemIds.Contains(item.CartItemId))
+                .Where(item => selectedProductIds.Contains(item.ProductId??0))
                 .Include(item => item.Product)
                 .ToListAsync();
 
@@ -79,11 +79,11 @@ namespace electro_shop_backend.Services
                 {
                     if (voucher.VoucherType == "Percentage")
                     {
-                        discountAmount = (totalPrice * voucher.DiscountValue) / 100; // Gi?m theo ph?n tr?m
+                        discountAmount = (totalPrice * voucher.DiscountValue) / 100; 
                     }
                     else
                     {
-                        discountAmount = voucher.DiscountValue; // Gi?m s? ti?n c? ??nh
+                        discountAmount = voucher.DiscountValue; 
                     }
                 }
             }

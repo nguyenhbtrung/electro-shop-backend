@@ -29,8 +29,6 @@ namespace electro_shop_backend.Services
 
         public async Task<CartItemDto> AddToCartAsync(string userId, int productId, int quantity)
         {
-            quantity = 1;
-
             var cart = await _context.Carts
                 .Include(cartitem => cartitem.CartItems)
                 .FirstOrDefaultAsync(cart => cart.UserId == userId);
@@ -79,6 +77,7 @@ namespace electro_shop_backend.Services
             {
                 throw new NotFoundException("Cart not found");
             }
+
             return cart.CartItems.Select(cartitem => cartitem.UserCartDto()).ToList();
         }
 

@@ -70,7 +70,7 @@ namespace electro_shop_backend.Controllers
 
         [HttpPost("user/createorder")]
         [Authorize(Policy = "UserPolicy")]
-        public async Task<IActionResult> CreateOrderAsync(List<int> selectedCartItemIds, string voucherCode)
+        public async Task<IActionResult> CreateOrderAsync(List<int> selectedProductIds, string voucherCode = "")
         {
             var username = User.GetUsername();
             var user = await _userManager.FindByNameAsync(username);
@@ -80,7 +80,7 @@ namespace electro_shop_backend.Controllers
             }
             try
             {
-                var order = await _orderService.CreateOrderAsync(user.Id, selectedCartItemIds, voucherCode);
+                var order = await _orderService.CreateOrderAsync(user.Id, selectedProductIds, voucherCode);
                 return Ok(order);
             }
             catch (Exception)
