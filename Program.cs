@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using electro_shop_backend.Configurations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -121,6 +122,12 @@ builder.Services.AddScoped<IReturnService, ReturnService>();
 builder.Services.AddScoped<IReturnReasonService, ReturnReasonService>();
 builder.Services.AddScoped<IBrandService, BrandService>();
 builder.Services.AddScoped<IFilterService, FilterService>();
+
+var emailConfig = builder.Configuration
+    .GetSection("EmailConfiguration")
+    .Get<EmailConfiguration>();
+builder.Services.AddSingleton(emailConfig);
+//builder.Services.AddScoped<IEmailService, EmailService>();
 
 var app = builder.Build();
 // Configure the HTTP request pipeline.
