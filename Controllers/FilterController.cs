@@ -23,5 +23,15 @@ namespace electro_shop_backend.Controllers
             var productDtos = await _filterService.FindProductByNameAsync(productName);
             return Ok(productDtos);
         }
+        [HttpGet]
+        public async Task<IActionResult> FilterProducts(
+            [FromQuery] int categoryId,
+            [FromQuery] int? priceFilter,
+            [FromQuery] string? brandName,
+            [FromQuery] int? ratingFilter)
+        {
+            var productDtos = await _filterService.FilterProductsByAttributesAsync(categoryId,priceFilter,brandName,ratingFilter);
+            return Ok(productDtos);
+        }
     }
 }
