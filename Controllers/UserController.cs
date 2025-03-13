@@ -1,7 +1,6 @@
 ﻿using electro_shop_backend.Models.DTOs.User;
 using electro_shop_backend.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace electro_shop_backend.Controllers
@@ -12,11 +11,7 @@ namespace electro_shop_backend.Controllers
     {
         private readonly IUserService _userService;
 
-        public UserController(IUserService userService)
-        {
-            _userService = userService;
-
-        }
+        public UserController(IUserService userService) => _userService = userService;
 
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDTO registerDTO)
@@ -66,7 +61,7 @@ namespace electro_shop_backend.Controllers
         [Authorize(Policy = "UserPolicy")]
         public async Task<IActionResult> GetUser(string userName)
         {
-            if(userName == null)
+            if (userName == null)
             {
                 return BadRequest("User name is required.");
             }
@@ -141,7 +136,7 @@ namespace electro_shop_backend.Controllers
             return await _userService.SendForgotPasswordEmail(email);
         }
 
-        [HttpPost("resetPassword")]
+        [HttpPut("resetPassword")]
         public async Task<IActionResult> ResetPassword(ResetPasswordDTO resetPasswordDTO)
         {
             if (!ModelState.IsValid)
@@ -149,6 +144,26 @@ namespace electro_shop_backend.Controllers
                 return BadRequest(ModelState);
             }
             return await _userService.ResetPasswordAsync(resetPasswordDTO);
+        }
+
+        [HttpPost("confirmedEmail")]
+        public async Task<IActionResult> SendEmailConfirmed(string email)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            return await _userService.SendEmailConfirmedAsync(email);
+        }
+
+        [HttpPut("confirmedEmail")]
+        public async Task<IActionResult> ConfirmEmail(string email, string token)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            return await _userService.ConfirmEmailAsync(email, token);
         }
     }
 }

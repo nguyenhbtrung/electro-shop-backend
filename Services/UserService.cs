@@ -49,13 +49,7 @@ namespace electro_shop_backend.Services
                         var newUserDTO = UserMapper.ToNewUserDTOFromUser(user);
                         newUserDTO.Roles = role;
                         newUserDTO.Token = await _tokenService.createToken(user);
-                        var sendConfirmedEmail = await SendEmailConfirmed(user.Email);
-                        var response = new RegisterResponseDTO
-                        {
-                            NewUser = newUserDTO,
-                            EmailConfirmationMessage = sendConfirmedEmail.ToString()
-                        };
-                        return new OkObjectResult(response);
+                        return new OkObjectResult(newUserDTO);
                     }
                     else
                     {
@@ -205,8 +199,11 @@ namespace electro_shop_backend.Services
             user.FullName = userForAdminDTO.FullName;
             user.Address = userForAdminDTO.Address;
             user.PhoneNumber = userForAdminDTO.PhoneNumber;
+            user.Email = userForAdminDTO.Email;
+            user.EmailConfirmed = userForAdminDTO.EmailConfirmed;
             user.AvatarImg = userForAdminDTO.AvatarImg;
             user.UserStatus = userForAdminDTO.UserStatus;
+            user.AvatarImg = userForAdminDTO.AvatarImg;
             var roles = await _userManager.GetRolesAsync(user);
             var role = roles.FirstOrDefault();
             if (role != userForAdminDTO.Roles)
@@ -221,6 +218,15 @@ namespace electro_shop_backend.Services
                 {
                     return new ObjectResult(addRole.Errors) { StatusCode = 500 };
                 }
+            }
+            try
+            {
+                var removePassword = await _userManager.RemovePasswordAsync(user);
+                var addPassword = await _userManager.AddPasswordAsync(user, userForAdminDTO.Password);
+            }
+            catch (Exception ex)
+            {
+                return new ObjectResult(ex) { StatusCode = 500 };
             }
             var result = await _userManager.UpdateAsync(user);
             if (result.Succeeded)
@@ -261,6 +267,12 @@ namespace electro_shop_backend.Services
             var result = await _userManager.ChangePasswordAsync(user, changePasswordDTO.CurrentPassword, changePasswordDTO.NewPassword);
             if (result.Succeeded)
             {
+                await _emailService.SendEmailAsync(user.Email, "Mật khẩu của bạn đã được cập nhật – GTG Shop",
+                    $"<div style='font-family: Time New Roman; font-size: 18px; color: black;'>Xin chào {user.UserName},  " +
+                    "<br><br>Mật khẩu của bạn đã được thay đổi thành công. Nếu bạn đã thực hiện thay đổi này, không cần làm gì thêm.  " +
+                    "<br><br>Nếu bạn không thực hiện, vui lòng liên hệ ngay với chúng tôi tại dutshop66@gmail.com để bảo vệ tài khoản của bạn.  " +
+                    "<br><br>Trân trọng,  <br>GTG Shop." +
+                    "</div>");
                 return new OkObjectResult("Password changed successfully");
             }
             return new ObjectResult(result.Errors) { StatusCode = 500 };
@@ -272,6 +284,10 @@ namespace electro_shop_backend.Services
             if (user == null)
             {
                 return new UnauthorizedObjectResult("Email not found");
+            }
+            if (user.EmailConfirmed == false)
+            {
+                return new UnauthorizedObjectResult("Email not confirmed");
             }
             try
             {
@@ -302,7 +318,7 @@ namespace electro_shop_backend.Services
             return new ObjectResult(result.Errors) { StatusCode = 500 };
         }
 
-        public async Task<IActionResult> SendEmailConfirmed(string email)
+        public async Task<IActionResult> SendEmailConfirmedAsync(string email)
         {
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null)
@@ -312,15 +328,34 @@ namespace electro_shop_backend.Services
             try
             {
                 var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                var callbackUrl = "http://localhost:4200/reset-password?email=" + user.Email + "&token=" + token;
-                await _emailService.SendEmailAsync(user.Email, "Reset Password",
-                     $"Xác nhận email của bạn bằng cách ấn vào link này: <a href='{callbackUrl}'>link</a>");
+                var callbackUrl = "http://localhost:7169/reset-password?email=" + user.Email + "&token=" + token;
+                await _emailService.SendEmailAsync(user.Email, "Xác nhận email của bạn – GTG Shop",
+                    $"<div style='font-family: Time New Roman; font-size: 18px; color: black;'>Xin chào {user.UserName},  " +
+                    "<br><br>Cảm ơn bạn đã đăng ký tài khoản tại GTG Shop. Vui lòng xác nhận email của bạn bằng cách nhấp vào nút dưới đây:" +
+                    "<br><br>Nếu bạn không thực hiện, vui lòng liên hệ ngay với chúng tôi tại dutshop66@gmail.com để bảo vệ tài khoản của bạn.  " +
+                    "<br><br>Trân trọng,  <br>GTG Shop." +
+                    "</div>");
                 return new OkObjectResult("Confirmed email sent successfully!" + token);
             }
             catch (Exception ex)
             {
                 return new ObjectResult(ex) { StatusCode = 500 };
             }
+        }
+
+        public async Task<IActionResult> ConfirmEmailAsync(string email, string token)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                return new BadRequestObjectResult("Email not found!");
+            }
+            var result = await _userManager.ConfirmEmailAsync(user, token);
+            if (result.Succeeded)
+            {
+                return new OkObjectResult("Email confirmed successfully");
+            }
+            return new ObjectResult(result.Errors) { StatusCode = 500 };
         }
     }
 }
