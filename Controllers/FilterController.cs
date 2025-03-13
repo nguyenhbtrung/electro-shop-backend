@@ -23,14 +23,24 @@ namespace electro_shop_backend.Controllers
             var productDtos = await _filterService.FindProductByNameAsync(productName);
             return Ok(productDtos);
         }
-        [HttpGet]
-        public async Task<IActionResult> FilterProducts(
+        [HttpGet("category")]
+        public async Task<IActionResult> FilterProductsInCategory(
             [FromQuery] int categoryId,
             [FromQuery] int? priceFilter,
             [FromQuery] int? brandId,
             [FromQuery] int? ratingFilter)
         {
-            var productDtos = await _filterService.FilterProductsByAttributesAsync(categoryId,priceFilter, brandId, ratingFilter);
+            var productDtos = await _filterService.FilterProductsInCategoryAsync(categoryId,priceFilter, brandId, ratingFilter);
+            return Ok(productDtos);
+        }
+        [HttpGet("brand")]
+        public async Task<IActionResult> FilterProductsInBrand(
+            [FromQuery] int brandId,
+            [FromQuery] int? priceFilter,
+            [FromQuery] int? categoryId,
+            [FromQuery] int? ratingFilter)
+        {
+            var productDtos = await _filterService.FilterProductsInBrandAsync(brandId, priceFilter, categoryId, ratingFilter);
             return Ok(productDtos);
         }
     }
