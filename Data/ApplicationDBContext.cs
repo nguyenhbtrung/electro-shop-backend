@@ -167,12 +167,22 @@ public partial class ApplicationDbContext : IdentityDbContext<User>
 
         modelBuilder.Entity<ProductDiscount>(entity =>
         {
-            entity.HasKey(e => e.ProductDiscountId).HasName("PK__Product___7901250948A30B83");
+            entity.HasKey(e => e.ProductDiscountId)
+                  .HasName("PK__Product___7901250948A30B83");
 
-            entity.HasOne(d => d.Discount).WithMany(p => p.ProductDiscounts).HasConstraintName("FK__Product_D__disco__72C60C4A");
+            entity.HasOne(d => d.Discount)
+                  .WithMany(p => p.ProductDiscounts)
+                  .HasForeignKey(d => d.DiscountId)
+                  .OnDelete(DeleteBehavior.Cascade)
+                  .HasConstraintName("FK__Product_D__disco__72C60C4A");
 
-            entity.HasOne(d => d.Product).WithMany(p => p.ProductDiscounts).HasConstraintName("FK__Product_D__produ__71D1E811");
+            entity.HasOne(d => d.Product)
+                  .WithMany(p => p.ProductDiscounts)
+                  .HasForeignKey(d => d.ProductId)
+                  .OnDelete(DeleteBehavior.Cascade)
+                  .HasConstraintName("FK__Product_D__produ__71D1E811");
         });
+
 
         modelBuilder.Entity<ProductImage>(entity =>
         {
