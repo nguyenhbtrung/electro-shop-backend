@@ -9,7 +9,7 @@ namespace electro_shop_backend.Services.Interfaces
     public interface IDiscountService
     {
         Task<Discount> CreateDiscountAsync(CreateDiscountRequestDto requestDto);
-        Task ApplyDiscountToProductsAsync(ApplyDiscountDto discountDto);
+        Task<int> ApplyDiscountToProductsAsync(ApplyDiscountDto request);
         Task<ICollection<DiscountDto>> GetDiscountsAsync(DiscountQuery discountQuery);
         Task<DiscountDto> GetDiscountByIdAsync(int discountId);
         Task<DiscountDto> UpdateDiscountAsync(int discountId, CreateDiscountRequestDto requestDto);

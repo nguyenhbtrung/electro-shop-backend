@@ -1,4 +1,5 @@
-﻿using electro_shop_backend.Data;
+﻿using Azure.Core;
+using electro_shop_backend.Data;
 using electro_shop_backend.Exceptions;
 using electro_shop_backend.Helpers;
 using electro_shop_backend.Models.DTOs.Discount;
@@ -20,37 +21,31 @@ namespace electro_shop_backend.Services
             _context = context;
         }
 
-        public async Task ApplyDiscountToProductsAsync(ApplyDiscountDto discountDto)
+        public async Task<int> ApplyDiscountToProductsAsync(ApplyDiscountDto request)
         {
-            var discount = await _context.Discounts.FindAsync(discountDto.DiscountId);
-            if (discount == null)
-            {
+            var discount = await _context.Discounts.FindAsync(request.DiscountId) ?? 
                 throw new ArgumentException("Discount không tồn tại.");
+            var existingAssociations = await _context.Set<ProductDiscount>()
+                .Where(pd => pd.DiscountId == request.DiscountId)
+                .ToListAsync();
+
+            if (existingAssociations.Count != 0)
+            {
+                _context.Set<ProductDiscount>().RemoveRange(existingAssociations);
             }
 
-            foreach (var productId in discountDto.ProductIds)
+            foreach (var productId in request.ProductIds)
             {
-                var product = await _context.Products.FindAsync(productId);
-                if (product == null)
+                var newAssociation = new ProductDiscount
                 {
-                    continue;
-                }
-
-                bool exists = await _context.ProductDiscounts
-                    .AnyAsync(x => x.ProductId == productId && x.DiscountId == discountDto.DiscountId);
-                if (!exists)
-                {
-                    var productDiscount = new ProductDiscount
-                    {
-                        ProductId = productId,
-                        DiscountId = discountDto.DiscountId
-                    };
-
-                    await _context.ProductDiscounts.AddAsync(productDiscount);
-                }
+                    DiscountId = request.DiscountId,
+                    ProductId = productId
+                };
+                await _context.Set<ProductDiscount>().AddAsync(newAssociation);
             }
 
             await _context.SaveChangesAsync();
+            return request.ProductIds.Count;
         }
 
         public async Task<Discount> CreateDiscountAsync(CreateDiscountRequestDto requestDto)

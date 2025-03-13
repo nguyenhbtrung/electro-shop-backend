@@ -101,12 +101,16 @@ namespace electro_shop_backend.Controllers
             }
             try
             {
-                await _discountService.ApplyDiscountToProductsAsync(requestDto);
-                return Ok(new { Message = "Khuyến mãi đã được áp dụng thành công." });
+                int productCount = await _discountService.ApplyDiscountToProductsAsync(requestDto);
+                return Ok(new 
+                { 
+                    Message = "Khuyến mãi đã được áp dụng thành công.",
+                    ProductCount = productCount
+                });
             }
             catch (ArgumentException ex)
             {
-                return BadRequest(new { Message = ex.Message });
+                return BadRequest(new { ex.Message });
             }
             catch (Exception ex)
             {

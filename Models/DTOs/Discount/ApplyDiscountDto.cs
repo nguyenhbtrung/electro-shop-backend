@@ -8,7 +8,7 @@ namespace electro_shop_backend.Models.DTOs.Discount
         public int DiscountId { get; set; }
 
         [Required]
-        public List<int> ProductIds { get; set; } = new List<int>();
+        public List<int> ProductIds { get; set; } = [];
     }
 
 }
