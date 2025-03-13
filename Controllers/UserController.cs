@@ -131,15 +131,14 @@ namespace electro_shop_backend.Controllers
             return await _userService.ChangePasswordAsync(changePasswordDTO);
         }
 
-        //[HttpPost]
-        //[Route("forgotPassword")]
-        //public async Task<IActionResult> ForgotPassword(string email)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return BadRequest(ModelState);
-        //    }
-        //    return await _userService.ForgotPassword(email);
-        //}
+        [HttpPost("forgotPassword")]
+        public async Task<IActionResult> ForgotPassword(string email)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            return await _userService.SendForgotPasswordEmail(email);
+        }
     }
 }

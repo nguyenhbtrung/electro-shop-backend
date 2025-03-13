@@ -15,12 +15,14 @@ namespace electro_shop_backend.Services
         private readonly ITokenService _tokenService;
         private readonly SignInManager<User> _signInManager;
         private readonly ApplicationDbContext _context;
-        public UserService(UserManager<User> userManager, ITokenService tokenService, SignInManager<User> signInManager, ApplicationDbContext context)
+        private readonly IEmailService _emailService;
+        public UserService(UserManager<User> userManager, ITokenService tokenService, SignInManager<User> signInManager, ApplicationDbContext context, IEmailService emailService)
         {
             _userManager = userManager;
             _tokenService = tokenService;
             _signInManager = signInManager;
             _context = context;
+            _emailService = emailService;
         }
         public async Task<IActionResult> RegisterAsync(RegisterDTO registerDTO)
         {
@@ -256,6 +258,20 @@ namespace electro_shop_backend.Services
                 return new OkObjectResult("Password changed successfully");
             }
             return new ObjectResult(result.Errors) { StatusCode = 500 };
+        }
+
+        public async Task<IActionResult> SendForgotPasswordEmail(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                return new UnauthorizedObjectResult("Email not found");
+            }
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var callbackUrl = "http://localhost:4200/reset-password?email=" + user.Email + "&token=" + token;
+            await _emailService.SendEmailAsync(user.Email, "Reset Password",
+                 $"Please reset your password by clicking here: <a href='{callbackUrl}'>link</a>");
+            return new OkObjectResult("Email sent successfully");
         }
     }
 }

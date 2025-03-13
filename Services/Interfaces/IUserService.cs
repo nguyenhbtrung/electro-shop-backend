@@ -14,5 +14,7 @@ namespace electro_shop_backend.Services.Interfaces
         Task<IActionResult> AdminUpdateUserAsync(UserForAdminDTO userForAdminDTO);
         Task<IActionResult> DeleteUserAsync(string userName);
         Task<IActionResult> ChangePasswordAsync(ChangePasswordDTO changePasswordDTO);
+        Task<IActionResult> SendForgotPasswordEmail(string email);
+
     }
 }

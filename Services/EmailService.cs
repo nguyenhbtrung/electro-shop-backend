@@ -8,7 +8,7 @@ namespace electro_shop_backend.Services
     public class EmailService : IEmailService
     {
         private readonly EmailConfiguration _emailConfig;
-        EmailService(EmailConfiguration emailConfig)
+        public EmailService(EmailConfiguration emailConfig)
         {
             _emailConfig = emailConfig;
         }
