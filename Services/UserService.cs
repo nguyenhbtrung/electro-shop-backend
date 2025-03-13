@@ -67,7 +67,7 @@ namespace electro_shop_backend.Services
             }
         }
 
-        public async Task<IActionResult> AddUser(AdminAddUserDTO adminAddUserDTO)
+        public async Task<IActionResult> AddUserAsync(AdminAddUserDTO adminAddUserDTO)
         {
             try
             {
@@ -239,6 +239,21 @@ namespace electro_shop_backend.Services
             if (result.Succeeded)
             {
                 return new OkObjectResult("User deleted successfully");
+            }
+            return new ObjectResult(result.Errors) { StatusCode = 500 };
+        }
+
+        public async Task<IActionResult> ChangePasswordAsync(ChangePasswordDTO changePasswordDTO)
+        {
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == changePasswordDTO.UserName);
+            if (user == null)
+            {
+                return new UnauthorizedObjectResult("User not found");
+            }
+            var result = await _userManager.ChangePasswordAsync(user, changePasswordDTO.CurrentPassword, changePasswordDTO.NewPassword);
+            if (result.Succeeded)
+            {
+                return new OkObjectResult("Password changed successfully");
             }
             return new ObjectResult(result.Errors) { StatusCode = 500 };
         }

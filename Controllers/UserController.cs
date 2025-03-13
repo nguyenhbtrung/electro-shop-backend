@@ -1,6 +1,7 @@
 ﻿using electro_shop_backend.Models.DTOs.User;
 using electro_shop_backend.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace electro_shop_backend.Controllers
@@ -35,7 +36,7 @@ namespace electro_shop_backend.Controllers
             {
                 return BadRequest(ModelState);
             }
-            return await _userService.AddUser(adminAddUserDTO);
+            return await _userService.AddUserAsync(adminAddUserDTO);
         }
 
         [HttpPost("login")]
@@ -114,5 +115,31 @@ namespace electro_shop_backend.Controllers
         {
             return await _userService.DeleteUserAsync(userName);
         }
+
+        [HttpPut("changePassword")]
+        [Authorize(Policy = "UserPolicy")]
+        public async Task<IActionResult> ChangePassword(ChangePasswordDTO changePasswordDTO)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            if (User.Identity.Name != changePasswordDTO.UserName)
+            {
+                return Unauthorized("Invalid username!");
+            }
+            return await _userService.ChangePasswordAsync(changePasswordDTO);
+        }
+
+        //[HttpPost]
+        //[Route("forgotPassword")]
+        //public async Task<IActionResult> ForgotPassword(string email)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return BadRequest(ModelState);
+        //    }
+        //    return await _userService.ForgotPassword(email);
+        //}
     }
 }
