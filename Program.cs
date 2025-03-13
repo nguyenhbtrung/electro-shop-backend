@@ -122,6 +122,7 @@ builder.Services.AddScoped<IReturnService, ReturnService>();
 builder.Services.AddScoped<IReturnReasonService, ReturnReasonService>();
 builder.Services.AddScoped<IBrandService, BrandService>();
 builder.Services.AddScoped<IFilterService, FilterService>();
+builder.Services.AddScoped<IImageService, ImageService>();
 
 var emailConfig = builder.Configuration
     .GetSection("EmailConfiguration")
@@ -138,6 +139,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors("AllowSpecificOrigin");
+
+app.UseStaticFiles();
 
 app.UseHttpsRedirection();
 app.UseAuthentication();
