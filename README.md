@@ -14,6 +14,7 @@
         "Username": "dutshop66@gmail.com",
         "Password": " password"
     },
+    "BaseUrl": "https://localhost:7169",
     "AllowedHosts": "*",
     "ConnectionStrings": {
         "DefaultSQLConnection": "Server=Your-Server;Database=ThreadCity2.0;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True"
