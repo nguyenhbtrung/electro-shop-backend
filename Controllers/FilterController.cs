@@ -27,10 +27,10 @@ namespace electro_shop_backend.Controllers
         public async Task<IActionResult> FilterProducts(
             [FromQuery] int categoryId,
             [FromQuery] int? priceFilter,
-            [FromQuery] string? brandName,
+            [FromQuery] int? brandId,
             [FromQuery] int? ratingFilter)
         {
-            var productDtos = await _filterService.FilterProductsByAttributesAsync(categoryId,priceFilter,brandName,ratingFilter);
+            var productDtos = await _filterService.FilterProductsByAttributesAsync(categoryId,priceFilter, brandId, ratingFilter);
             return Ok(productDtos);
         }
     }

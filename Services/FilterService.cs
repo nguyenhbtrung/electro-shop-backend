@@ -64,7 +64,7 @@ namespace electro_shop_backend.Services
         public async Task<List<ProductCardDto>> FilterProductsByAttributesAsync(
         int categoryId,
         int? priceFilter = null,   
-        string? brandName = null,
+        int? brandId = null,
         int? ratingFilter = null)  
         {
             var products = await _context.Products
@@ -116,10 +116,9 @@ namespace electro_shop_backend.Services
                 }).ToList();
             }
 
-            if (!string.IsNullOrWhiteSpace(brandName))
+            if (brandId.HasValue)
             {
-                products = products.Where(p => p.Brand != null &&
-                    p.Brand.BrandName.ToLower().Contains(brandName.ToLower())).ToList();
+                products = products.Where(p => p.Brand != null && p.Brand.BrandId ==brandId.Value).ToList() ;
             }
             double? minRating = null;
             double? maxRating = null;

@@ -10,7 +10,7 @@ namespace electro_shop_backend.Services.Interfaces
         Task<List<ProductCardDto>> FilterProductsByAttributesAsync(
         int categoryId,
         int? priceFilter = null,
-        string? brandName = null,
+        int? brandId = null,
         int? ratingFilter = null);
     }
 }
