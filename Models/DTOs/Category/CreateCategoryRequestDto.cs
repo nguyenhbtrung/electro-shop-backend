@@ -16,7 +16,6 @@ namespace electro_shop_backend.Models.DTOs.Category
         public int? ParentCategoryId { get; set; }
 
         [StringLength(255)]
-        [Required]
         public string? ImageUrl { get; set; }
     }
 }
