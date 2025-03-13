@@ -76,9 +76,9 @@ namespace electro_shop_backend.Services
                 var user = adminAddUserDTO.ToUserFromAdminAddUserDTO();
                 user.CreatedAt = DateTime.UtcNow;
                 var createUser = await _userManager.CreateAsync(user, adminAddUserDTO.Password);
-                if(createUser.Succeeded)
+                if (createUser.Succeeded)
                 {
-                    if(adminAddUserDTO.Role == "Admin")
+                    if (adminAddUserDTO.Role == "Admin")
                     {
                         var userRole = await _userManager.AddToRoleAsync(user, adminAddUserDTO.Role);
                         if (userRole.Succeeded)
@@ -114,7 +114,7 @@ namespace electro_shop_backend.Services
                 return new ObjectResult(ex) { StatusCode = 500 };
             }
         }
-        public async Task<IActionResult> LoginAsync (LoginDTO loginDTO)
+        public async Task<IActionResult> LoginAsync(LoginDTO loginDTO)
         {
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == loginDTO.UserName.ToLower());
             if (user == null)
@@ -130,8 +130,8 @@ namespace electro_shop_backend.Services
 
             var roles = await _userManager.GetRolesAsync(user);
             var role = roles.FirstOrDefault();
-            
-            if(user.UserStatus == "Banned")
+
+            if (user.UserStatus == "Banned")
             {
                 return new UnauthorizedObjectResult("User is banned");
             }
@@ -141,12 +141,13 @@ namespace electro_shop_backend.Services
 
             return new OkObjectResult(newUserDTO);
         }
-        
+
         public async Task<IActionResult> GetAllUsersAsync()
         {
             var users = await _userManager.Users.ToListAsync();
             var userDtos = new List<ViewUserForAdminDTO>();
-            foreach (var user in users) {
+            foreach (var user in users)
+            {
                 var roles = await _userManager.GetRolesAsync(user);
                 var role = roles.FirstOrDefault();
                 var userForAdminDTO = UserMapper.ToViewUserForAdminDTOFromUser(user);
@@ -271,7 +272,22 @@ namespace electro_shop_backend.Services
             var callbackUrl = "http://localhost:4200/reset-password?email=" + user.Email + "&token=" + token;
             await _emailService.SendEmailAsync(user.Email, "Reset Password",
                  $"Please reset your password by clicking here: <a href='{callbackUrl}'>link</a>");
-            return new OkObjectResult("Email sent successfully");
+            return new OkObjectResult("Email sent successfully!" + token);
+        }
+
+        public async Task<IActionResult> ResetPasswordAsync(ResetPasswordDTO resetPasswordDTO)
+        {
+            var user = await _userManager.FindByEmailAsync(resetPasswordDTO.Email);
+            if (user == null)
+            {
+                return new UnauthorizedObjectResult("Email not found");
+            }
+            var result = await _userManager.ResetPasswordAsync(user, resetPasswordDTO.Token, resetPasswordDTO.NewPassword);
+            if (result.Succeeded)
+            {
+                return new OkObjectResult("Password reset successfully");
+            }
+            return new ObjectResult(result.Errors) { StatusCode = 500 };
         }
     }
-}
+}   

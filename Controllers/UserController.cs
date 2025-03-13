@@ -140,5 +140,15 @@ namespace electro_shop_backend.Controllers
             }
             return await _userService.SendForgotPasswordEmail(email);
         }
+
+        [HttpPost("resetPassword")]
+        public async Task<IActionResult> ResetPassword(ResetPasswordDTO resetPasswordDTO)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            return await _userService.ResetPasswordAsync(resetPasswordDTO);
+        }
     }
 }
