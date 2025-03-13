@@ -49,8 +49,13 @@ namespace electro_shop_backend.Services
                         var newUserDTO = UserMapper.ToNewUserDTOFromUser(user);
                         newUserDTO.Roles = role;
                         newUserDTO.Token = await _tokenService.createToken(user);
-
-                        return new OkObjectResult(newUserDTO);
+                        var sendConfirmedEmail = await SendEmailConfirmed(user.Email);
+                        var response = new RegisterResponseDTO
+                        {
+                            NewUser = newUserDTO,
+                            EmailConfirmationMessage = sendConfirmedEmail.ToString()
+                        };
+                        return new OkObjectResult(response);
                     }
                     else
                     {
@@ -268,11 +273,18 @@ namespace electro_shop_backend.Services
             {
                 return new UnauthorizedObjectResult("Email not found");
             }
-            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-            var callbackUrl = "http://localhost:4200/reset-password?email=" + user.Email + "&token=" + token;
-            await _emailService.SendEmailAsync(user.Email, "Reset Password",
-                 $"Please reset your password by clicking here: <a href='{callbackUrl}'>link</a>");
-            return new OkObjectResult("Email sent successfully!" + token);
+            try
+            {
+                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+                var callbackUrl = "http://localhost:4200/reset-password?email=" + user.Email + "&token=" + token;
+                await _emailService.SendEmailAsync(user.Email, "Reset Password",
+                     $"Please reset your password by clicking here: <a href='{callbackUrl}'>link</a>");
+                return new OkObjectResult("Email sent successfully!" + token);
+            }
+            catch (Exception ex)
+            {
+                return new ObjectResult(ex) { StatusCode = 500 };
+            }
         }
 
         public async Task<IActionResult> ResetPasswordAsync(ResetPasswordDTO resetPasswordDTO)
@@ -289,5 +301,26 @@ namespace electro_shop_backend.Services
             }
             return new ObjectResult(result.Errors) { StatusCode = 500 };
         }
+
+        public async Task<IActionResult> SendEmailConfirmed(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                return new BadRequestObjectResult("User not found!");
+            }
+            try
+            {
+                var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                var callbackUrl = "http://localhost:4200/reset-password?email=" + user.Email + "&token=" + token;
+                await _emailService.SendEmailAsync(user.Email, "Reset Password",
+                     $"Xác nhận email của bạn bằng cách ấn vào link này: <a href='{callbackUrl}'>link</a>");
+                return new OkObjectResult("Confirmed email sent successfully!" + token);
+            }
+            catch (Exception ex)
+            {
+                return new ObjectResult(ex) { StatusCode = 500 };
+            }
+        }
     }
-}   
+}
