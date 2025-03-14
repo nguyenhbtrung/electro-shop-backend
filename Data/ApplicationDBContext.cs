@@ -276,7 +276,7 @@ public partial class ApplicationDbContext : IdentityDbContext<User>
             entity.HasOne(d => d.Product)
                   .WithMany()
                   .HasForeignKey(d => d.ProductId)
-                  .OnDelete(DeleteBehavior.Cascade)
+                  .OnDelete(DeleteBehavior.ClientSetNull)
                   .HasConstraintName("FK__StockImportDetail__ProductId");
         });
 

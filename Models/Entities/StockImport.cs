@@ -9,6 +9,8 @@ namespace electro_shop_backend.Models.Entities
         [Key]
         [Column("stock_import_id")]
         public int StockImportId { get; set; }
+        [Column("stock_import_name")]
+        public string? StockImportName { get; set; }
         [Column("supplier_id")]
         public int SupplierId { get; set; }
         [Column("total_price")]
@@ -24,6 +26,5 @@ namespace electro_shop_backend.Models.Entities
         public virtual Supplier? Supplier { get; set; }
         [InverseProperty("StockImport")]
         public virtual ICollection<StockImportDetail> StockImportDetails { get; set; } = new List<StockImportDetail>();
-
     }
 }

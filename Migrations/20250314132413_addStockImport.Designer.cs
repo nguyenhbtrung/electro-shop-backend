@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using electro_shop_backend.Data;
 
@@ -11,9 +12,11 @@ using electro_shop_backend.Data;
 namespace electro_shop_backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250314132413_addStockImport")]
+    partial class addStockImport
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -841,10 +844,6 @@ namespace electro_shop_backend.Migrations
                     b.Property<DateTime>("ImportDate")
                         .HasColumnType("datetime2")
                         .HasColumnName("import_date");
-
-                    b.Property<string>("StockImportName")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("stock_import_name");
 
                     b.Property<string>("StockImportStatus")
                         .HasColumnType("nvarchar(max)")
