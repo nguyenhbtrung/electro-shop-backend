@@ -192,7 +192,8 @@ public partial class ApplicationDbContext : IdentityDbContext<User>
         {
             entity.HasKey(e => e.ProductImageId).HasName("PK__Product___0302EB4AD91F1FDC");
 
-            entity.HasOne(d => d.Product).WithMany(p => p.ProductImages).HasConstraintName("FK__Product_I__produ__44FF419A");
+            entity.HasOne(d => d.Product).WithMany(p => p.ProductImages).HasForeignKey(d => d.ProductId) .OnDelete(DeleteBehavior.Cascade).HasConstraintName("FK__Product_I__produ__44FF419A");
+            
         });
 
         modelBuilder.Entity<ProductViewHistory>(entity =>
@@ -213,7 +214,7 @@ public partial class ApplicationDbContext : IdentityDbContext<User>
             entity.Property(e => e.TimeStamp).HasDefaultValueSql("(getdate())");
 
             entity.HasOne(d => d.Product).WithMany(p => p.Ratings)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK__Rating__product___68487DD7");
 
             entity.HasOne(d => d.User).WithMany(p => p.Ratings)

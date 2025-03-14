@@ -26,7 +26,6 @@ namespace electro_shop_backend.Services
                 .Include(p => p.Categories)
                 .Include(p=>p.Brand)
                 .ToListAsync();
-
             var productDtos = products.Select(p =>
             {
                 var productDto = ProductMapper.ToProductDto(p);

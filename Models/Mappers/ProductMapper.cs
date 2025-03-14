@@ -23,10 +23,8 @@ namespace electro_shop_backend.Models.Mappers
                 ProductId = product.ProductId,
                 Name = product.Name,
                 Info = product.Info,
-                Price = product.Price,
+                OriginalPrice = product.Price,
                 Stock = product.Stock,
-                RatingCount = product.RatingCount,
-                AverageRating = product.AverageRating,
                 ProductImages = new()
             };
         }
