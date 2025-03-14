@@ -1,3 +1,4 @@
+using electro_shop_backend.Configurations;
 using electro_shop_backend.Data;
 using electro_shop_backend.Models.Entities;
 using electro_shop_backend.Services;
@@ -7,7 +8,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using electro_shop_backend.Configurations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -79,7 +79,7 @@ builder.Services.AddAuthentication(options =>
     options.DefaultAuthenticateScheme =
     options.DefaultChallengeScheme =
     options.DefaultForbidScheme =
-    options.DefaultScheme = 
+    options.DefaultScheme =
     options.DefaultSignInScheme =
     options.DefaultSignOutScheme = JwtBearerDefaults.AuthenticationScheme;
 
@@ -123,6 +123,7 @@ builder.Services.AddScoped<IReturnReasonService, ReturnReasonService>();
 builder.Services.AddScoped<IBrandService, BrandService>();
 builder.Services.AddScoped<IFilterService, FilterService>();
 builder.Services.AddScoped<IImageService, ImageService>();
+builder.Services.AddScoped<ISupplierService, SupplierService>();
 
 var emailConfig = builder.Configuration
     .GetSection("EmailConfiguration")
