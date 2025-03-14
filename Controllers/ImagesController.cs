@@ -11,9 +11,12 @@ namespace electro_shop_backend.Controllers
     {
 
         private readonly IImageService _imageService;
-        public ImagesController(IImageService imageService)
+        private readonly ILogger<ImagesController> _logger;
+
+        public ImagesController(IImageService imageService, ILogger<ImagesController> logger)
         {
             _imageService = imageService;
+            _logger = logger;
         }
 
         [HttpPost("upload")]
@@ -23,9 +26,21 @@ namespace electro_shop_backend.Controllers
             {
                 return BadRequest("Không có file ảnh được gửi lên.");
             }
-            var imageUrl = await _imageService.UploadImageAsync(uploadImageDto.File);
+            try
+            {
+                var imageUrl = await _imageService.UploadImageAsync(uploadImageDto.File);
+                return Ok(new { ImageUrl = imageUrl });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi không xác định khi xử lý yêu cầu upload ảnh.");
+                return StatusCode(500, "Có lỗi xảy ra khi upload ảnh");
+            }
 
-            return Ok(new { ImageUrl = imageUrl });
         }
 
     }

@@ -22,7 +22,15 @@ namespace electro_shop_backend.Services
 
         public async Task<string> UploadImageAsync( IFormFile file)
         {
-            var fileExtension = Path.GetExtension(file.FileName);
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".bmp" };
+
+            var fileExtension = Path.GetExtension(file.FileName).ToLowerInvariant();
+
+            if (!allowedExtensions.Contains(fileExtension))
+            {
+                throw new ArgumentException("File ảnh không hợp lệ.");
+            }
+
             var fileName = $"{Guid.NewGuid()}{fileExtension}";
             var filePath = Path.Combine(_imageFolder, fileName);
 
