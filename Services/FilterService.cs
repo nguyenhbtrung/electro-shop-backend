@@ -189,7 +189,6 @@ namespace electro_shop_backend.Services
                 .Include(p => p.Ratings)
                 .Include(p => p.ProductDiscounts)
                     .ThenInclude(pd => pd.Discount)
-                .Include(p => p.Categories)
                 .Where(p => p.Brand.BrandId == brandId)
                 .ToListAsync();
 

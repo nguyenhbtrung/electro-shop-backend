@@ -24,6 +24,9 @@ namespace electro_shop_backend.Services
                 .AsNoTracking()
                 .Include(p => p.ProductImages)
                 .Include(p => p.Categories)
+                .Include(p => p.Ratings)
+                .Include(p => p.ProductDiscounts)
+                    .ThenInclude(pd => pd.Discount)
                 .Include(p=>p.Brand)
                 .ToListAsync();
             var productDtos = products.Select(p =>
@@ -36,6 +39,11 @@ namespace electro_shop_backend.Services
                     .Select(CategoryMapper.ToCategoryIdDto)
                     .ToList();
                 productDto.Brand = p.Brand != null ? BrandMapper.ToBrandDto(p.Brand) : null;
+                var (discountedPrice, discountType, discountValue) = ProductCalculationValue.CalculateDiscount(p);
+                productDto.DiscountValue = discountValue;
+                productDto.DiscountType = discountType;
+                productDto.DiscountedPrice = discountedPrice;
+                productDto.AverageRating= ProductCalculationValue.CalculateAverageRating(p);
                 return productDto;
             }).ToList();
 
@@ -47,6 +55,10 @@ namespace electro_shop_backend.Services
             .AsNoTracking()
             .Include(p => p.ProductImages)
             .Include(p => p.Categories)
+            .Include(p => p.Brand)
+            .Include(p=>p.Ratings)
+            .Include(p => p.ProductDiscounts)
+                .ThenInclude(pd => pd.Discount)
             .FirstOrDefaultAsync(p => p.ProductId == productId); 
 
             if (product == null) return null;
@@ -57,6 +69,11 @@ namespace electro_shop_backend.Services
             productDto.Categories = product.Categories
                 .Select(CategoryMapper.ToCategoryIdDto)
                 .ToList();
+            var (discountedPrice, discountType, discountValue) = ProductCalculationValue.CalculateDiscount(product);
+            productDto.DiscountValue = discountValue;
+            productDto.DiscountType = discountType;
+            productDto.DiscountedPrice = discountedPrice;
+            productDto.AverageRating = ProductCalculationValue.CalculateAverageRating(product);
             productDto.Brand =product.Brand!=null?BrandMapper.ToBrandDto(product.Brand) : null;
             return productDto;
         }
