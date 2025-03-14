@@ -34,6 +34,7 @@ namespace electro_shop_backend.Models.Mappers
             product.Info = requestDto.Info;
             product.Price = requestDto.Price;
             product.Stock = requestDto.Stock;
+            product.BrandId = requestDto.BrandId;
         }
     }
 }

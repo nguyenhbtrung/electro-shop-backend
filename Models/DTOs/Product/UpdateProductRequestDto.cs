@@ -13,5 +13,8 @@ namespace electro_shop_backend.Models.DTOs.Product
         public decimal Price { get; set; }
 
         public int Stock { get; set; }
+        public List<int> CategoryIds { get; set; } = new();
+        public int BrandId { get; set; }
+
     }
 }

@@ -108,12 +108,21 @@ namespace electro_shop_backend.Services
         }
         public async Task<ProductDto> UpdateProductAsync(int productId, UpdateProductRequestDto requestDto)
         {
-            var product = await _context.Products.FindAsync(productId);
+            var product = await _context.Products.Include(p=>p.Categories).FirstOrDefaultAsync(p=>p.ProductId==productId);
             if (product == null)
             {
                 throw new NotFoundException("Không tìm thấy sản phẩm.");
             }
             product.UpdateProductFromDto(requestDto);
+            if (requestDto.CategoryIds != null)
+            {
+                var newCategories = await _context.Categories.Where(c=>requestDto.CategoryIds.Contains(c.CategoryId)).ToListAsync();
+                product.Categories.Clear();
+                foreach (var category in newCategories)
+                {
+                    product.Categories.Add(category);
+                }
+            }
             await _context.SaveChangesAsync();
             return product.ToProductDto();
         }
