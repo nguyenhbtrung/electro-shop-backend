@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
-using electro_shop_backend.Models.Entities;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using electro_shop_backend.Models.Entities;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace electro_shop_backend.Data;
 
@@ -54,6 +52,12 @@ public partial class ApplicationDbContext : IdentityDbContext<User>
 
     public virtual DbSet<Brand> Brands { get; set; }
 
+    public virtual DbSet<StockImport> StockImports { get; set; }
+
+    public virtual DbSet<StockImportDetail> StockImportDetails { get; set; }
+
+    public virtual DbSet<Supplier> Suppliers { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -62,7 +66,7 @@ public partial class ApplicationDbContext : IdentityDbContext<User>
         {
             new IdentityRole { Id = "Admin", Name = "Admin", NormalizedName = "ADMIN" },
             new IdentityRole { Id = "User", Name = "User", NormalizedName = "USER" }
-        }; 
+        };
         modelBuilder.Entity<IdentityRole>().HasData(roles);
 
         modelBuilder.Entity<Banner>(entity =>
@@ -249,6 +253,36 @@ public partial class ApplicationDbContext : IdentityDbContext<User>
             entity.Property(e => e.EndDate).HasDefaultValueSql("DATEADD(day, 7, GETDATE())");
 
             entity.Property(e => e.CreatedDate).HasDefaultValueSql("GETDATE()");
+        });
+
+        modelBuilder.Entity<StockImport>(entity =>
+        {
+            entity.HasKey(e => e.StockImportId).HasName("PK__StockImp__D3A3E3A3D3A3E3A3");
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
+            entity.HasOne(d => d.Supplier)
+                  .WithMany(p => p.StockImports)
+                  .HasForeignKey(d => d.SupplierId)
+                  .OnDelete(DeleteBehavior.ClientSetNull)
+                  .HasConstraintName("FK__StockImpo__suppl__5EBF139D");
+        });
+
+        modelBuilder.Entity<StockImportDetail>(entity =>
+        {
+            entity.HasKey(e => e.StockImportDetailId).HasName("PK__StockImpDetail__1A56936E");
+            entity.HasOne(d => d.StockImport)
+                  .WithMany(p => p.StockImportDetails)
+                  .OnDelete(DeleteBehavior.Cascade)
+                  .HasConstraintName("FK__StockImportDetail__StockImportId");
+            entity.HasOne(d => d.Product)
+                  .WithMany()
+                  .HasForeignKey(d => d.ProductId)
+                  .OnDelete(DeleteBehavior.Cascade)
+                  .HasConstraintName("FK__StockImportDetail__ProductId");
+        });
+
+        modelBuilder.Entity<Supplier>(entity =>
+        {
+            entity.HasKey(e => e.SupplierId).HasName("PK__Supplier__1A56936E");
         });
 
         OnModelCreatingPartial(modelBuilder);
