@@ -43,5 +43,18 @@ namespace electro_shop_backend.Controllers
 
         }
 
+        [HttpDelete("delete-by-url")]
+        public async Task<IActionResult> DeleteImageByUrl([FromBody] string imageUrl)
+        {
+            if (string.IsNullOrEmpty(imageUrl))
+            {
+                return BadRequest("URL ảnh không hợp lệ.");
+            }
+            var result = await _imageService.DeleteImageByUrlAsync(imageUrl);
+            if (result)
+                return Ok("Xoá ảnh thành công.");
+            else
+                return NotFound("Ảnh không tồn tại hoặc đã bị xoá.");
+        }
     }
 }
