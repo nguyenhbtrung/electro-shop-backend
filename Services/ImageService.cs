@@ -22,7 +22,15 @@ namespace electro_shop_backend.Services
 
         public async Task<string> UploadImageAsync( IFormFile file)
         {
-            var fileExtension = Path.GetExtension(file.FileName);
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".bmp" };
+
+            var fileExtension = Path.GetExtension(file.FileName).ToLowerInvariant();
+
+            if (!allowedExtensions.Contains(fileExtension))
+            {
+                throw new ArgumentException("File ảnh không hợp lệ.");
+            }
+
             var fileName = $"{Guid.NewGuid()}{fileExtension}";
             var filePath = Path.Combine(_imageFolder, fileName);
 
@@ -34,16 +42,54 @@ namespace electro_shop_backend.Services
             return imageUrl;
         }
 
-        public async Task<bool> DeleteImageAsync(string imageName, string userId)
+        public async Task<bool> DeleteImageByUrlAsync(string imageUrl)
         {
-            // Nếu cần kiểm tra quyền sở hữu ảnh, bạn có thể bổ sung logic ở đây
-            var filePath = Path.Combine(_imageFolder, imageName);
+            if (!ValidateImageUrl(imageUrl, out string fileName))
+            {
+                return false;
+            }
+
+            var filePath = Path.Combine(_imageFolder, fileName);
+
             if (File.Exists(filePath))
             {
-                File.Delete(filePath);
-                return true;
+                try
+                {
+                    File.Delete(filePath);
+                    return true;
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
             }
+
             return false;
+        }
+
+        private bool ValidateImageUrl(string imageUrl, out string fileName)
+        {
+            fileName = string.Empty;
+
+            if (string.IsNullOrEmpty(imageUrl))
+            {
+                return false;
+            }
+
+            if (!Uri.TryCreate(imageUrl, UriKind.Absolute, out var uri))
+            {
+                return false;
+            }
+
+            var localPath = uri.LocalPath;
+
+            if (!localPath.StartsWith("/images", StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+
+            fileName = Path.GetFileName(localPath);
+            return true;
         }
     }
 
