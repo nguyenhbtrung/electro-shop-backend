@@ -51,25 +51,39 @@ namespace electro_shop_backend.Services
 
         public async Task<OrderDto> CreateOrderAsync(string userId, List<int> selectedProductIds, string voucherCode)
         {
+            decimal totalPrice = 0;
             var cartitems = await _context.CartItems
-                .Where(item => selectedProductIds.Contains(item.ProductId??0))
-                .Include(item => item.Product)
+                .Where(item => selectedProductIds.Contains(item.ProductId ?? 0) && item.Cart!.UserId == userId)
+                .Include(cartitem => cartitem.Product)
+                .Include(cartitem => cartitem.Cart)
                 .ToListAsync();
 
             if (cartitems == null)
             {
-                throw new NotFoundException("Please choose cartitem to buy");
+                throw new NotFoundException("Cartitem not found");
             }
 
-            var orderItems = cartitems.Select(cartitem => new OrderItem
+            foreach (var cartitem in cartitems)
             {
-                ProductId = cartitem.ProductId,
-                ProductName = cartitem.Product!.Name,
-                Quantity = cartitem.Quantity,
-                Price = cartitem.Product!.Price,
-            }).ToList();
+                if (cartitem.Quantity > cartitem.Product!.Stock)
+                {
+                    throw new BadRequestException("Product out of stock");
+                }
 
-            decimal totalPrice = orderItems.Sum(item => item.Price * item.Quantity);
+                cartitem.Product!.Stock -= cartitem.Quantity;
+
+                OrderItem orderItem = new OrderItem
+                {
+                    ProductId = cartitem.ProductId,
+                    ProductName = cartitem.Product!.Name,
+                    Quantity = cartitem.Quantity,
+                    Price = cartitem.Product!.Price,
+                };
+                totalPrice =+orderItem.Price * orderItem.Quantity;
+                cartitem.Cart!.CartItems.Remove(cartitem);
+                _context.OrderItems.Add(orderItem);
+                _context.Products.Update(cartitem.Product);
+            }
 
             decimal discountAmount = 0;
             if (!string.IsNullOrEmpty(voucherCode))
@@ -79,11 +93,11 @@ namespace electro_shop_backend.Services
                 {
                     if (voucher.VoucherType == "Percentage")
                     {
-                        discountAmount = (totalPrice * voucher.DiscountValue) / 100; 
+                        discountAmount = (totalPrice * voucher.DiscountValue) / 100;
                     }
                     else
                     {
-                        discountAmount = voucher.DiscountValue; 
+                        discountAmount = voucher.DiscountValue;
                     }
                 }
             }
