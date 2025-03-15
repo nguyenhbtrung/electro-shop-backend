@@ -47,6 +47,7 @@ public partial class ApplicationDbContext : IdentityDbContext<User>
     public virtual DbSet<ReturnItem> ReturnItems { get; set; }
 
     public virtual DbSet<ReturnReason> ReturnReasons { get; set; }
+    public virtual DbSet<ReturnImage> ReturnImages { get; set; }
 
     public virtual DbSet<Voucher> Vouchers { get; set; }
 
@@ -243,6 +244,16 @@ public partial class ApplicationDbContext : IdentityDbContext<User>
         modelBuilder.Entity<ReturnReason>(entity =>
         {
             entity.HasKey(e => e.ReasonId).HasName("PK__Return_R__846BB55471535E7D");
+        });
+
+        modelBuilder.Entity<ReturnImage>(entity =>
+        {
+            entity.HasKey(e => e.ReturnImageId).HasName("PK__Return_Img");
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
+            entity.HasOne(d => d.Return).WithMany(p => p.ReturnImages)
+                .HasForeignKey(d => d.ReturnId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK__Return_Img__return");
         });
 
         modelBuilder.Entity<Voucher>(entity =>
