@@ -1,5 +1,6 @@
 ﻿using electro_shop_backend.Data;
 using electro_shop_backend.Exceptions;
+using electro_shop_backend.Models.DTOs.Brand;
 using electro_shop_backend.Models.DTOs.ProductImage;
 using electro_shop_backend.Models.Entities;
 using electro_shop_backend.Models.Mappers;
@@ -26,18 +27,32 @@ namespace electro_shop_backend.Services
                 throw new KeyNotFoundException("Product not found");
             }
 
-            var newProductImage = new ProductImage
-            {
-                ProductId = productId,
-                ImageUrl = requestDto.ImageUrl!
-            };
-
+            var newProductImage = requestDto.ToProductImageFromCreate();
+            newProductImage.ProductId = productId;
             _context.ProductImages.Add(newProductImage);
             await _context.SaveChangesAsync();
 
             return ProductImageMapper.ToProductImageDto(newProductImage);
         }
-
+        public async Task<ProductImageDto> UpdateProductImageAsync(int productId, CreateProductImageDto requestDto)
+        {
+            var product = await _context.Products
+                .AsNoTracking()
+                .FirstOrDefaultAsync(p => p.ProductId == productId);
+            if (product == null)
+            {
+                throw new KeyNotFoundException("Product not found");
+            }
+            var productImage = await _context.ProductImages
+                .FirstOrDefaultAsync(pi => pi.ProductId == productId);
+            if (productImage == null)
+            {
+                throw new KeyNotFoundException("Product image not found");
+            }
+            requestDto.ToProductImageFromUpdate(productImage);
+            await _context.SaveChangesAsync();
+            return productImage.ToProductImageDto();
+        }
 
         public async Task<bool> DeleteProductImageAsync(int id)
         {

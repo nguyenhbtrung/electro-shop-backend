@@ -111,7 +111,7 @@ namespace electro_shop_backend.Services
                 Total = finalTotal,
                 Status = "Pending",
                 TimeStamp = DateTime.UtcNow,
-                OrderItems = orderItems
+                //OrderItems = orderItems
             };
 
             _context.Orders.Add(order);
