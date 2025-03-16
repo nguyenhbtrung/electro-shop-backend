@@ -50,14 +50,31 @@ namespace electro_shop_backend.Services
         public async Task<bool> DeleteBrandAsync(int id)
         {
             var brand = await _context.Brands.FindAsync(id);
-            if (brand== null)
+            if (brand == null)
             {
                 throw new NotFoundException("Không tìm thấy hãng sản phẩm.");
             }
+
             _context.Brands.Remove(brand);
-            await _context.SaveChangesAsync();
-            return true;
+            try
+            {
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (DbUpdateException ex)
+            {
+                if (ex.InnerException != null)
+                {
+                    string errorMessage = ex.InnerException.Message.ToLower();
+                    if (errorMessage.Contains("fk__product__brandid__46e78a0c"))
+                    {
+                        throw new Exception("Không được xóa nhãn hàng khi còn sản phẩm thuộc nhãn hàng.");
+                    }
+                }
+                throw;
+            }
         }
+
         public async Task<List<ProductCardDto>> GetAllProdcutByBrandIdAsync(int brandid)
         {
             var now = DateTime.Now;
