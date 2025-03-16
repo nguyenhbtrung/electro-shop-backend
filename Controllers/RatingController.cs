@@ -89,7 +89,8 @@ namespace electro_shop_backend.Controllers
         public async Task<IActionResult> DeleteRating(int ProductId)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            await _ratingService.DeleteRatingAsync(ProductId, userId);
+            var isAdmin = User.IsInRole("Admin"); // Kiểm tra xem người dùng có phải admin không
+            await _ratingService.DeleteRatingAsync(ProductId, userId, isAdmin);
             return Ok("Rating deleted successfully");
         }
     }

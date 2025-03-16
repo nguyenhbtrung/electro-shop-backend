@@ -95,14 +95,16 @@ namespace electro_shop_backend.Services
             return rating.ToRatingDto();
         }
 
-        public async Task<bool> DeleteRatingAsync(int productId, string userId)
+        public async Task<bool> DeleteRatingAsync(int productId, string currentUserId, bool isAdmin = false)
         {
-            var rating = await _context.Ratings
-                .FirstOrDefaultAsync(r => r.ProductId == productId && r.UserId == userId);
+            // Nếu là admin thì bỏ qua kiểm tra UserId, còn không thì chỉ cho xóa đánh giá của chính người dùng.
+            var rating = await _context.Ratings.FirstOrDefaultAsync(r => r.ProductId == productId
+                                              && (isAdmin || r.UserId == currentUserId));
             if (rating == null)
             {
-                throw new NotFoundException("You can only change your own rating.");
+                throw new NotFoundException("Không tìm thấy đánh giá hoặc bạn không có quyền xóa đánh giá này.");
             }
+
             _context.Ratings.Remove(rating);
             await _context.SaveChangesAsync();
             return true;

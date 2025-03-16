@@ -9,6 +9,6 @@ namespace electro_shop_backend.Services.Interfaces
         Task<List<RatingDto>> GetRatingByUserIdAsync(string userId);
         Task<RatingDto> CreateRatingAsync(string userId, CreateRatingRequestDto requestDto);
         Task<RatingDto> UpdateRatingAsync(int productId, UpdateRatingDto requestDto, string userId);
-        Task<bool> DeleteRatingAsync(int productId, string userId);
+        Task<bool> DeleteRatingAsync(int productId, string currentUserId, bool isAdmin = false);
     }
 }
