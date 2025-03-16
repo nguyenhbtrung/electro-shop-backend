@@ -49,4 +49,6 @@ public partial class Return
 
     [InverseProperty("Return")]
     public virtual ICollection<ReturnImage> ReturnImages { get; set; } = new List<ReturnImage>();
+    [InverseProperty("Return")]
+    public virtual ICollection<ReturnHistory> ReturnHistories { get; set; } = new List<ReturnHistory>();
 }

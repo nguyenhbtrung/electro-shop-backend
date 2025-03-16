@@ -1,4 +1,6 @@
-﻿using electro_shop_backend.Models.DTOs.Product;
+﻿using electro_shop_backend.Models.DTOs.Brand;
+using electro_shop_backend.Models.DTOs.Category;
+using electro_shop_backend.Models.DTOs.Product;
 using electro_shop_backend.Models.Entities;
 
 namespace electro_shop_backend.Models.Mappers
@@ -13,6 +15,8 @@ namespace electro_shop_backend.Models.Mappers
                 Info = requestDto.Info,
                 Price = requestDto.Price,
                 Stock = requestDto.Stock,
+                BrandId = requestDto.BrandId,
+                Categories = new List<Category>()
             };
         }
 
@@ -25,7 +29,17 @@ namespace electro_shop_backend.Models.Mappers
                 Info = product.Info,
                 OriginalPrice = product.Price,
                 Stock = product.Stock,
-                ProductImages = new()
+                ProductImages = new(),
+                Categories = product.Categories?.Select(c => new CategoryIdDto
+                {
+                    CategoryId = c.CategoryId,
+                    Name = c.Name,
+                }).ToList() ?? new List<CategoryIdDto>(),
+                Brand = product.Brand != null ? new BrandDto
+                {
+                    BrandId = product.Brand.BrandId,
+                    BrandName = product.Brand.BrandName
+                } : null
             };
         }
         public static void UpdateProductFromDto(this Product product, UpdateProductRequestDto requestDto) // Cập nhật

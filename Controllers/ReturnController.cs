@@ -33,6 +33,31 @@ namespace electro_shop_backend.Controllers
             return Ok(returns);
         }
 
+        [HttpGet("{returnId}")]
+        [Authorize]
+        public async Task<IActionResult> GetReturnById([FromRoute] int returnId)
+        {
+            //var username = User.GetUsername();
+            //var user = await _userManager.FindByNameAsync(username);
+            //if (user == null)
+            //{
+            //    return NotFound();
+            //}
+            try
+            {
+                var result = await _returnService.GetReturnByIdAsync(returnId);
+                return Ok(result);
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> CreateReturn([FromForm] CreateReturnRequestDto requestDto)

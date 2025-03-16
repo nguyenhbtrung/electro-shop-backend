@@ -155,6 +155,60 @@ namespace electro_shop_backend.Services
             await _context.SaveChangesAsync();
             return true;
         }
+
+        public async Task<ReturnDetailResponseDto> GetReturnByIdAsync(int returnId)
+        {
+            var existingReturn = await _context.Returns
+                .AsNoTracking()
+                .Include(r => r.ReturnHistories)
+                .FirstOrDefaultAsync(r => r.ReturnId == returnId);
+            if (existingReturn == null)
+            {
+                throw new NotFoundException("Không tìm thấy yêu cầu hoàn trả");
+            }
+            var response =  new ReturnDetailResponseDto
+            {
+                ReturnId = existingReturn.ReturnId,
+                Reason = existingReturn.Reason,
+                Detail = existingReturn.Detail,
+                Status = existingReturn.Status,
+                ReturnMethod = existingReturn.ReturnMethod,
+                AdminComment = existingReturn.AdminComment,
+                CreatedAt = existingReturn.TimeStamp,
+                ReturnHistories = existingReturn.ReturnHistories
+                    .Select(rh => new ReturnHistoryDto
+                    {
+                        Status = rh.Status,
+                        ChangedAt = rh.ChangedAt
+                    }).ToList(),
+            };
+            var returnItems = await _context.ReturnItems
+                .AsNoTracking()
+                .Include(ri => ri.OrderItem)
+                .ThenInclude(oi => oi!.Product)
+                .Where(ri => ri.ReturnId == returnId)
+                .ToListAsync();
+            foreach (var  item in returnItems)
+            {
+                var returnProduct = new ReturnProductDto
+                {
+                    ProductId = item?.OrderItem?.ProductId,
+                    Name = item?.OrderItem?.Product?.Name,
+                    ReturnQuantity = item?.ReturnQuantity
+                };
+                var img = await _context.ProductImages
+                    .AsNoTracking()
+                    .Select(i => new
+                    {
+                        i.ProductId,
+                        i.ImageUrl
+                    })
+                    .FirstOrDefaultAsync(i => i.ProductId == returnProduct.ProductId);
+                returnProduct.Image = img?.ImageUrl;
+                response.ReturnProducts.Add(returnProduct);
+            }
+            return response;
+        }
     }
 
     public enum ReturnStatus
