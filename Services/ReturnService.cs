@@ -183,6 +183,7 @@ namespace electro_shop_backend.Services
                     }).ToList(),
             };
             var returnItems = await _context.ReturnItems
+                .AsNoTracking()
                 .Include(ri => ri.OrderItem)
                 .ThenInclude(oi => oi!.Product)
                 .Where(ri => ri.ReturnId == returnId)
@@ -196,6 +197,7 @@ namespace electro_shop_backend.Services
                     ReturnQuantity = item?.ReturnQuantity
                 };
                 var img = await _context.ProductImages
+                    .AsNoTracking()
                     .Select(i => new
                     {
                         i.ProductId,
