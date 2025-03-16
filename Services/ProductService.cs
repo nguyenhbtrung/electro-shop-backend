@@ -7,6 +7,7 @@ using electro_shop_backend.Models.Entities;
 using electro_shop_backend.Models.Mappers;
 using electro_shop_backend.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace electro_shop_backend.Services
 {
@@ -88,7 +89,6 @@ namespace electro_shop_backend.Services
                         .Where(c => requestDto.CategoryIds.Contains(c.CategoryId))
                         .ToListAsync();
                     product.Categories = categories;
-
                 }
                 if (requestDto.BrandId > 0)
                 {
@@ -99,6 +99,16 @@ namespace electro_shop_backend.Services
                 }
                 await _context.Products.AddAsync(product);
                 await _context.SaveChangesAsync();
+                if (!string.IsNullOrWhiteSpace(requestDto.ImageUrl))
+                {
+                    var productImage = new ProductImage 
+                    {
+                        ProductId = product.ProductId,
+                        ImageUrl = requestDto.ImageUrl,
+                    };
+                    await _context.ProductImages.AddAsync(productImage);
+                    await _context.SaveChangesAsync();
+                }
                 return product.ToProductDto();
             }
             catch (Exception)
