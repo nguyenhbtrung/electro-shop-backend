@@ -6,5 +6,6 @@ namespace electro_shop_backend.Services.Interfaces
     {
         Task<ProductImageDto> CreateProductImageAsync(int id,CreateProductImageDto requestDto);
         Task<bool> DeleteProductImageAsync(int id);
+        Task<ProductImageDto> UpdateProductImageAsync(int productId, CreateProductImageDto requestDto);
     }
 }

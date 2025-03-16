@@ -20,6 +20,11 @@ namespace electro_shop_backend.Models.Mappers
                 ImageUrl = requestDto.ImageUrl,
             };
         }
+        public static void ToProductImageFromUpdate(this CreateProductImageDto requestDto, ProductImage productImage)
+        {
+            productImage.ImageUrl = requestDto.ImageUrl;
+        }
+
 
     }
 }

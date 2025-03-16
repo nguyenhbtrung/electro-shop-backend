@@ -101,7 +101,17 @@ namespace electro_shop_backend.Controllers
             var result = await _productimageService.CreateProductImageAsync(id,requestDto);
             return Ok(result);
         }
-
+        [HttpPut("{id}/Image")]
+        [Authorize(Policy = "AdminPolicy")]
+        public async Task<IActionResult> UpdateProductImage(int id, [FromBody] CreateProductImageDto requestDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var result = await _productimageService.UpdateProductImageAsync(id, requestDto);
+            return Ok(result);
+        }
         [HttpDelete("{id}")]
         [Authorize(Policy = "AdminPolicy")]
         public async Task<IActionResult> DeleteProduct(int id)
@@ -120,13 +130,13 @@ namespace electro_shop_backend.Controllers
                 return new ObjectResult(e);
             }
         }
-        [HttpDelete("{id}/Image")]
+        [HttpDelete("Image/{imageId}")]
         [Authorize(Policy = "AdminPolicy")]
-        public async Task<IActionResult> DeleteProductImage(int id)
+        public async Task<IActionResult> DeleteProductImage(int imageId)
         {
             try
             {
-                var result = await _productimageService.DeleteProductImageAsync(id);
+                var result = await _productimageService.DeleteProductImageAsync(imageId);
                 return result ? NoContent() : NotFound("Không tìm thấy ảnh sản phẩm.");
             }
             catch (NotFoundException ex)

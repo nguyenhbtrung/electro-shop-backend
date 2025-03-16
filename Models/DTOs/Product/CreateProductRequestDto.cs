@@ -19,6 +19,8 @@ namespace electro_shop_backend.Models.DTOs.Product
         public int Stock { get; set; }
         public List<int> CategoryIds { get; set; } = new();
         public int BrandId { get; set; }
+        [StringLength(255)]
+        public string? ImageUrl { get; set; }
 
     }
 }
