@@ -141,10 +141,6 @@ public partial class ApplicationDbContext : IdentityDbContext<User>
         modelBuilder.Entity<Product>(entity =>
         {
             entity.HasKey(e => e.ProductId).HasName("PK__Product__47027DF5BB06DC67");
-
-            entity.Property(e => e.AverageRating).HasDefaultValue(0.0);
-            entity.Property(e => e.RatingCount).HasDefaultValue(0);
-
             entity.HasOne(d => d.Brand)
                 .WithMany(p => p.Products)
                 .HasForeignKey(d => d.BrandId)

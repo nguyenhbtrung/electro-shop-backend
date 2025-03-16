@@ -81,9 +81,30 @@ namespace electro_shop_backend.Services
             }
 
             _context.Categories.Remove(category);
-            await _context.SaveChangesAsync();
-            return true;
+            try
+            {
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (DbUpdateException ex)
+            {
+                if (ex.InnerException != null)
+                {
+                    string errorMessage = ex.InnerException.Message.ToLower();
+                    if (errorMessage.Contains("fk__category__parent__3a81b327"))
+                    {
+                        throw new Exception("Không được xóa danh mục cha khi đang tồn tại 1 danh mục con");
+                    }
+                    else if (errorMessage.Contains("fk__product_c__categ__4222d4ef"))
+                    {
+                        throw new Exception("Không được xóa danh mục khi tồn tại 1 sản phẩm thuộc danh mục");
+                    }
+                }
+                throw;
+            }
         }
+
+
 
         public async Task<List<CategoryTreeDto>> GetCategoryTreeAsync()
         {
