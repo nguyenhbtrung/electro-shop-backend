@@ -5,9 +5,9 @@ namespace electro_shop_backend.Models.Mappers
 {
     public static class UserMapper
     {
-        public static ViewUserForAdminDTO ToViewUserForAdminDTOFromUser (this User user)
+        public static ViewUserForAdminDTO ToViewUserForAdminDTOFromUser(this User user)
         {
-            return new ViewUserForAdminDTO ()
+            return new ViewUserForAdminDTO()
             {
                 UserName = user.UserName,
                 FullName = user.FullName,
@@ -18,10 +18,10 @@ namespace electro_shop_backend.Models.Mappers
                 AvatarImg = user.AvatarImg,
                 UserStatus = user.UserStatus,
                 CreatedAt = user.CreatedAt
-            };      
+            };
         }
 
-        public static NewUserDTO ToNewUserDTOFromUser (this User user)
+        public static NewUserDTO ToNewUserDTOFromUser(this User user)
         {
             return new NewUserDTO()
             {
@@ -30,7 +30,7 @@ namespace electro_shop_backend.Models.Mappers
             };
         }
 
-        public static User ToUserFromAdminAddUserDTO (this AdminAddUserDTO adminAddUserDTO)
+        public static User ToUserFromAdminAddUserDTO(this AdminAddUserDTO adminAddUserDTO)
         {
             return new User()
             {
@@ -42,6 +42,25 @@ namespace electro_shop_backend.Models.Mappers
                 AvatarImg = adminAddUserDTO.AvatarImg,
                 UserStatus = adminAddUserDTO.UserStatus
             };
+        }
+
+        public static void UpdateUserFromDTO(this User user, UserForAdminDTO userForAdminDTO)
+        {
+            user.FullName = userForAdminDTO.FullName;
+            user.Address = userForAdminDTO.Address;
+            user.PhoneNumber = userForAdminDTO.PhoneNumber;
+            user.AvatarImg = userForAdminDTO.AvatarImg;
+            user.Email = userForAdminDTO.Email;
+            user.EmailConfirmed = userForAdminDTO.EmailConfirmed;
+            user.UserStatus = userForAdminDTO.UserStatus;
+        }
+
+        public static void UserUpdateUserFromDTO(this User user, UserChangeUser userChangeUser)
+        {
+            user.FullName = userChangeUser.FullName;
+            user.Address = userChangeUser.Address;
+            user.PhoneNumber = userChangeUser.PhoneNumber;
+            user.AvatarImg = userChangeUser.AvatarImg;
         }
     }
 }

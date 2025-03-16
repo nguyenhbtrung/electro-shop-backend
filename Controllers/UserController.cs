@@ -56,7 +56,6 @@ namespace electro_shop_backend.Controllers
         {
             return await _userService.GetUserAsync(userName);
         }
-
         [HttpGet("user/{userName}")]
         [Authorize(Policy = "UserPolicy")]
         public async Task<IActionResult> GetUser(string userName)
@@ -75,13 +74,14 @@ namespace electro_shop_backend.Controllers
 
         [HttpPut("user")]
         [Authorize(Policy = "UserPolicy")]
-        public async Task<IActionResult> UpdateUser(UserForAdminDTO userForAdminDTO)
+        public async Task<IActionResult> UpdateUser(UserChangeUser userChangeUser)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            return await _userService.UpdateUserAsync(userForAdminDTO);
+            var authenticatedUserName = User.Identity.Name;
+            return await _userService.UpdateUserAsync(authenticatedUserName, userChangeUser);
         }
         [HttpPut("admin")]
         [Authorize(Policy = "AdminPolicy")]

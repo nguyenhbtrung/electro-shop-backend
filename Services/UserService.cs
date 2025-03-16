@@ -198,20 +198,20 @@ namespace electro_shop_backend.Services
             }
         }
 
-        public async Task<IActionResult> UpdateUserAsync(UserForAdminDTO userForAdminDTO)
+        public async Task<IActionResult> UpdateUserAsync(string userName, UserChangeUser userChangeUser)
         {
             try
             {
-                var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == userForAdminDTO.UserName);
+                var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == userName);
                 if (user == null)
                 {
                     return new UnauthorizedObjectResult("User not found");
                 }
-                user.FullName = userForAdminDTO.FullName;
-                user.Address = userForAdminDTO.Address;
-                user.PhoneNumber = userForAdminDTO.PhoneNumber;
-                user.AvatarImg = userForAdminDTO.AvatarImg;
+
+                user.UserUpdateUserFromDTO(userChangeUser);
+
                 var result = await _userManager.UpdateAsync(user);
+
                 if (result.Succeeded)
                 {
                     return new OkObjectResult("User updated successfully");
@@ -231,55 +231,54 @@ namespace electro_shop_backend.Services
         {
             try
             {
-
                 var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == userForAdminDTO.UserName);
                 if (user == null)
                 {
                     return new UnauthorizedObjectResult("User not found");
                 }
-                user.FullName = userForAdminDTO.FullName;
-                user.Address = userForAdminDTO.Address;
-                user.PhoneNumber = userForAdminDTO.PhoneNumber;
-                user.Email = userForAdminDTO.Email;
-                user.EmailConfirmed = userForAdminDTO.EmailConfirmed;
-                user.AvatarImg = userForAdminDTO.AvatarImg;
-                user.UserStatus = userForAdminDTO.UserStatus;
-                user.AvatarImg = userForAdminDTO.AvatarImg;
+
+                user.UpdateUserFromDTO(userForAdminDTO);
+
                 var roles = await _userManager.GetRolesAsync(user);
-                var role = roles.FirstOrDefault();
-                if (role != userForAdminDTO.Roles)
+                var currentRole = roles.FirstOrDefault();
+                if (currentRole != userForAdminDTO.Roles)
                 {
-                    var removeRole = await _userManager.RemoveFromRoleAsync(user, role);
-                    if (!removeRole.Succeeded)
+                    var removeRoleResult = await _userManager.RemoveFromRoleAsync(user, currentRole);
+                    if (!removeRoleResult.Succeeded)
                     {
-                        return new ObjectResult(removeRole.Errors) { StatusCode = 500 };
+                        return new ObjectResult(removeRoleResult.Errors) { StatusCode = 500 };
                     }
-                    var addRole = await _userManager.AddToRoleAsync(user, userForAdminDTO.Roles);
-                    if (!addRole.Succeeded)
+
+                    var addRoleResult = await _userManager.AddToRoleAsync(user, userForAdminDTO.Roles);
+                    if (!addRoleResult.Succeeded)
                     {
-                        return new ObjectResult(addRole.Errors) { StatusCode = 500 };
+                        return new ObjectResult(addRoleResult.Errors) { StatusCode = 500 };
                     }
                 }
-                if (userForAdminDTO.Password != null)
+
+                if (!string.IsNullOrEmpty(userForAdminDTO.Password))
                 {
-                    try
+                    var removePasswordResult = await _userManager.RemovePasswordAsync(user);
+                    if (!removePasswordResult.Succeeded)
                     {
-                        var removePassword = await _userManager.RemovePasswordAsync(user);
-                        var addPassword = await _userManager.AddPasswordAsync(user, userForAdminDTO.Password);
+                        return new BadRequestObjectResult(removePasswordResult.Errors);
                     }
-                    catch (Exception ex)
+
+                    var addPasswordResult = await _userManager.AddPasswordAsync(user, userForAdminDTO.Password);
+                    if (!addPasswordResult.Succeeded)
                     {
-                        return new BadRequestObjectResult(ex);
+                        return new BadRequestObjectResult(addPasswordResult.Errors);
                     }
                 }
-                var result = await _userManager.UpdateAsync(user);
-                if (result.Succeeded)
+
+                var updateResult = await _userManager.UpdateAsync(user);
+                if (updateResult.Succeeded)
                 {
                     return new OkObjectResult("User updated successfully");
                 }
                 else
                 {
-                    return new BadRequestObjectResult(result.Errors);
+                    return new BadRequestObjectResult(updateResult.Errors);
                 }
             }
             catch (Exception ex)
