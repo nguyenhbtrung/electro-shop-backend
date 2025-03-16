@@ -26,12 +26,6 @@ public partial class Product
     [Column("stock")]
     public int Stock { get; set; }
 
-    [Column("rating_count")]
-    public int? RatingCount { get; set; }
-
-    [Column("average_rating")]
-    public double? AverageRating { get; set; }
-
     [Column("brand_id")]
     public int? BrandId { get; set; }
 
