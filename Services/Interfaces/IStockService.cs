@@ -9,6 +9,7 @@ namespace electro_shop_backend.Services.Interfaces
         Task<IActionResult> GetStockAsync(int id);
         Task<IActionResult> AddStockAsync(AddStockImportDTO addStockImportDTO);
         Task<IActionResult> DeleteStockAsync(int id);
-        Task<IActionResult> UpdateStockAsync(AddStockImportDTO addStockImportDTO);
+        Task<IActionResult> UpdateStockAsync(int id, AddStockImportDTO addStockImportDTO);
+        Task<IActionResult> UpdateStockStatusAsync(int id, string status);
     }
 }

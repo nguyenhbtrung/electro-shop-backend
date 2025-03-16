@@ -11,9 +11,8 @@ namespace electro_shop_backend.Models.Mappers
             {
                 StockImportId = stockImport.StockImportId,
                 StockImportName = stockImport.StockImportName,
-                SupplierId = stockImport.SupplierId,
+                SupplierName = stockImport.Supplier?.SupplierName,
                 TotalPrice = stockImport.TotalPrice,
-                StockImportStatus = stockImport.StockImportStatus,
                 ImportDate = stockImport.ImportDate,
                 CreatedAt = stockImport.CreatedAt,
                 StockImportItems = stockImport.StockImportDetails.Select(x => x.ToStockImportItemsDTOFromStockImportItems()).ToList()
@@ -25,9 +24,9 @@ namespace electro_shop_backend.Models.Mappers
             {
                 StockImportDetailId = stockImportDetail.StockImportDetailId,
                 ProductId = stockImportDetail.ProductId,
+                ProductName = stockImportDetail.Product?.Name,
                 Quantity = stockImportDetail.Quantity,
-                UnitPrice = stockImportDetail.UnitPrice,
-                ProductName = stockImportDetail.Product.Name
+                UnitPrice = stockImportDetail.UnitPrice
             };
         }
 
@@ -38,7 +37,6 @@ namespace electro_shop_backend.Models.Mappers
                 StockImportName = addStockImportDTO.StockImportName,
                 SupplierId = addStockImportDTO.SupplierId,
                 TotalPrice = addStockImportDTO.TotalPrice,
-                StockImportStatus = addStockImportDTO.StockImportStatus,
                 ImportDate = addStockImportDTO.ImportDate,
                 CreatedAt = DateTime.UtcNow,
                 StockImportDetails = addStockImportDTO.StockImportItems.Select(item => item.FromAddStockImportItemsDTOToStockImportDetail()).ToList()
@@ -53,6 +51,25 @@ namespace electro_shop_backend.Models.Mappers
                 Quantity = addStockImportItems.Quantity,
                 UnitPrice = addStockImportItems.UnitPrice
             };
+        }
+
+        public static void UpdateStockImportFromDTO(this StockImport stockImport, AddStockImportDTO addStockImportDTO)
+        {
+            stockImport.StockImportName = addStockImportDTO.StockImportName;
+            stockImport.SupplierId = addStockImportDTO.SupplierId;
+            stockImport.TotalPrice = addStockImportDTO.TotalPrice;
+            stockImport.ImportDate = addStockImportDTO.ImportDate;
+
+            // Update StockImportDetails
+            stockImport.StockImportDetails.Clear();
+
+            if (addStockImportDTO.StockImportItems != null)
+            {
+                foreach (var item in addStockImportDTO.StockImportItems)
+                {
+                    stockImport.StockImportDetails.Add(item.FromAddStockImportItemsDTOToStockImportDetail());
+                }
+            }
         }
     }
 }

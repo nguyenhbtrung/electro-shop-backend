@@ -37,14 +37,14 @@ namespace electro_shop_backend.Controllers
             }
             return await _stockService.AddStockAsync(addStockImportDTO);
         }
-        [HttpPut]
-        public async Task<IActionResult> UpdateStock(AddStockImportDTO addStockImportDTO)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateStock([FromRoute] int id, AddStockImportDTO addStockImportDTO)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            return await _stockService.UpdateStockAsync(addStockImportDTO);
+            return await _stockService.UpdateStockAsync(id, addStockImportDTO);
         }
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteStock([FromRoute] int id)
@@ -54,6 +54,16 @@ namespace electro_shop_backend.Controllers
                 return BadRequest(ModelState);
             }
             return await _stockService.DeleteStockAsync(id);
+        }
+
+        [HttpPut("status/{id}")]
+        public async Task<IActionResult> UpdateStockStatus([FromRoute] int id, [FromBody] string status)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            return await _stockService.UpdateStockStatusAsync(id, status);
         }
     }
 }

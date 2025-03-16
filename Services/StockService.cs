@@ -31,15 +31,14 @@ namespace electro_shop_backend.Services
                 var stockImport = await _context.StockImports
                     .Include(si => si.StockImportDetails)
                     .ThenInclude(sid => sid.Product)
+                    .Include(si => si.Supplier)
                     .FirstOrDefaultAsync(si => si.StockImportId == id);
                 if (stockImport == null)
                 {
                     return new NotFoundResult();
                 }
                 var stockImportDTO = stockImport.ToStockImportDTOFromStock();
-                // đoạn này đang lấy full info của product, hơi thừa, sửa lại
-                // sửa lại, thay vì lấy supplierId thì lấy supplierName
-                return new OkObjectResult(stockImport);
+                return new OkObjectResult(stockImportDTO);
             }
             catch (Exception ex)
             {
@@ -52,6 +51,8 @@ namespace electro_shop_backend.Services
             try
             {
                 var stockImport = addStockImportDTO.ToStockImport();
+                stockImport.CreatedAt = System.DateTime.UtcNow;
+                stockImport.StockImportStatus = "Pending";
                 _context.StockImports.Add(stockImport);
                 await _context.SaveChangesAsync();
                 return new OkObjectResult("Stock added successfully");
@@ -62,16 +63,67 @@ namespace electro_shop_backend.Services
             }
         }
 
-        public async Task<IActionResult> DeleteStockAsync(int id)
+        public async Task<IActionResult> UpdateStockAsync(int id, AddStockImportDTO addStockImportDTO)
         {
-            // Implementation for deleting a specific stock by id
-            return new OkResult();
+            try
+            {
+                var stockImport = await _context.StockImports
+                    .Include(si => si.StockImportDetails)
+                    .FirstOrDefaultAsync(si => si.StockImportId == id);
+                if (stockImport == null)
+                {
+                    return new NotFoundResult();
+                }
+                if (stockImport.StockImportStatus != "Pending")
+                {
+                    return new BadRequestObjectResult("Stock is not pending, cannot update") { StatusCode = 400 };
+                }
+                stockImport.UpdateStockImportFromDTO(addStockImportDTO);
+                await _context.SaveChangesAsync();
+                return new OkObjectResult("Stock updated successfully");
+            }
+            catch (Exception ex)
+            {
+                return new BadRequestObjectResult(ex) { StatusCode = 500 };
+            }
         }
 
-        public async Task<IActionResult> UpdateStockAsync(AddStockImportDTO addStockImportDTO)
+        public async Task<IActionResult> DeleteStockAsync(int id)
         {
-            // Implementation for updating existing stock
-            return new OkResult();
+            try
+            {
+                var stockImport = await _context.StockImports.FindAsync(id);
+                if (stockImport == null)
+                {
+                    return new NotFoundResult();
+                }
+                _context.StockImports.Remove(stockImport);
+                await _context.SaveChangesAsync();
+                return new OkObjectResult("Stock deleted successfully");
+            }
+            catch (Exception ex)
+            {
+                return new BadRequestObjectResult(ex) { StatusCode = 500 };
+            }
+        }
+
+        public async Task<IActionResult> UpdateStockStatusAsync(int id, string status)
+        {
+            try
+            {
+                var stockImport = await _context.StockImports.FindAsync(id);
+                if (stockImport == null)
+                {
+                    return new NotFoundResult();
+                }
+                stockImport.StockImportStatus = status;
+                await _context.SaveChangesAsync();
+                return new OkObjectResult("Stock status updated successfully");
+            }
+            catch (Exception ex)
+            {
+                return new BadRequestObjectResult(ex) { StatusCode = 500 };
+            }
         }
     }
 }

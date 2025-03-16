@@ -4,7 +4,7 @@
     {
         public int StockImportId { get; set; }
         public string? StockImportName { get; set; }
-        public int SupplierId { get; set; }
+        public string? SupplierName { get; set; }
         public decimal TotalPrice { get; set; }
         public string? StockImportStatus { get; set; }
         public DateTime ImportDate { get; set; }

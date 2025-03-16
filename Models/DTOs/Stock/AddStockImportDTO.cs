@@ -5,7 +5,6 @@
         public string StockImportName { get; set; }
         public int SupplierId { get; set; }
         public decimal TotalPrice { get; set; }
-        public string? StockImportStatus { get; set; }
         public DateTime ImportDate { get; set; }
         public List<AddStockImportItemsDTO>? StockImportItems { get; set; }
     }
