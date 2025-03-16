@@ -21,19 +21,19 @@ namespace electro_shop_backend.Models.Mappers
                 TimeStamp = returnEntity.TimeStamp
             };
         }
-        public static Return CreateReturnDto(this CreateReturnRequestDto requestDto)
-        {
-            return new Return
-            {
-                OrderId = requestDto.OrderId,
-                Reason = requestDto.Reason,
-                Detail = requestDto.Detail,
-                Status = requestDto.Status,
-                ReturnMethod = requestDto.ReturnMethod,
-                Address = requestDto.Address,
-                TimeStamp = requestDto.TimeStamp
-            };
-        }
+        //public static Return CreateReturnDto(this CreateReturnRequestDto requestDto)
+        //{
+        //    return new Return
+        //    {
+        //        OrderId = requestDto.OrderId,
+        //        Reason = requestDto.Reason,
+        //        Detail = requestDto.Detail,
+        //        Status = requestDto.Status,
+        //        ReturnMethod = requestDto.ReturnMethod,
+        //        Address = requestDto.Address,
+        //        TimeStamp = requestDto.TimeStamp
+        //    };
+        //}
         public static void UpdateReturnDto(this UpdateReturnDto requestDto, Return returnEntity)
         {
             returnEntity.OrderId = requestDto.OrderId;

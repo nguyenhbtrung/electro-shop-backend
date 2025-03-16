@@ -8,14 +8,20 @@ namespace electro_shop_backend.Models.DTOs.Return
         public int? OrderId { get; set; }
         [Required]
         public string? Reason { get; set; }
-        [Required]
         public string? Detail { get; set; }
         [Required]
-        public string? Status { get; set; }
+        public ReturnMethod ReturnMethod { get; set; }
         [Required]
-        public string? ReturnMethod { get; set; }
+        public List<ReturnItemDto> ReturnItems { get; set; } = [];
         [Required]
-        public string? Address { get; set; }
-        public DateTime? TimeStamp { get; set; }
+        public List<IFormFile> EvidenceImages { get; set; } = [];
+
+    }
+
+    public enum ReturnMethod
+    {
+        Refund,
+        Exchange,
+        Repair
     }
 }
