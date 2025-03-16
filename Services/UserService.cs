@@ -42,6 +42,7 @@ namespace electro_shop_backend.Services
                     var userRole = await _userManager.AddToRoleAsync(user, "User");
                     if (userRole.Succeeded)
                     {
+                        // Gửi email xác thực tài khoản chứ k login luôn
                         var token = await _tokenService.createToken(user);
                         var roles = await _userManager.GetRolesAsync(user);
                         var role = roles.FirstOrDefault();
@@ -54,12 +55,12 @@ namespace electro_shop_backend.Services
                     else
                     {
                         var result = await _userManager.DeleteAsync(user);
-                        return new ObjectResult(userRole.Errors) { StatusCode = 500 };
+                        return new BadRequestObjectResult(userRole.Errors);
                     }
                 }
                 else
                 {
-                    return new ObjectResult(createUser.Errors) { StatusCode = 500 };
+                    return new BadRequestObjectResult(createUser.Errors);
                 }
             }
             catch (Exception ex)
@@ -86,7 +87,8 @@ namespace electro_shop_backend.Services
                         }
                         else
                         {
-                            return new ObjectResult("User created but add role error: " + userRole.Errors) { StatusCode = 500 };
+                            var result = await _userManager.DeleteAsync(user);
+                            return new BadRequestObjectResult(userRole.Errors);
                         }
                     }
                     else
@@ -99,13 +101,13 @@ namespace electro_shop_backend.Services
                         else
                         {
                             var result = await _userManager.DeleteAsync(user);
-                            return new ObjectResult(userRole.Errors) { StatusCode = 500 };
+                            return new BadRequestObjectResult(userRole.Errors);
                         }
                     }
                 }
                 else
                 {
-                    return new ObjectResult("User create not success: " + createUser.Errors) { StatusCode = 500 };
+                    return new BadRequestObjectResult(createUser.Errors);
                 }
             }
             catch (Exception ex)
@@ -115,167 +117,242 @@ namespace electro_shop_backend.Services
         }
         public async Task<IActionResult> LoginAsync(LoginDTO loginDTO)
         {
-            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == loginDTO.UserName.ToLower());
-            if (user == null)
-            {
-                return new UnauthorizedObjectResult("UserName or Password is incorrect!");
-            }
-
-            var result = await _signInManager.CheckPasswordSignInAsync(user, loginDTO.Password, false);
-            if (!result.Succeeded)
-            {
-                return new UnauthorizedObjectResult("UserName or Password is incorrect!");
-            }
-
-            var roles = await _userManager.GetRolesAsync(user);
-            var role = roles.FirstOrDefault();
-
-            if (user.UserStatus == "Banned")
-            {
-                return new UnauthorizedObjectResult("User is banned");
-            }
-            var newUserDTO = UserMapper.ToNewUserDTOFromUser(user);
-            newUserDTO.Roles = role;
-            newUserDTO.Token = await _tokenService.createToken(user);
-
-            return new OkObjectResult(newUserDTO);
-        }
-
-        public async Task<IActionResult> GetAllUsersAsync()
-        {
-            var users = await _userManager.Users.ToListAsync();
-            var userDtos = new List<ViewUserForAdminDTO>();
-            foreach (var user in users)
-            {
-                var roles = await _userManager.GetRolesAsync(user);
-                var role = roles.FirstOrDefault();
-                var userForAdminDTO = UserMapper.ToViewUserForAdminDTOFromUser(user);
-                userForAdminDTO.Roles = role;
-                userDtos.Add(userForAdminDTO);
-            }
-            return new OkObjectResult(userDtos);
-        }
-
-        public async Task<IActionResult> GetUserAsync(string userName)
-        {
-            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == userName);
-            if (user == null)
-            {
-                return new UnauthorizedObjectResult("User not found");
-            }
-            var roles = await _userManager.GetRolesAsync(user);
-            var role = roles.FirstOrDefault();
-            var userForAdminDTO = UserMapper.ToViewUserForAdminDTOFromUser(user);
-            userForAdminDTO.Roles = role;
-            return new OkObjectResult(userForAdminDTO);
-        }
-
-        public async Task<IActionResult> UpdateUserAsync(UserForAdminDTO userForAdminDTO)
-        {
-            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == userForAdminDTO.UserName);
-            if (user == null)
-            {
-                return new UnauthorizedObjectResult("User not found");
-            }
-            user.FullName = userForAdminDTO.FullName;
-            user.Address = userForAdminDTO.Address;
-            user.PhoneNumber = userForAdminDTO.PhoneNumber;
-            user.AvatarImg = userForAdminDTO.AvatarImg;
-            var result = await _userManager.UpdateAsync(user);
-            if (result.Succeeded)
-            {
-                return new OkObjectResult("User updated successfully");
-            }
-            return new ObjectResult(result.Errors) { StatusCode = 500 };
-        }
-
-        public async Task<IActionResult> AdminUpdateUserAsync(UserForAdminDTO userForAdminDTO)
-        {
-            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == userForAdminDTO.UserName);
-            if (user == null)
-            {
-                return new UnauthorizedObjectResult("User not found");
-            }
-            user.FullName = userForAdminDTO.FullName;
-            user.Address = userForAdminDTO.Address;
-            user.PhoneNumber = userForAdminDTO.PhoneNumber;
-            user.Email = userForAdminDTO.Email;
-            user.EmailConfirmed = userForAdminDTO.EmailConfirmed;
-            user.AvatarImg = userForAdminDTO.AvatarImg;
-            user.UserStatus = userForAdminDTO.UserStatus;
-            user.AvatarImg = userForAdminDTO.AvatarImg;
-            var roles = await _userManager.GetRolesAsync(user);
-            var role = roles.FirstOrDefault();
-            if (role != userForAdminDTO.Roles)
-            {
-                var removeRole = await _userManager.RemoveFromRoleAsync(user, role);
-                if (!removeRole.Succeeded)
-                {
-                    return new ObjectResult(removeRole.Errors) { StatusCode = 500 };
-                }
-                var addRole = await _userManager.AddToRoleAsync(user, userForAdminDTO.Roles);
-                if (!addRole.Succeeded)
-                {
-                    return new ObjectResult(addRole.Errors) { StatusCode = 500 };
-                }
-            }
             try
             {
-                var removePassword = await _userManager.RemovePasswordAsync(user);
-                var addPassword = await _userManager.AddPasswordAsync(user, userForAdminDTO.Password);
+                var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == loginDTO.UserName.ToLower());
+                if (user == null)
+                {
+                    return new UnauthorizedObjectResult("UserName or Password is incorrect!");
+                }
+
+                //if (!user.EmailConfirmed)
+                //{
+                //    return new UnauthorizedObjectResult("Email not confirmed");
+                //}
+
+                var result = await _signInManager.CheckPasswordSignInAsync(user, loginDTO.Password, false);
+                if (!result.Succeeded)
+                {
+                    return new UnauthorizedObjectResult("UserName or Password is incorrect!");
+                }
+
+                var roles = await _userManager.GetRolesAsync(user);
+                var role = roles.FirstOrDefault();
+
+                if (user.UserStatus == "Banned")
+                {
+                    return new UnauthorizedObjectResult("User is banned");
+                }
+                var newUserDTO = UserMapper.ToNewUserDTOFromUser(user);
+                newUserDTO.Roles = role;
+                newUserDTO.Token = await _tokenService.createToken(user);
+
+                return new OkObjectResult(newUserDTO);
             }
             catch (Exception ex)
             {
                 return new ObjectResult(ex) { StatusCode = 500 };
             }
-            var result = await _userManager.UpdateAsync(user);
-            if (result.Succeeded)
+        }
+
+        public async Task<IActionResult> GetAllUsersAsync()
+        {
+            try
             {
-                return new OkObjectResult("User updated successfully");
+                var users = await _userManager.Users.ToListAsync();
+                var userDtos = new List<ViewUserForAdminDTO>();
+                foreach (var user in users)
+                {
+                    var roles = await _userManager.GetRolesAsync(user);
+                    var role = roles.FirstOrDefault();
+                    var userForAdminDTO = UserMapper.ToViewUserForAdminDTOFromUser(user);
+                    userForAdminDTO.Roles = role;
+                    userDtos.Add(userForAdminDTO);
+                }
+                return new OkObjectResult(userDtos);
             }
-            return new ObjectResult(result.Errors) { StatusCode = 500 };
+            catch (Exception ex)
+            {
+                return new ObjectResult(ex) { StatusCode = 500 };
+            }
+        }
+
+        public async Task<IActionResult> GetUserAsync(string userName)
+        {
+            try
+            {
+                var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == userName);
+                if (user == null)
+                {
+                    return new UnauthorizedObjectResult("User not found");
+                }
+                var roles = await _userManager.GetRolesAsync(user);
+                var role = roles.FirstOrDefault();
+                var userForAdminDTO = UserMapper.ToViewUserForAdminDTOFromUser(user);
+                userForAdminDTO.Roles = role;
+                return new OkObjectResult(userForAdminDTO);
+            }
+            catch (Exception ex)
+            {
+                return new ObjectResult(ex) { StatusCode = 500 };
+            }
+        }
+
+        public async Task<IActionResult> UpdateUserAsync(UserForAdminDTO userForAdminDTO)
+        {
+            try
+            {
+                var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == userForAdminDTO.UserName);
+                if (user == null)
+                {
+                    return new UnauthorizedObjectResult("User not found");
+                }
+                user.FullName = userForAdminDTO.FullName;
+                user.Address = userForAdminDTO.Address;
+                user.PhoneNumber = userForAdminDTO.PhoneNumber;
+                user.AvatarImg = userForAdminDTO.AvatarImg;
+                var result = await _userManager.UpdateAsync(user);
+                if (result.Succeeded)
+                {
+                    return new OkObjectResult("User updated successfully");
+                }
+                else
+                {
+                    return new BadRequestObjectResult(result.Errors);
+                }
+            }
+            catch (Exception ex)
+            {
+                return new ObjectResult(ex) { StatusCode = 500 };
+            }
+        }
+
+        public async Task<IActionResult> AdminUpdateUserAsync(UserForAdminDTO userForAdminDTO)
+        {
+            try
+            {
+
+                var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == userForAdminDTO.UserName);
+                if (user == null)
+                {
+                    return new UnauthorizedObjectResult("User not found");
+                }
+                user.FullName = userForAdminDTO.FullName;
+                user.Address = userForAdminDTO.Address;
+                user.PhoneNumber = userForAdminDTO.PhoneNumber;
+                user.Email = userForAdminDTO.Email;
+                user.EmailConfirmed = userForAdminDTO.EmailConfirmed;
+                user.AvatarImg = userForAdminDTO.AvatarImg;
+                user.UserStatus = userForAdminDTO.UserStatus;
+                user.AvatarImg = userForAdminDTO.AvatarImg;
+                var roles = await _userManager.GetRolesAsync(user);
+                var role = roles.FirstOrDefault();
+                if (role != userForAdminDTO.Roles)
+                {
+                    var removeRole = await _userManager.RemoveFromRoleAsync(user, role);
+                    if (!removeRole.Succeeded)
+                    {
+                        return new ObjectResult(removeRole.Errors) { StatusCode = 500 };
+                    }
+                    var addRole = await _userManager.AddToRoleAsync(user, userForAdminDTO.Roles);
+                    if (!addRole.Succeeded)
+                    {
+                        return new ObjectResult(addRole.Errors) { StatusCode = 500 };
+                    }
+                }
+                if (userForAdminDTO.Password != null)
+                {
+                    try
+                    {
+                        var removePassword = await _userManager.RemovePasswordAsync(user);
+                        var addPassword = await _userManager.AddPasswordAsync(user, userForAdminDTO.Password);
+                    }
+                    catch (Exception ex)
+                    {
+                        return new BadRequestObjectResult(ex);
+                    }
+                }
+                var result = await _userManager.UpdateAsync(user);
+                if (result.Succeeded)
+                {
+                    return new OkObjectResult("User updated successfully");
+                }
+                else
+                {
+                    return new BadRequestObjectResult(result.Errors);
+                }
+            }
+            catch (Exception ex)
+            {
+                return new ObjectResult(ex) { StatusCode = 500 };
+            }
         }
 
 
         public async Task<IActionResult> DeleteUserAsync(string userName)
         {
-            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == userName);
-            if (user == null)
+            try
             {
-                return new UnauthorizedObjectResult("User not found");
+                var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == userName);
+                if (user == null)
+                {
+                    return new UnauthorizedObjectResult("User not found");
+                }
+                var rating = await _context.Ratings.Where(r => r.UserId == user.Id).ToListAsync();
+                foreach (var r in rating)
+                {
+                    _context.Ratings.Remove(r);
+                }
+                var result = await _userManager.DeleteAsync(user);
+                if (result.Succeeded)
+                {
+                    return new OkObjectResult("User deleted successfully");
+                }
+                else
+                {
+                    return new BadRequestObjectResult(result.Errors);
+                }
             }
-            var rating = await _context.Ratings.Where(r => r.UserId == user.Id).ToListAsync();
-            foreach (var r in rating)
+            catch (Exception ex)
             {
-                _context.Ratings.Remove(r);
+                return new ObjectResult(ex) { StatusCode = 500 };
             }
-            var result = await _userManager.DeleteAsync(user);
-            if (result.Succeeded)
-            {
-                return new OkObjectResult("User deleted successfully");
-            }
-            return new ObjectResult(result.Errors) { StatusCode = 500 };
         }
 
         public async Task<IActionResult> ChangePasswordAsync(ChangePasswordDTO changePasswordDTO)
         {
-            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == changePasswordDTO.UserName);
-            if (user == null)
+            try
             {
-                return new UnauthorizedObjectResult("User not found");
+                var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == changePasswordDTO.UserName);
+                if (user == null)
+                {
+                    return new UnauthorizedObjectResult("User not found");
+                }
+                if (user.EmailConfirmed == false)
+                {
+                    return new UnauthorizedObjectResult("Email not confirmed");
+                }
+                if (user.Email == null)
+                {
+                    return new UnauthorizedObjectResult("User dont have an email!");
+                }
+                var result = await _userManager.ChangePasswordAsync(user, changePasswordDTO.CurrentPassword, changePasswordDTO.NewPassword);
+                if (result.Succeeded)
+                {
+                    await _emailService.SendEmailAsync(user.Email, "Mật khẩu của bạn đã được cập nhật – GTG Shop",
+                        $"<div style='font-family: Time New Roman; font-size: 18px; color: black;'>Xin chào {user.UserName},  " +
+                        "<br><br>Mật khẩu của bạn đã được thay đổi thành công. Nếu bạn đã thực hiện thay đổi này, không cần làm gì thêm.  " +
+                        "<br><br>Nếu bạn không thực hiện, vui lòng liên hệ ngay với chúng tôi tại dutshop66@gmail.com để bảo vệ tài khoản của bạn.  " +
+                        "<br><br>Trân trọng,  <br>GTG Shop." +
+                        "</div>");
+                    return new OkObjectResult("Password changed successfully");
+                }
+                else return new BadRequestObjectResult(result.Errors);
             }
-            var result = await _userManager.ChangePasswordAsync(user, changePasswordDTO.CurrentPassword, changePasswordDTO.NewPassword);
-            if (result.Succeeded)
+            catch (Exception ex)
             {
-                await _emailService.SendEmailAsync(user.Email, "Mật khẩu của bạn đã được cập nhật – GTG Shop",
-                    $"<div style='font-family: Time New Roman; font-size: 18px; color: black;'>Xin chào {user.UserName},  " +
-                    "<br><br>Mật khẩu của bạn đã được thay đổi thành công. Nếu bạn đã thực hiện thay đổi này, không cần làm gì thêm.  " +
-                    "<br><br>Nếu bạn không thực hiện, vui lòng liên hệ ngay với chúng tôi tại dutshop66@gmail.com để bảo vệ tài khoản của bạn.  " +
-                    "<br><br>Trân trọng,  <br>GTG Shop." +
-                    "</div>");
-                return new OkObjectResult("Password changed successfully");
+                return new ObjectResult(ex) { StatusCode = 500 };
             }
-            return new ObjectResult(result.Errors) { StatusCode = 500 };
         }
 
         public async Task<IActionResult> SendForgotPasswordEmail(string email)
@@ -305,17 +382,24 @@ namespace electro_shop_backend.Services
 
         public async Task<IActionResult> ResetPasswordAsync(ResetPasswordDTO resetPasswordDTO)
         {
-            var user = await _userManager.FindByEmailAsync(resetPasswordDTO.Email);
-            if (user == null)
+            try
             {
-                return new UnauthorizedObjectResult("Email not found");
+                var user = await _userManager.FindByEmailAsync(resetPasswordDTO.Email);
+                if (user == null)
+                {
+                    return new UnauthorizedObjectResult("Email not found");
+                }
+                var result = await _userManager.ResetPasswordAsync(user, resetPasswordDTO.Token, resetPasswordDTO.NewPassword);
+                if (result.Succeeded)
+                {
+                    return new OkObjectResult("Password reset successfully");
+                }
+                else return new BadRequestObjectResult(result.Errors);
             }
-            var result = await _userManager.ResetPasswordAsync(user, resetPasswordDTO.Token, resetPasswordDTO.NewPassword);
-            if (result.Succeeded)
+            catch (Exception ex)
             {
-                return new OkObjectResult("Password reset successfully");
+                return new ObjectResult(ex) { StatusCode = 500 };
             }
-            return new ObjectResult(result.Errors) { StatusCode = 500 };
         }
 
         public async Task<IActionResult> SendEmailConfirmedAsync(string email)
@@ -345,17 +429,24 @@ namespace electro_shop_backend.Services
 
         public async Task<IActionResult> ConfirmEmailAsync(string email, string token)
         {
-            var user = await _userManager.FindByEmailAsync(email);
-            if (user == null)
+            try
             {
-                return new BadRequestObjectResult("Email not found!");
+                var user = await _userManager.FindByEmailAsync(email);
+                if (user == null)
+                {
+                    return new BadRequestObjectResult("Email not found!");
+                }
+                var result = await _userManager.ConfirmEmailAsync(user, token);
+                if (result.Succeeded)
+                {
+                    return new OkObjectResult("Email confirmed successfully");
+                }
+                else return new BadRequestObjectResult(result.Errors);
             }
-            var result = await _userManager.ConfirmEmailAsync(user, token);
-            if (result.Succeeded)
+            catch (Exception ex)
             {
-                return new OkObjectResult("Email confirmed successfully");
+                return new ObjectResult(ex) { StatusCode = 500 };
             }
-            return new ObjectResult(result.Errors) { StatusCode = 500 };
         }
     }
 }
