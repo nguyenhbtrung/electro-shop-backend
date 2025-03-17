@@ -9,12 +9,10 @@ namespace electro_shop_backend.Models.Entities
     {
         [Key]
         public int AttributeId { get; set; }
-        [ForeignKey("Product")]
-        public int ProductId { get; set; }
-        public virtual Product Product { get; set; } = null!;
+
         [StringLength(100)]
         public string Name { get; set; } = null!;
-        public virtual ICollection<ProductAttributeDetail> Details { get; set; } = new List<ProductAttributeDetail>();
+        public virtual ICollection<AttributeDetail> Details { get; set; } = new List<AttributeDetail>();
     }
 
 }

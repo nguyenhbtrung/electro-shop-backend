@@ -165,11 +165,6 @@ public partial class ApplicationDbContext : IdentityDbContext<User>
                         j.IndexerProperty<int>("ProductId").HasColumnName("product_id");
                         j.IndexerProperty<int>("CategoryId").HasColumnName("category_id");
                     });
-            entity.HasMany(p => p.ProductAttributes)
-                .WithOne(pa => pa.Product)
-                .HasForeignKey(pa => pa.ProductId)
-                .OnDelete(DeleteBehavior.Cascade)
-                .HasConstraintName("FK_ProductAttribute_Product");
         });
         modelBuilder.Entity<ProductAttribute>(entity =>
         {
@@ -178,29 +173,18 @@ public partial class ApplicationDbContext : IdentityDbContext<User>
             entity.Property(e => e.Name)
                 .IsRequired()
                 .HasMaxLength(100);
-
-            entity.HasOne(e => e.Product)
-                .WithMany(p => p.ProductAttributes)
-                .HasForeignKey(e => e.ProductId)
-                .OnDelete(DeleteBehavior.Cascade)
-                .HasConstraintName("FK_ProductAttribute_Product");
         });
-        modelBuilder.Entity<ProductAttributeDetail>(entity =>
+        modelBuilder.Entity<AttributeDetail>(entity =>
         {
             entity.ToTable("ProductAttributeDetail");
             entity.HasKey(e => e.AttributeDetailId);
+
             entity.Property(e => e.Value)
                 .IsRequired()
                 .HasMaxLength(100);
 
             entity.Property(e => e.PriceModifier)
                 .HasColumnType("decimal(18, 2)");
-
-            entity.HasOne(e => e.ProductAttribute)
-                .WithMany(pa => pa.Details)
-                .HasForeignKey(e => e.ProductAttributeId)
-                .OnDelete(DeleteBehavior.Cascade)
-                .HasConstraintName("FK_ProductAttributeDetail_ProductAttribute");
         });
 
         modelBuilder.Entity<ProductDiscount>(entity =>
@@ -339,7 +323,6 @@ public partial class ApplicationDbContext : IdentityDbContext<User>
         {
             entity.HasKey(e => e.SupplierId).HasName("PK__Supplier__1A56936E");
         });
-
         OnModelCreatingPartial(modelBuilder);
     }
 

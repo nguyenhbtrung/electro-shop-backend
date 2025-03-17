@@ -52,9 +52,9 @@ public partial class Product
     [InverseProperty("Products")]
     public virtual ICollection<Category> Categories { get; set; } = new List<Category>();
 
-    public virtual ICollection<ProductAttribute> ProductAttributes { get; set; } = new List<ProductAttribute>();
-
     [ForeignKey("BrandId")]
     [InverseProperty("Products")]
     public virtual Brand? Brand { get; set; }
+    public virtual ICollection<AttributeDetail> ProductAttributeDetails { get; set; } = new List<AttributeDetail>();
+
 }

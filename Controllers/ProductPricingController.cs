@@ -15,11 +15,11 @@ namespace electro_shop_backend.Controllers
             _pricingService = pricingService;
         }
 
-        [HttpPost("calculate")]
-        public async Task<IActionResult> CalculatePrice([FromBody] PriceCalculationDto dto)
-        {
-            var result = await _pricingService.CalculatePriceAsync(dto.ProductId, dto.SelectedAttributeDetailIds);
-            return Ok(result);
-        }
+        //[HttpPost("calculate")]
+        //public async Task<IActionResult> CalculatePrice([FromBody] PriceCalculationDto dto)
+        //{
+        //    var result = await _pricingService.CalculatePriceAsync(dto.ProductId, dto.SelectedAttributeDetailIds);
+        //    return Ok(result);
+        //}
     }
 }

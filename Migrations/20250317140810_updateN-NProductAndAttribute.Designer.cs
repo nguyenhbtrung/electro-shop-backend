@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using electro_shop_backend.Data;
 
@@ -11,9 +12,11 @@ using electro_shop_backend.Data;
 namespace electro_shop_backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250317140810_updateN-NProductAndAttribute")]
+    partial class updateNNProductAndAttribute
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,21 +24,6 @@ namespace electro_shop_backend.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("AttributeDetailProduct", b =>
-                {
-                    b.Property<int>("ProductAttributeDetailsAttributeDetailId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ProductsProductId")
-                        .HasColumnType("int");
-
-                    b.HasKey("ProductAttributeDetailsAttributeDetailId", "ProductsProductId");
-
-                    b.HasIndex("ProductsProductId");
-
-                    b.ToTable("AttributeDetailProduct");
-                });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
@@ -202,30 +190,19 @@ namespace electro_shop_backend.Migrations
                     b.ToTable("Product_Category", (string)null);
                 });
 
-            modelBuilder.Entity("electro_shop_backend.Models.Entities.AttributeDetail", b =>
+            modelBuilder.Entity("ProductProductAttributeDetail", b =>
                 {
-                    b.Property<int>("AttributeDetailId")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("ProductAttributeDetailsAttributeDetailId")
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AttributeDetailId"));
-
-                    b.Property<decimal>("PriceModifier")
-                        .HasColumnType("decimal(18, 2)");
-
-                    b.Property<int>("ProductAttributeId")
+                    b.Property<int>("ProductsProductId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Value")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                    b.HasKey("ProductAttributeDetailsAttributeDetailId", "ProductsProductId");
 
-                    b.HasKey("AttributeDetailId");
+                    b.HasIndex("ProductsProductId");
 
-                    b.HasIndex("ProductAttributeId");
-
-                    b.ToTable("ProductAttributeDetail", (string)null);
+                    b.ToTable("ProductProductAttributeDetail");
                 });
 
             modelBuilder.Entity("electro_shop_backend.Models.Entities.Banner", b =>
@@ -633,6 +610,32 @@ namespace electro_shop_backend.Migrations
                     b.HasKey("AttributeId");
 
                     b.ToTable("ProductAttribute", (string)null);
+                });
+
+            modelBuilder.Entity("electro_shop_backend.Models.Entities.ProductAttributeDetail", b =>
+                {
+                    b.Property<int>("AttributeDetailId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AttributeDetailId"));
+
+                    b.Property<decimal>("PriceModifier")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<int>("ProductAttributeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("AttributeDetailId");
+
+                    b.HasIndex("ProductAttributeId");
+
+                    b.ToTable("ProductAttributeDetail", (string)null);
                 });
 
             modelBuilder.Entity("electro_shop_backend.Models.Entities.ProductDiscount", b =>
@@ -1211,21 +1214,6 @@ namespace electro_shop_backend.Migrations
                     b.ToTable("Voucher");
                 });
 
-            modelBuilder.Entity("AttributeDetailProduct", b =>
-                {
-                    b.HasOne("electro_shop_backend.Models.Entities.AttributeDetail", null)
-                        .WithMany()
-                        .HasForeignKey("ProductAttributeDetailsAttributeDetailId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("electro_shop_backend.Models.Entities.Product", null)
-                        .WithMany()
-                        .HasForeignKey("ProductsProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -1292,15 +1280,19 @@ namespace electro_shop_backend.Migrations
                         .HasConstraintName("FK__Product_C__produ__412EB0B6");
                 });
 
-            modelBuilder.Entity("electro_shop_backend.Models.Entities.AttributeDetail", b =>
+            modelBuilder.Entity("ProductProductAttributeDetail", b =>
                 {
-                    b.HasOne("electro_shop_backend.Models.Entities.ProductAttribute", "ProductAttribute")
-                        .WithMany("Details")
-                        .HasForeignKey("ProductAttributeId")
+                    b.HasOne("electro_shop_backend.Models.Entities.ProductAttributeDetail", null)
+                        .WithMany()
+                        .HasForeignKey("ProductAttributeDetailsAttributeDetailId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("ProductAttribute");
+                    b.HasOne("electro_shop_backend.Models.Entities.Product", null)
+                        .WithMany()
+                        .HasForeignKey("ProductsProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("electro_shop_backend.Models.Entities.Cart", b =>
@@ -1385,6 +1377,17 @@ namespace electro_shop_backend.Migrations
                         .HasConstraintName("FK__Product__BrandId__46E78A0C");
 
                     b.Navigation("Brand");
+                });
+
+            modelBuilder.Entity("electro_shop_backend.Models.Entities.ProductAttributeDetail", b =>
+                {
+                    b.HasOne("electro_shop_backend.Models.Entities.ProductAttribute", "ProductAttribute")
+                        .WithMany("Details")
+                        .HasForeignKey("ProductAttributeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ProductAttribute");
                 });
 
             modelBuilder.Entity("electro_shop_backend.Models.Entities.ProductDiscount", b =>

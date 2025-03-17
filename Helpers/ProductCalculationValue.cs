@@ -4,25 +4,23 @@ namespace electro_shop_backend.Helpers
 {
     public static class ProductCalculationValue
     {
-        public static decimal CalculateTotalModifier(Product product, List<int> selectedAttributeDetailIds)
-        {
-            decimal totalModifier = 0;
+        //public static decimal CalculateTotalModifier(Product product, List<int> selectedAttributeDetailIds)
+        //{
+        //    decimal totalModifier = 0;
 
-            // Giả sử rằng product.ProductAttributes đã được Include kèm theo AttributeDetails
-            foreach (var attribute in product.ProductAttributes)
-            {
-                // Tìm ProductAttributeDetail trong danh sách của attribute có ID nằm trong danh sách được chọn
-                var selectedDetail = attribute.Details
-                    .FirstOrDefault(detail => selectedAttributeDetailIds.Contains(detail.AttributeDetailId));
+        //    foreach (var attribute in product.ProductAttributes)
+        //    {
+        //        var selectedDetail = attribute.Details
+        //            .FirstOrDefault(detail => selectedAttributeDetailIds.Contains(detail.AttributeDetailId));
 
-                if (selectedDetail != null)
-                {
-                    totalModifier += selectedDetail.PriceModifier;
-                }
-            }
+        //        if (selectedDetail != null)
+        //        {
+        //            totalModifier += selectedDetail.PriceModifier;
+        //        }
+        //    }
 
-            return totalModifier;
-        }
+        //    return totalModifier;
+        //}
         public static (decimal discountedPrice, string discountType, decimal discountValue) CalculateDiscount(Product product, decimal totalModifier)
         {
             var now = DateTime.Now;
