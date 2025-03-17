@@ -59,7 +59,8 @@ public partial class ApplicationDbContext : IdentityDbContext<User>
     public virtual DbSet<StockImportDetail> StockImportDetails { get; set; }
 
     public virtual DbSet<Supplier> Suppliers { get; set; }
-
+    public virtual DbSet<ProductAttribute> ProductAttributes { get; set; }
+    public virtual DbSet<AttributeDetail> ProductAttributeDetails { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

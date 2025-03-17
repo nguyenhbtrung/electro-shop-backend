@@ -13,7 +13,7 @@ namespace electro_shop_backend.Models.Entities
         public string Value { get; set; } = null!;
         [Column(TypeName = "decimal(18, 2)")]
         public decimal PriceModifier { get; set; }
-
+        public int ProductAttributeId { get; set; }
         [ForeignKey("ProductAttributeId")]
         public virtual ProductAttribute ProductAttribute { get; set; } = null!;
         public virtual ICollection<Product> Products { get; set; } = new List<Product>();
