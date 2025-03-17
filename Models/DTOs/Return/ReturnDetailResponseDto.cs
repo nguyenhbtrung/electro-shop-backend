@@ -4,6 +4,7 @@ namespace electro_shop_backend.Models.DTOs.Return
     public class ReturnDetailResponseDto
     {
         public int ReturnId { get; set; }
+        public int? OrderId { get; set; }
         public string? Reason { get; set; }
         public string? Detail { get; set; }
         public string? Status { get; set; }

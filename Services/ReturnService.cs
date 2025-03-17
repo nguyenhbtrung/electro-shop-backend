@@ -165,6 +165,7 @@ namespace electro_shop_backend.Services
                 .Select(r => new ReturnDetailResponseDto
                 {
                     ReturnId = r.ReturnId,
+                    OrderId = r.OrderId,
                     Reason = r.Reason,
                     Detail = r.Detail,
                     Status = r.Status,
