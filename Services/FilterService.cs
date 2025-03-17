@@ -37,7 +37,8 @@ namespace electro_shop_backend.Services
 
                 if (processedName.Contains(processedQuery))
                 {
-                    var (discountedPrice, discountType, discountValue) = ProductCalculationValue.CalculateDiscount(product);
+                    decimal totalModifier = 0;
+                    var (discountedPrice, discountType, discountValue) = ProductCalculationValue.CalculateDiscount(product,totalModifier);
                     double avgRating = ProductCalculationValue.CalculateAverageRating(product);
 
                     var dto = new ProductCardDto
@@ -107,9 +108,10 @@ namespace electro_shop_backend.Services
 
             if (minPrice.HasValue || maxPrice.HasValue)
             {
+                decimal totalModifier = 0;
                 products = products.Where(product =>
                 {
-                    var (discountedPrice, discountType, discountValue) = ProductCalculationValue.CalculateDiscount(product);
+                    var (discountedPrice, discountType, discountValue) = ProductCalculationValue.CalculateDiscount(product, totalModifier);
                     bool meetsMin = !minPrice.HasValue || discountedPrice >= minPrice.Value;
                     bool meetsMax = !maxPrice.HasValue || discountedPrice <= maxPrice.Value;
                     return meetsMin && meetsMax;
@@ -155,8 +157,9 @@ namespace electro_shop_backend.Services
                     p.Ratings.Average(r => r.RatingScore) <= maxRating.Value).ToList();
             }
             var productDtos = products.Select(product =>
-            {
-                var (discountedPrice, discountType, discountValue) = ProductCalculationValue.CalculateDiscount(product);
+            {   
+                decimal totalModifier = 0;
+                var (discountedPrice, discountType, discountValue) = ProductCalculationValue.CalculateDiscount(product,totalModifier);
                 double avgRating = ProductCalculationValue.CalculateAverageRating(product);
                 return new ProductCardDto
                 {
@@ -223,7 +226,8 @@ namespace electro_shop_backend.Services
             {
                 products = products.Where(product =>
                 {
-                    var (discountedPrice, discountType, discountValue) = ProductCalculationValue.CalculateDiscount(product);
+                    decimal totalModifier = 0;
+                    var (discountedPrice, discountType, discountValue) = ProductCalculationValue.CalculateDiscount(product, totalModifier);
                     bool meetsMin = !minPrice.HasValue || discountedPrice >= minPrice.Value;
                     bool meetsMax = !maxPrice.HasValue || discountedPrice <= maxPrice.Value;
                     return meetsMin && meetsMax;
@@ -270,7 +274,8 @@ namespace electro_shop_backend.Services
             }
             var productDtos = products.Select(product =>
             {
-                var (discountedPrice, discountType, discountValue) = ProductCalculationValue.CalculateDiscount(product);
+                decimal totalModifier = 0;
+                var (discountedPrice, discountType, discountValue) = ProductCalculationValue.CalculateDiscount(product, totalModifier);
                 double avgRating = ProductCalculationValue.CalculateAverageRating(product);
                 return new ProductCardDto
                 {

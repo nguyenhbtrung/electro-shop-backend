@@ -142,7 +142,8 @@ namespace electro_shop_backend.Services
 
             var productDtos = products.Select(product =>
             {
-                var (discountedPrice, discountType, discountValue) = ProductCalculationValue.CalculateDiscount(product);
+                decimal totalModifier = 0;
+                var (discountedPrice, discountType, discountValue) = ProductCalculationValue.CalculateDiscount(product, totalModifier);
                 double avgRating = ProductCalculationValue.CalculateAverageRating(product);
                 return new ProductCardDto
                 {

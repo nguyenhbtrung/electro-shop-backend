@@ -32,6 +32,7 @@ namespace electro_shop_backend.Services
                 .ToListAsync();
             var productDtos = products.Select(p =>
             {
+                decimal totalModifier = 0;
                 var productDto = ProductMapper.ToProductDto(p);
                 productDto.ProductImages = p.ProductImages
                     .Select(ProductImageMapper.ToProductImageDto)
@@ -40,7 +41,7 @@ namespace electro_shop_backend.Services
                     .Select(CategoryMapper.ToCategoryIdDto)
                     .ToList();
                 productDto.Brand = p.Brand != null ? BrandMapper.ToBrandDto(p.Brand) : null;
-                var (discountedPrice, discountType, discountValue) = ProductCalculationValue.CalculateDiscount(p);
+                var (discountedPrice, discountType, discountValue) = ProductCalculationValue.CalculateDiscount(p, totalModifier);
                 productDto.DiscountValue = discountValue;
                 productDto.DiscountType = discountType;
                 productDto.DiscountedPrice = discountedPrice;
@@ -63,6 +64,7 @@ namespace electro_shop_backend.Services
             .FirstOrDefaultAsync(p => p.ProductId == productId); 
 
             if (product == null) return null;
+            decimal totalModifier = 0;
             var productDto = ProductMapper.ToProductDto(product);
             productDto.ProductImages = product.ProductImages
                 .Select(ProductImageMapper.ToProductImageDto)
@@ -70,7 +72,7 @@ namespace electro_shop_backend.Services
             productDto.Categories = product.Categories
                 .Select(CategoryMapper.ToCategoryIdDto)
                 .ToList();
-            var (discountedPrice, discountType, discountValue) = ProductCalculationValue.CalculateDiscount(product);
+            var (discountedPrice, discountType, discountValue) = ProductCalculationValue.CalculateDiscount(product, totalModifier);
             productDto.DiscountValue = discountValue;
             productDto.DiscountType = discountType;
             productDto.DiscountedPrice = discountedPrice;
@@ -165,7 +167,8 @@ namespace electro_shop_backend.Services
 
             var productDtos = products.Select(product =>
             {
-                var (discountedPrice, discountType, discountValue) = ProductCalculationValue.CalculateDiscount(product);
+                decimal totalModifier = 0;
+                var (discountedPrice, discountType, discountValue) = ProductCalculationValue.CalculateDiscount(product, totalModifier);
                 double avgRating = ProductCalculationValue.CalculateAverageRating(product);
 
                 return new ProductCardDto
@@ -209,7 +212,8 @@ namespace electro_shop_backend.Services
 
             var productDtos = products.Select(product =>
             {
-                var (discountedPrice, discountType, discountValue) = ProductCalculationValue.CalculateDiscount(product);
+                decimal totalModifier = 0;
+                var (discountedPrice, discountType, discountValue) = ProductCalculationValue.CalculateDiscount(product, totalModifier);
                 double avgRating = ProductCalculationValue.CalculateAverageRating(product);
 
                 return new ProductCardDto
