@@ -14,31 +14,27 @@ public class ProductPricingService : IProductPricingService
         _context = context;
     }
 
-    //public async Task<PriceResultDto> CalculatePriceAsync(int productId, List<int> selectedAttributeDetailIds)
-    //{
-    //    var product = await _context.Products
-    //        .Include(p => p.ProductAttributes)
-    //            .ThenInclude(a => a.Details)
-    //        .Include(p => p.ProductDiscounts)
-    //            .ThenInclude(pd => pd.Discount)
-    //        .FirstOrDefaultAsync(p => p.ProductId == productId);
+    public async Task<PriceResultDto> CalculatePriceAsync(int productId, List<int> selectedAttributeDetailIds)
+    {
+        var product = await _context.Products
+            .Include(p => p.ProductAttributeDetails)
+            .Include(p => p.ProductDiscounts)
+                .ThenInclude(pd => pd.Discount)
+            .FirstOrDefaultAsync(p => p.ProductId == productId);
 
-    //    if (product == null)
-    //    {
-    //        throw new Exception("Sản phẩm không tồn tại.");
-    //    }
+        if (product == null)
+        {
+            throw new Exception("Sản phẩm không tồn tại.");
+        }
+        var (discountedPrice, discountType, discountValue) = ProductCalculationValue.CalculateDiscount(product, selectedAttributeDetailIds);
+        decimal originalPrice = product.Price;
 
-    //    decimal totalModifier = ProductCalculationValue.CalculateTotalModifier(product, selectedAttributeDetailIds);
-
-    //    var (discountedPrice, discountType, discountValue) = ProductCalculationValue.CalculateDiscount(product, totalModifier);
-    //    decimal originalPrice = product.Price + totalModifier;
-
-    //    return new PriceResultDto
-    //    {
-    //        OriginalPrice = originalPrice,
-    //        DiscountedPrice = discountedPrice,
-    //        DiscountType = discountType,
-    //        DiscountValue = discountValue
-    //    };
-    //}
+        return new PriceResultDto
+        {
+            OriginalPrice = originalPrice,
+            DiscountedPrice = discountedPrice,
+            DiscountType = discountType,
+            DiscountValue = discountValue
+        };
+    }
 }

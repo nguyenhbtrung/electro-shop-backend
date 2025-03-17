@@ -4,25 +4,13 @@ namespace electro_shop_backend.Helpers
 {
     public static class ProductCalculationValue
     {
-        //public static decimal CalculateTotalModifier(Product product, List<int> selectedAttributeDetailIds)
-        //{
-        //    decimal totalModifier = 0;
-
-        //    foreach (var attribute in product.ProductAttributes)
-        //    {
-        //        var selectedDetail = attribute.Details
-        //            .FirstOrDefault(detail => selectedAttributeDetailIds.Contains(detail.AttributeDetailId));
-
-        //        if (selectedDetail != null)
-        //        {
-        //            totalModifier += selectedDetail.PriceModifier;
-        //        }
-        //    }
-
-        //    return totalModifier;
-        //}
-        public static (decimal discountedPrice, string discountType, decimal discountValue) CalculateDiscount(Product product, decimal totalModifier)
+        public static (decimal discountedPrice, string discountType, decimal discountValue) CalculateDiscount(Product product, List<int> selectedAttributeDetailIds)
         {
+            decimal totalModifier = product.ProductAttributeDetails
+                .Where(detail => selectedAttributeDetailIds.Contains(detail.AttributeDetailId))
+                .Sum(detail => detail.PriceModifier);
+            decimal basePrice = product.Price + totalModifier;
+
             var now = DateTime.Now;
             var effectiveDiscount = product.ProductDiscounts
                 .Where(pd => pd.Discount != null &&
@@ -33,7 +21,6 @@ namespace electro_shop_backend.Helpers
 
             string discountType = string.Empty;
             decimal discountValue = 0;
-            decimal basePrice = product.Price + totalModifier;
             decimal discountedPrice = basePrice;
 
             if (effectiveDiscount != null)
@@ -44,12 +31,12 @@ namespace electro_shop_backend.Helpers
                 // Nếu discount theo phần trăm
                 if (string.Equals(discountType, "Percentage", StringComparison.OrdinalIgnoreCase))
                 {
-                    discountedPrice = product.Price * (1 - discountValue / 100);
+                    discountedPrice = basePrice * (1 - discountValue / 100);
                 }
                 // Nếu discount theo số tiền cố định
                 else if (string.Equals(discountType, "Flat Amount", StringComparison.OrdinalIgnoreCase))
                 {
-                    discountedPrice = product.Price - discountValue;
+                    discountedPrice = basePrice - discountValue;
                 }
 
                 // Đảm bảo giá không âm
