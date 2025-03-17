@@ -165,6 +165,42 @@ public partial class ApplicationDbContext : IdentityDbContext<User>
                         j.IndexerProperty<int>("ProductId").HasColumnName("product_id");
                         j.IndexerProperty<int>("CategoryId").HasColumnName("category_id");
                     });
+            entity.HasMany(p => p.ProductAttributes)
+                .WithOne(pa => pa.Product)
+                .HasForeignKey(pa => pa.ProductId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK_ProductAttribute_Product");
+        });
+        modelBuilder.Entity<ProductAttribute>(entity =>
+        {
+            entity.ToTable("ProductAttribute");
+            entity.HasKey(e => e.AttributeId);
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            entity.HasOne(e => e.Product)
+                .WithMany(p => p.ProductAttributes)
+                .HasForeignKey(e => e.ProductId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK_ProductAttribute_Product");
+        });
+        modelBuilder.Entity<ProductAttributeDetail>(entity =>
+        {
+            entity.ToTable("ProductAttributeDetail");
+            entity.HasKey(e => e.AttributeDetailId);
+            entity.Property(e => e.Value)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            entity.Property(e => e.PriceModifier)
+                .HasColumnType("decimal(18, 2)");
+
+            entity.HasOne(e => e.ProductAttribute)
+                .WithMany(pa => pa.Details)
+                .HasForeignKey(e => e.ProductAttributeId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK_ProductAttributeDetail_ProductAttribute");
         });
 
         modelBuilder.Entity<ProductDiscount>(entity =>
