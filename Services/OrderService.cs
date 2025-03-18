@@ -63,6 +63,8 @@ namespace electro_shop_backend.Services
                 throw new NotFoundException("Cartitem not found");
             }
 
+            var orderItems = new List<OrderItem>();
+
             foreach (var cartitem in cartitems)
             {
                 if (cartitem.Quantity > cartitem.Product!.Stock)
@@ -79,10 +81,11 @@ namespace electro_shop_backend.Services
                     Quantity = cartitem.Quantity,
                     Price = cartitem.Product!.Price,
                 };
-                totalPrice =+orderItem.Price * orderItem.Quantity;
+                totalPrice += orderItem.Price * orderItem.Quantity;
                 cartitem.Cart!.CartItems.Remove(cartitem);
                 _context.OrderItems.Add(orderItem);
                 _context.Products.Update(cartitem.Product);
+                orderItems.Add(orderItem);
             }
 
             decimal discountAmount = 0;
@@ -111,7 +114,7 @@ namespace electro_shop_backend.Services
                 Total = finalTotal,
                 Status = "Pending",
                 TimeStamp = DateTime.UtcNow,
-                //OrderItems = orderItems
+                OrderItems = orderItems
             };
 
             _context.Orders.Add(order);
