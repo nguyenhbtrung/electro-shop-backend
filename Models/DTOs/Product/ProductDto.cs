@@ -20,7 +20,7 @@ namespace electro_shop_backend.Models.DTOs.Product
 
         public List<ProductImageDto> ProductImages { get; set; } = new();
         public List<CategoryIdDto> Categories { get; set; } = new();
-        public List<AttributeDetail> ProductAttributeDetail{ get; set; } = new();
+        public List<ProductAttributeDetailDto> ProductAttributeDetail { get; set; } = new List<ProductAttributeDetailDto>();
         public BrandDto? Brand { get; set; }
     }
 }

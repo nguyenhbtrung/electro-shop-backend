@@ -1,6 +1,7 @@
 ﻿using electro_shop_backend.Data;
 using electro_shop_backend.Models.DTOs;
 using electro_shop_backend.Models.DTOs.Product;
+using electro_shop_backend.Models.DTOs.ProductAttribute;
 using electro_shop_backend.Models.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -130,7 +131,7 @@ namespace electro_shop_backend.Controllers
 
         [HttpPost("{attributeId}/details")]
         [Authorize(Policy = "AdminPolicy")]
-        public async Task<IActionResult> CreateAttributeDetail(int attributeId, [FromBody] ProductAttributeDetailDto detailDto)
+        public async Task<IActionResult> CreateAttributeDetail(int attributeId, [FromBody] CreateProductAttributeDetailDto detailDto)
         {
             var attribute = await _context.ProductAttributes.FindAsync(attributeId);
             if (attribute == null)
@@ -151,7 +152,7 @@ namespace electro_shop_backend.Controllers
 
         [HttpPut("{attributeId}/details/{detailId}")]
         [Authorize(Policy = "AdminPolicy")]
-        public async Task<IActionResult> UpdateAttributeDetail(int attributeId, int detailId, [FromBody] ProductAttributeDetailDto detailDto)
+        public async Task<IActionResult> UpdateAttributeDetail(int attributeId, int detailId, [FromBody] CreateProductAttributeDetailDto detailDto)
         {
             var detail = await _context.ProductAttributeDetails
                 .FirstOrDefaultAsync(d => d.ProductAttributeId == attributeId && d.AttributeDetailId == detailId);
