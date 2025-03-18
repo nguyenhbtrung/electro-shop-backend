@@ -58,6 +58,31 @@ namespace electro_shop_backend.Controllers
             }
         }
 
+        [HttpGet("history")]
+        [Authorize]
+        public async Task<IActionResult> GetUserReturnHistory()
+        {
+            var username = User.GetUsername();
+            var user = await _userManager.FindByNameAsync(username);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            try
+            {
+                var result = await _returnService.GetUserReturnHistoryAsync(user.Id);
+                return Ok(result);
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> CreateReturn([FromForm] CreateReturnRequestDto requestDto)

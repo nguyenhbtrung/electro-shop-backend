@@ -268,6 +268,32 @@ namespace electro_shop_backend.Services
             //}
             //return existingReturn;
         }
+
+        public async Task<List<ReturnUserHistoryDto>> GetUserReturnHistoryAsync(string userId)
+        {
+            var returns = await _context.Returns
+                .AsNoTracking()
+                .Include(r => r.Order)
+                .Include(r => r.ReturnItems)
+                .ThenInclude(ri => ri.OrderItem)
+                .Where(r => r.Order!.UserId == userId)
+                .Select(r => new ReturnUserHistoryDto
+                {
+                    ReturnId = r.ReturnId,
+                    Status = r.Status,
+                    ReturnMethod = r.ReturnMethod,
+                    TimeStamp = r.TimeStamp,
+                    ReturnProducts = r.ReturnItems.Select(ri => new ReturnProductDto
+                    {
+                        ProductId = ri.OrderItem!.ProductId,
+                        Name = ri.OrderItem.ProductName,
+                        ReturnQuantity = ri.ReturnQuantity
+                    }).ToList()
+                })
+                .ToListAsync();
+
+            return returns;
+        }
     }
 
     public enum ReturnStatus
