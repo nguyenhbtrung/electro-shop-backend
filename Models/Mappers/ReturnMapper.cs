@@ -44,5 +44,16 @@ namespace electro_shop_backend.Models.Mappers
             returnEntity.Address = requestDto.Address;
             returnEntity.TimeStamp = requestDto.TimeStamp;
         }
+
+        public static ReturnStatusHistoryDto ToReturnStatusHistoryDto (this ReturnHistory returnHistory)
+        {
+            return new ReturnStatusHistoryDto
+            {
+                ReturnHistoryId = returnHistory.ReturnHistoryId,
+                ReturnId = returnHistory.ReturnHistoryId,
+                Status = returnHistory.Status,
+                ChangedAt = returnHistory.ChangedAt
+            };
+        }
     }
 }

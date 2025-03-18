@@ -14,11 +14,13 @@ namespace electro_shop_backend.Services
     {
         private readonly ApplicationDbContext _context;
         private readonly IImageService _imageService;
+        private readonly IReturnStatusHistoryService _returnStatusHistoryService;
 
-        public ReturnService(ApplicationDbContext context, IImageService imageService)
+        public ReturnService(ApplicationDbContext context, IImageService imageService, IReturnStatusHistoryService returnStatusHistoryService)
         {
             _context = context;
             _imageService = imageService;
+            _returnStatusHistoryService = returnStatusHistoryService;
         }
 
         public async Task<List<AllReturnDto>> GetAllReturnAsync()
@@ -113,6 +115,12 @@ namespace electro_shop_backend.Services
                 }
                 await _context.Returns.AddAsync(newReturn);
                 await _context.SaveChangesAsync();
+                await _returnStatusHistoryService.CreateReturnStatusHistoryAsync(new CreateReturnStatusHistoryRequestDto
+                {
+                    ReturnId = newReturn.ReturnId,
+                    Status = ReturnStatus.Pending,
+                    ChangedAt = newReturn.TimeStamp
+                });
                 return new CreateReturnResponseDto
                 {
                     ReturnId = newReturn.ReturnId,
