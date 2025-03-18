@@ -1,6 +1,7 @@
 ﻿using electro_shop_backend.Data;
 using electro_shop_backend.Models.DTOs.Stock;
 using electro_shop_backend.Models.Entities;
+using electro_shop_backend.Models.Mappers;
 using electro_shop_backend.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -45,7 +46,12 @@ namespace electro_shop_backend.Services
         public async Task<IActionResult> GetAllSuppliersAsync()
         {
             var suppliers = await _context.Suppliers.ToListAsync();
-            return new OkObjectResult(suppliers);
+            var suppliersDTO = new List<SupplierDTO>();
+            foreach (var supplier in suppliers)
+            {
+                suppliersDTO.Add(supplier.ToSupplierDTOFromSupplier());
+            }
+            return new OkObjectResult(suppliersDTO);
         }
         public async Task<IActionResult> GetSupplierAsync(int id)
         {
