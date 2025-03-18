@@ -18,6 +18,7 @@ namespace electro_shop_backend.Services.Interfaces
         Task<IActionResult> ResetPasswordAsync(ResetPasswordDTO resetPasswordDTO);
         Task<IActionResult> ConfirmEmailAsync(string email, string token);
         Task<IActionResult> SendEmailConfirmedAsync(string email);
+        Task<IActionResult> UpdateAvatarAsync(string userName, string url);
 
     }
 }

@@ -1,6 +1,5 @@
 ﻿using electro_shop_backend.Models.DTOs.Image;
 using electro_shop_backend.Services.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace electro_shop_backend.Controllers
@@ -44,7 +43,7 @@ namespace electro_shop_backend.Controllers
         }
 
         [HttpDelete("delete-by-url")]
-        public async Task<IActionResult> DeleteImageByUrl([FromBody] string imageUrl)
+        public async Task<IActionResult> DeleteImageByUrl(string imageUrl)
         {
             if (string.IsNullOrEmpty(imageUrl))
             {

@@ -165,5 +165,21 @@ namespace electro_shop_backend.Controllers
             }
             return await _userService.ConfirmEmailAsync(email, token);
         }
+
+        [HttpPut("user/avatar")]
+        [Authorize(Policy = "UserPolicy")]
+        public async Task<IActionResult> UpdateAvatar(string url)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var authenticatedUserName = User?.Identity?.Name;
+            if (authenticatedUserName == null)
+            {
+                return Unauthorized("Invalid username!");
+            }
+            return await _userService.UpdateAvatarAsync(authenticatedUserName, url);
+        }
     }
 }

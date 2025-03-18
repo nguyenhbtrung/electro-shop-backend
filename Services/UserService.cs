@@ -447,5 +447,31 @@ namespace electro_shop_backend.Services
                 return new ObjectResult(ex) { StatusCode = 500 };
             }
         }
+
+        public async Task<IActionResult> UpdateAvatarAsync(string userName, string url)
+        {
+            try
+            {
+                var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == userName);
+                if (user == null)
+                {
+                    return new UnauthorizedObjectResult("User not found");
+                }
+                user.AvatarImg = url;
+                var result = await _userManager.UpdateAsync(user);
+                if (result.Succeeded)
+                {
+                    return new OkObjectResult("Avatar updated successfully");
+                }
+                else
+                {
+                    return new BadRequestObjectResult(result.Errors);
+                }
+            }
+            catch (Exception ex)
+            {
+                return new ObjectResult(ex) { StatusCode = 500 };
+            }
+        }
     }
 }
