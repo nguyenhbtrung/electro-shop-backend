@@ -22,7 +22,7 @@ namespace electro_shop_backend.Controllers
             _productService = productService;
             _productimageService = productImageService;
             _productAttributeService = productAttributeService;
-    }
+        }
 
         [HttpGet]
         public async Task<IActionResult> GetAllProducts()

@@ -2,7 +2,11 @@
 {
     public class ProductAttributeDetailDto
     {
-        public string Value { get; set; } 
+        public int AttributeDetailId { get; set; }
+        public string Value { get; set; } = string.Empty;
         public decimal PriceModifier { get; set; }
+        public int ProductAttributeId { get; set; }
+        public string ProductAttributeName { get; set; } = string.Empty;
+
     }
 }
