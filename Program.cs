@@ -126,7 +126,8 @@ builder.Services.AddScoped<IImageService, ImageService>();
 builder.Services.AddScoped<ISupplierService, SupplierService>();
 builder.Services.AddScoped<IStockService, StockService>();
 builder.Services.AddScoped<IReturnStatusHistoryService, ReturnStatusHistoryService>();
-
+builder.Services.AddScoped<IProductAttributeService, ProductAttributeService>();
+builder.Services.AddScoped<IProductPricingService, ProductPricingService>();
 var emailConfig = builder.Configuration
     .GetSection("EmailConfiguration")
     .Get<EmailConfiguration>();

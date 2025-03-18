@@ -5,6 +5,8 @@ using electro_shop_backend.Models.DTOs.ProductImage;
 using electro_shop_backend.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using electro_shop_backend.Helpers;
+using Microsoft.EntityFrameworkCore;
+using electro_shop_backend.Services;
 
 namespace electro_shop_backend.Controllers
 {
@@ -14,12 +16,13 @@ namespace electro_shop_backend.Controllers
     {
         private readonly IProductService _productService;
         private readonly IProductImageService _productimageService;
-
-        public ProductController(IProductService productService, IProductImageService productImageService)
+        private readonly IProductAttributeService _productAttributeService;
+        public ProductController(IProductService productService, IProductImageService productImageService, IProductAttributeService productAttributeService)
         {
             _productService = productService;
             _productimageService = productImageService;
-        }
+            _productAttributeService = productAttributeService;
+    }
 
         [HttpGet]
         public async Task<IActionResult> GetAllProducts()
@@ -147,6 +150,11 @@ namespace electro_shop_backend.Controllers
             {
                 return StatusCode(500, "Lỗi khi xóa ảnh sản phẩm.");
             }
+        }
+        [HttpPost("{productId}/addAttributeId")]
+        public async Task<IActionResult> AddAttributeDetails(int productId, [FromBody] AddAttributeDto dto)
+        {
+            return await _productAttributeService.AssignAttributeDetails(productId, dto.AttributeDetailId);
         }
     }
 }
