@@ -30,7 +30,7 @@ namespace electro_shop_backend.Controllers
 
         [HttpGet]
         [Authorize(Policy = "UserPolicy")]
-        public async Task<IActionResult> GetProductViewHistories([FromQuery] HistoryQuery historyQuery)
+        public async Task<IActionResult> GetProductViewHistories()
         {
             var username = User.GetUsername();
             var user = await _userManager.FindByNameAsync(username);
@@ -40,7 +40,7 @@ namespace electro_shop_backend.Controllers
             }
             try
             {
-                var result = await _productViewHistoryService.GetProductViewHistoriesAsync(user.Id, historyQuery);
+                var result = await _productViewHistoryService.GetProductViewHistoriesAsync(user.Id);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -53,7 +53,7 @@ namespace electro_shop_backend.Controllers
         [HttpGet("{historyId}")]
         public async Task<IActionResult> GetProductViewHistoryById([FromRoute] int historyId)
         {
-            return Ok("Get");
+            return Ok("Get");  //ch làm, có thể k dùng
         }
 
         [HttpPost("{productId}")]

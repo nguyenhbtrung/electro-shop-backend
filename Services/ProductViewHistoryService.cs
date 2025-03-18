@@ -91,11 +91,10 @@ namespace electro_shop_backend.Services
             }
         }
 
-        public async Task<ICollection<ProductViewHistoryDto>> GetProductViewHistoriesAsync(string userId, HistoryQuery historyQuery)
+        public async Task<ICollection<ProductViewHistoryDto>> GetProductViewHistoriesAsync(string userId)
         {
             try
             {
-                int skipNumber = (historyQuery.PageNumber - 1) * historyQuery.PageSize;
                 var histories = await _context.ProductViewHistories
                     .AsNoTracking()
                     .Where(h => h.UserId == userId)
@@ -108,8 +107,6 @@ namespace electro_shop_backend.Services
 
                     })
                     .OrderByDescending(h => h.TimeStamp)
-                    .Skip(skipNumber)
-                    .Take(historyQuery.PageSize)
                     .ToListAsync();
 
                 return histories;
