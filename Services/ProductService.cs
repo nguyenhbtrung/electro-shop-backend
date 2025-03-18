@@ -1,8 +1,10 @@
 ﻿using electro_shop_backend.Data;
 using electro_shop_backend.Exceptions;
 using electro_shop_backend.Helpers;
+using electro_shop_backend.Models.DTOs;
 using electro_shop_backend.Models.DTOs.Discount;
 using electro_shop_backend.Models.DTOs.Product;
+using electro_shop_backend.Models.DTOs.ProductAttribute;
 using electro_shop_backend.Models.Entities;
 using electro_shop_backend.Models.Mappers;
 using electro_shop_backend.Services.Interfaces;
@@ -61,6 +63,7 @@ namespace electro_shop_backend.Services
             .Include(p=>p.Ratings)
             .Include(p => p.ProductDiscounts)
                 .ThenInclude(pd => pd.Discount)
+            .Include(p=>p.ProductAttributeDetails)
             .FirstOrDefaultAsync(p => p.ProductId == productId); 
 
             if (product == null) return null;
@@ -72,6 +75,14 @@ namespace electro_shop_backend.Services
             productDto.Categories = product.Categories
                 .Select(CategoryMapper.ToCategoryIdDto)
                 .ToList();
+            productDto.ProductAttributeDetail = product.ProductAttributeDetails
+                .Select(d => new AttributeDetail
+                {
+                    AttributeDetailId = d.AttributeDetailId,
+                    Value = d.Value,
+                    PriceModifier = d.PriceModifier,
+                    ProductAttributeId = d.ProductAttributeId
+                }).ToList();
             var (discountedPrice, discountType, discountValue) = ProductCalculationValue.CalculateDiscount(product, selectedAttributeDetailIds);
             productDto.DiscountValue = discountValue;
             productDto.DiscountType = discountType;

@@ -17,9 +17,10 @@ namespace electro_shop_backend.Models.DTOs.Product
         public double AverageRating { get; set; }
 
         public int Stock { get; set; }
-        //public int? RatingCount { get; set; }
+
         public List<ProductImageDto> ProductImages { get; set; } = new();
         public List<CategoryIdDto> Categories { get; set; } = new();
+        public List<AttributeDetail> ProductAttributeDetail{ get; set; } = new();
         public BrandDto? Brand { get; set; }
     }
 }

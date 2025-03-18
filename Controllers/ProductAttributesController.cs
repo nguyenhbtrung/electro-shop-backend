@@ -1,5 +1,6 @@
 ﻿using electro_shop_backend.Data;
 using electro_shop_backend.Models.DTOs;
+using electro_shop_backend.Models.DTOs.Product;
 using electro_shop_backend.Models.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -88,8 +89,20 @@ namespace electro_shop_backend.Controllers
         public async Task<IActionResult> GetAttributeDetails(int attributeId)
         {
             var attribute = await _context.ProductAttributes
-                .Include(a => a.Details)
-                .FirstOrDefaultAsync(a => a.AttributeId == attributeId);
+                .Where(a => a.AttributeId == attributeId)
+                .Select(a => new
+                {
+                    a.AttributeId,
+                    a.Name,
+                    Details = a.Details.Select(d => new
+                    {
+                        d.AttributeDetailId,
+                        d.Value,
+                        d.PriceModifier,
+                    }).ToList()
+                })
+                .FirstOrDefaultAsync();
+
             if (attribute == null)
                 return NotFound("Product attribute not found.");
 
@@ -99,12 +112,21 @@ namespace electro_shop_backend.Controllers
         [HttpGet("{attributeId}/details/{detailId}")]
         public async Task<IActionResult> GetAttributeDetail(int attributeId, int detailId)
         {
-            var detail = await _context.ProductAttributeDetails
-                .FirstOrDefaultAsync(d => d.ProductAttributeId == attributeId && d.AttributeDetailId == detailId);
-            if (detail == null)
+            var detailDto = await _context.ProductAttributeDetails
+                .Where(d => d.ProductAttributeId == attributeId && d.AttributeDetailId == detailId)
+                .Select(d => new
+                {
+                    d.AttributeDetailId,
+                    d.Value,
+                    d.PriceModifier,
+                }).FirstOrDefaultAsync();
+
+            if (detailDto == null)
                 return NotFound();
-            return Ok(detail);
+
+            return Ok(detailDto);
         }
+
 
         [HttpPost("{attributeId}/details")]
         [Authorize(Policy = "AdminPolicy")]
