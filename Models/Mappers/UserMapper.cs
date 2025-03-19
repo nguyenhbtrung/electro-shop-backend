@@ -25,6 +25,7 @@ namespace electro_shop_backend.Models.Mappers
         {
             return new NewUserDTO()
             {
+                UserId = user.Id,
                 UserName = user.UserName,
                 Email = user.Email
             };

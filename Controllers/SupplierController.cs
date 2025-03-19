@@ -46,6 +46,7 @@ namespace electro_shop_backend.Controllers
             return await _supplierService.AddSupplierAsync(addSupplierDTO);
         }
         [HttpPut]
+        [Authorize(Policy = "AdminPolicy")]
         public async Task<IActionResult> UpdateSupplier(int id, [FromBody] AddSupplierDTO updateSupplierDTO)
         {
             if (!ModelState.IsValid)
