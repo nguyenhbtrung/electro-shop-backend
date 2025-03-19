@@ -15,5 +15,6 @@
         public string? ReturnMethod { get; set; }
         public DateTime? CreatedAt { get; set; }
         public List<ReturnProductDto> ReturnProducts { get; set; } = [];
+        public List<string> ReturnImageUrls { get; set; } = [];
     }
 }

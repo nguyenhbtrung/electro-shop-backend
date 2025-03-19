@@ -300,6 +300,7 @@ namespace electro_shop_backend.Services
         {
             var existingReturn = await _context.Returns
                 .AsNoTracking()
+                .Include(r => r.ReturnImages)
                 .Include(r => r.Order)
                 .ThenInclude(o => o.User)
                 .Select(r => new ReturnDetailAdminResponseDto
@@ -315,6 +316,7 @@ namespace electro_shop_backend.Services
                     Status = r.Status,
                     ReturnMethod = r.ReturnMethod,
                     CreatedAt = r.TimeStamp,
+                    ReturnImageUrls = r.ReturnImages.Select(ri => ri.ImageUrl).ToList(),
                 })
                 .FirstOrDefaultAsync(r => r.ReturnId == returnId);
             if (existingReturn == null)
@@ -326,10 +328,39 @@ namespace electro_shop_backend.Services
 
             return existingReturn;
         }
+
+        public async Task<UpdateReturnStatusResponseDto> UpdateReturnStatusAsync(int returnId, UpdateReturnStatusRequestDto requestDto)
+        {
+            var existingReturn = await _context.Returns.FirstOrDefaultAsync(r => r.ReturnId == returnId);
+            if (existingReturn == null)
+            {
+                throw new NotFoundException("không tìm thấy yêu cầu hoàn trả");
+            }
+            existingReturn.Status = requestDto.ReturnStatus.ToString().ToLower();
+            existingReturn.AdminComment = requestDto.AdminComment;
+            var newReturnHistory = new ReturnHistory
+            {
+                ReturnId = returnId,
+                Status = requestDto.ReturnStatus.ToString().ToLower()
+            };
+            await _context.ReturnHistories.AddAsync(newReturnHistory);
+            await _context.SaveChangesAsync();
+            return new UpdateReturnStatusResponseDto
+            {
+                ReturnId = existingReturn.ReturnId,
+                ReturnStatus = existingReturn.Status,
+                AdminComment = existingReturn.AdminComment
+            };
+        }
     }
 
     public enum ReturnStatus
     {
-        Pending
+        Pending,
+        Approved,
+        Processing,
+        Completed,
+        Rejected,
+        Canceled
     }
 }

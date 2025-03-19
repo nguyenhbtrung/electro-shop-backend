@@ -166,6 +166,27 @@ namespace electro_shop_backend.Controllers
             }
         }
 
+        [HttpPut("status/{ReturnId}")]
+        [Authorize(Policy = "AdminPolicy")]
+        public async Task<IActionResult> UpdateReturnStatus(int ReturnId, [FromBody] UpdateReturnStatusRequestDto requestDto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            try
+            {
+                var result = await _returnService.UpdateReturnStatusAsync(ReturnId, requestDto);
+                return Ok(result);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpDelete("{ReturnId}")]
         public async Task<IActionResult> DeleteReturn(int ReturnId)
         {
