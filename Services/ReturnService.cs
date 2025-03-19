@@ -31,12 +31,8 @@ namespace electro_shop_backend.Services
                 {
                     ReturnId = p.ReturnId,
                     OrderId = p.OrderId,
-                    Reason = p.Reason,
-                    Detail = p.Detail,
                     Status = p.Status,
                     ReturnMethod = p.ReturnMethod,
-                    Address = p.Address,
-                    AdminComment = p.AdminComment,
                     TimeStamp = p.TimeStamp,
                 })
                 .ToListAsync();
@@ -192,51 +188,7 @@ namespace electro_shop_backend.Services
                 throw new NotFoundException("Không tìm thấy yêu cầu hoàn trả");
             }
 
-            var returnItems = await _context.ReturnItems
-                .AsNoTracking()
-                .Include(ri => ri.OrderItem)
-                .ThenInclude(oi => oi!.Product)
-                .Select(ri => new
-                {
-                    ri.ReturnId,
-                    ri!.OrderItem!.ProductId,
-                    ri!.OrderItem!.Product!.Name,
-                    ri.ReturnQuantity
-                })
-                .Where(ri => ri.ReturnId == returnId)
-                .ToListAsync();
-            var productIds = returnItems
-                .Where(ri => ri.ProductId != null)
-                .Select(ri => ri.ProductId)
-                .ToList();
-            var images = await _context.ProductImages
-                .AsNoTracking()
-                .Where(i => productIds.Contains(i.ProductId))
-                .GroupBy(i => i.ProductId)
-                .Select(g => new
-                {
-                    ProductId = g.Key,
-                    ImageUrl = g.OrderBy(i => i.ProductId)
-                                .Select(i => i.ImageUrl)
-                                .FirstOrDefault()
-                })
-                .ToListAsync();
-            var productImageDict = images.ToDictionary(i => i.ProductId, i => i.ImageUrl);
-
-            foreach (var item in returnItems)
-            {
-                var returnProduct = new ReturnProductDto
-                {
-                    ProductId = item?.ProductId,
-                    Name = item?.Name,
-                    ReturnQuantity = item?.ReturnQuantity,
-                    Image = item?.ProductId != null && productImageDict.TryGetValue(item?.ProductId, out var imageUrl)
-                                 ? imageUrl
-                                 : null
-                };
-
-                existingReturn.ReturnProducts.Add(returnProduct);
-            }
+            await GetReturnProductsById(returnId, existingReturn.ReturnProducts);
 
             return existingReturn;
 
@@ -269,6 +221,55 @@ namespace electro_shop_backend.Services
             //return existingReturn;
         }
 
+        private async Task GetReturnProductsById(int returnId, List<ReturnProductDto> returnProducts)
+        {
+            var returnItems = await _context.ReturnItems
+                            .AsNoTracking()
+                            .Include(ri => ri.OrderItem)
+                            .ThenInclude(oi => oi!.Product)
+                            .Select(ri => new
+                            {
+                                ri.ReturnId,
+                                ri!.OrderItem!.ProductId,
+                                ri!.OrderItem!.Product!.Name,
+                                ri.ReturnQuantity
+                            })
+                            .Where(ri => ri.ReturnId == returnId)
+                            .ToListAsync();
+            var productIds = returnItems
+                .Where(ri => ri.ProductId != null)
+                .Select(ri => ri.ProductId)
+                .ToList();
+            var images = await _context.ProductImages
+                .AsNoTracking()
+                .Where(i => productIds.Contains(i.ProductId))
+                .GroupBy(i => i.ProductId)
+                .Select(g => new
+                {
+                    ProductId = g.Key,
+                    ImageUrl = g.OrderBy(i => i.ProductId)
+                                .Select(i => i.ImageUrl)
+                                .FirstOrDefault()
+                })
+                .ToListAsync();
+            var productImageDict = images.ToDictionary(i => i.ProductId, i => i.ImageUrl);
+
+            foreach (var item in returnItems)
+            {
+                var returnProduct = new ReturnProductDto
+                {
+                    ProductId = item?.ProductId,
+                    Name = item?.Name,
+                    ReturnQuantity = item?.ReturnQuantity,
+                    Image = item?.ProductId != null && productImageDict.TryGetValue(item?.ProductId, out var imageUrl)
+                                 ? imageUrl
+                                 : null
+                };
+
+                returnProducts.Add(returnProduct);
+            }
+        }
+
         public async Task<List<ReturnUserHistoryDto>> GetUserReturnHistoryAsync(string userId)
         {
             var returns = await _context.Returns
@@ -293,6 +294,37 @@ namespace electro_shop_backend.Services
                 .ToListAsync();
 
             return returns;
+        }
+
+        public async Task<ReturnDetailAdminResponseDto> GetReturnByAdminAsync(int returnId)
+        {
+            var existingReturn = await _context.Returns
+                .AsNoTracking()
+                .Include(r => r.Order)
+                .ThenInclude(o => o.User)
+                .Select(r => new ReturnDetailAdminResponseDto
+                {
+                    ReturnId = r.ReturnId,
+                    OrderId = r.OrderId,
+                    OrderDate = r.Order!.TimeStamp,
+                    CustomerName = r.Order.User.FullName ?? r.Order.User.UserName,
+                    Address = r.Order.User.Address,
+                    PhoneNumber = r.Order.User.PhoneNumber,
+                    Reason = r.Reason,
+                    Detail = r.Detail,
+                    Status = r.Status,
+                    ReturnMethod = r.ReturnMethod,
+                    CreatedAt = r.TimeStamp,
+                })
+                .FirstOrDefaultAsync(r => r.ReturnId == returnId);
+            if (existingReturn == null)
+            {
+                throw new NotFoundException("Không tìm thấy yêu cầu hoàn trả");
+            }
+
+            await GetReturnProductsById(returnId, existingReturn.ReturnProducts);
+
+            return existingReturn;
         }
     }
 

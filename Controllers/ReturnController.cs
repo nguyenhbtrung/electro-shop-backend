@@ -29,8 +29,15 @@ namespace electro_shop_backend.Controllers
         [Authorize(Policy = "AdminPolicy")]
         public async Task<IActionResult> GetAllReturn()
         {
-            var returns = await _returnService.GetAllReturnAsync();
-            return Ok(returns);
+            try
+            {
+                var returns = await _returnService.GetAllReturnAsync();
+                return Ok(returns);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
         [HttpGet("{returnId}")]
@@ -58,6 +65,31 @@ namespace electro_shop_backend.Controllers
             }
         }
 
+        [HttpGet("admin/{returnId}")]
+        [Authorize(Policy = "AdminPolicy")]
+        public async Task<IActionResult> GetReturnByAdmin([FromRoute] int returnId)
+        {
+            //var username = User.GetUsername();
+            //var user = await _userManager.FindByNameAsync(username);
+            //if (user == null)
+            //{
+            //    return NotFound();
+            //}
+            try
+            {
+                var result = await _returnService.GetReturnByAdminAsync(returnId);
+                return Ok(result);
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
         [HttpGet("history")]
         [Authorize]
         public async Task<IActionResult> GetUserReturnHistory()
@@ -72,10 +104,6 @@ namespace electro_shop_backend.Controllers
             {
                 var result = await _returnService.GetUserReturnHistoryAsync(user.Id);
                 return Ok(result);
-            }
-            catch (NotFoundException ex)
-            {
-                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {

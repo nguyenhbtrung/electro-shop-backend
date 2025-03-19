@@ -6,6 +6,7 @@ namespace electro_shop_backend.Services.Interfaces
     {
         Task<List<AllReturnDto>> GetAllReturnAsync();
         Task<ReturnDetailResponseDto> GetReturnByIdAsync(int returnId);
+        Task<ReturnDetailAdminResponseDto> GetReturnByAdminAsync(int returnId);
         Task<List<ReturnUserHistoryDto>> GetUserReturnHistoryAsync(string userId);
         Task<CreateReturnResponseDto> CreateReturnAsync(string userId, CreateReturnRequestDto requestDto);
         Task<ReturnDto> UpdateReturnAsync(int returnId, UpdateReturnDto requestDto);
