@@ -29,6 +29,8 @@ public partial class Product
 
     [Column("brand_id")]
     public int? BrandId { get; set; }
+    [Column("units_sold")]
+    public int UnitsSold { get; set; } = 0;
 
     [InverseProperty("Product")]
     public virtual ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();

@@ -29,6 +29,7 @@ namespace electro_shop_backend.Models.Mappers
                 Info = product.Info,
                 OriginalPrice = product.Price,
                 Stock = product.Stock,
+                UnitsSold=product.UnitsSold,
                 ProductImages = new(),
                 Categories = product.Categories?.Select(c => new CategoryIdDto
                 {

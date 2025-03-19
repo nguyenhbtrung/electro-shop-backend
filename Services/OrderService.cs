@@ -72,8 +72,8 @@ namespace electro_shop_backend.Services
                     throw new BadRequestException("Product out of stock");
                 }
 
-                cartitem.Product!.Stock -= cartitem.Quantity;
-
+                cartitem.Product!.Stock -= cartitem.Quantity; 
+                cartitem.Product.UnitsSold += cartitem.Quantity;
                 OrderItem orderItem = new OrderItem
                 {
                     ProductId = cartitem.ProductId,

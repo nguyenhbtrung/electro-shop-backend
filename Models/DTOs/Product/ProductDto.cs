@@ -17,6 +17,7 @@ namespace electro_shop_backend.Models.DTOs.Product
         public double AverageRating { get; set; }
 
         public int Stock { get; set; }
+        public int UnitsSold { get; set; }
 
         public List<ProductImageDto> ProductImages { get; set; } = new();
         public List<CategoryIdDto> Categories { get; set; } = new();
