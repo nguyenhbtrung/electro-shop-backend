@@ -17,6 +17,8 @@ namespace electro_shop_backend.Models.Entities
         [Column("receiver_id")]
         [StringLength(450)]
         public string? ReceiverId { get; set; }
+        [Column("message")]
+        public string Message { get; set; } = null!;
 
         [Column("is_from_admin")]
         public bool IsFromAdmin { get; set; }
