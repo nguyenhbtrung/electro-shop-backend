@@ -1,4 +1,4 @@
-## appsettings.json template
+﻿## appsettings.json template
 ```json
 {
     "Logging": {
@@ -26,3 +26,23 @@
     }
 }
 ```
+## test thanh toan bang vnpay
+B1: Đăng ký tài khoản tại https://sandbox.vnpayment.vn/devreg/
+B2: Xác nhận email
+B3: Chỉnh sửa appsettings.json với thông số nhận được trong email
+```json
+{
+    "VnPay": {
+        "Url": "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html",
+        "TmnCode": "email",
+        "HashSecret": "email",
+        "Version": "2.1.0",
+        "Command": "pay",
+        "CurrencyCode": "VND",
+        "Locale": "vn",
+        "ReturnUrl": "https://localhost:7169/api/Order/vnpay-callback"
+    }
+}
+```
+B4: Chạy api CreateOrder với paymentmethod là "vnpay"
+B5: Truy cập https://sandbox.vnpayment.vn/apis/vnpay-demo/ để lấy tài khoản test
