@@ -18,6 +18,20 @@ namespace electro_shop_backend.Models.Mappers
                 StockImportItems = stockImport.StockImportDetails.Select(x => x.ToStockImportItemsDTOFromStockImportItems()).ToList()
             };
         }
+
+        public static ListStockDTO ToListStockDTOFromStock(this StockImport stockImport)
+        {
+            return new ListStockDTO()
+            {
+                StockImportId = stockImport.StockImportId,
+                StockImportName = stockImport.StockImportName,
+                SupplierName = stockImport.Supplier?.SupplierName,
+                TotalPrice = stockImport.TotalPrice,
+                StockImportStatus = stockImport.StockImportStatus,
+                ImportDate = stockImport.ImportDate,
+                CreatedAt = stockImport.CreatedAt
+            };
+        }
         public static StockImportItemsDTO ToStockImportItemsDTOFromStockImportItems(this StockImportDetail stockImportDetail)
         {
             return new StockImportItemsDTO()

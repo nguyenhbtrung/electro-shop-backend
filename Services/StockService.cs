@@ -15,8 +15,11 @@ namespace electro_shop_backend.Services
         {
             try
             {
-                var allStock = await _context.StockImports.ToListAsync();
-                return new OkObjectResult(allStock);
+                var allStock = await _context.StockImports
+                    .Include(si => si.Supplier)
+                    .ToListAsync();
+                var allStockDTO = allStock.Select(stock => stock.ToListStockDTOFromStock()).ToList();
+                return new OkObjectResult(allStockDTO);
             }
             catch (Exception ex)
             {
