@@ -41,4 +41,10 @@ public partial class User : IdentityUser
 
     [InverseProperty("User")]
     public virtual ICollection<Rating> Ratings { get; set; } = new List<Rating>();
+
+    [InverseProperty("Sender")]
+    public virtual ICollection<SupportMessage> SentMessages { get; set; } = new List<SupportMessage>();
+    [InverseProperty("Receiver")]
+    public virtual ICollection<SupportMessage> ReceivedMessages { get; set; } = new List<SupportMessage>();
+
 }

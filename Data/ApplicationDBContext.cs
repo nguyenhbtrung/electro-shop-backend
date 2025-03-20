@@ -61,6 +61,7 @@ public partial class ApplicationDbContext : IdentityDbContext<User>
     public virtual DbSet<Supplier> Suppliers { get; set; }
     public virtual DbSet<ProductAttribute> ProductAttributes { get; set; }
     public virtual DbSet<AttributeDetail> ProductAttributeDetails { get; set; }
+    public virtual DbSet<SupportMessage> SupportMessages { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -323,6 +324,26 @@ public partial class ApplicationDbContext : IdentityDbContext<User>
         modelBuilder.Entity<Supplier>(entity =>
         {
             entity.HasKey(e => e.SupplierId).HasName("PK__Supplier__1A56936E");
+        });
+
+        modelBuilder.Entity<SupportMessage>(entity =>
+        {
+            entity.HasKey(e => e.MessageId)
+                  .HasName("PK__Support_Message");
+
+            entity.Property(e => e.SentAt).HasDefaultValueSql("(getdate())");
+
+            entity.HasOne(d => d.Sender)
+                  .WithMany(p => p.SentMessages)
+                  .HasForeignKey(d => d.SenderId)
+                  .OnDelete(DeleteBehavior.ClientSetNull)
+                  .HasConstraintName("FK__SupportMessage__senderId");
+
+            entity.HasOne(d => d.Receiver)
+                  .WithMany(p => p.ReceivedMessages)
+                  .HasForeignKey(d => d.ReceiverId)
+                  .OnDelete(DeleteBehavior.ClientSetNull)
+                  .HasConstraintName("FK__SupportMessage__receiverId");
         });
         OnModelCreatingPartial(modelBuilder);
     }

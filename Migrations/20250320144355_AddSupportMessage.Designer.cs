@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using electro_shop_backend.Data;
 
@@ -11,9 +12,11 @@ using electro_shop_backend.Data;
 namespace electro_shop_backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250320144355_AddSupportMessage")]
+    partial class AddSupportMessage
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1060,7 +1063,7 @@ namespace electro_shop_backend.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MessageId"));
 
-                    b.Property<bool>("IsFromAdmin")
+                    b.Property<bool?>("IsFromAdmin")
                         .HasColumnType("bit")
                         .HasColumnName("is_from_admin");
 
@@ -1074,7 +1077,7 @@ namespace electro_shop_backend.Migrations
                         .HasColumnType("nvarchar(450)")
                         .HasColumnName("sender_id");
 
-                    b.Property<DateTime>("SentAt")
+                    b.Property<DateTime?>("SentAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime")
                         .HasColumnName("sent_at")
