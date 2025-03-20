@@ -11,6 +11,8 @@ namespace electro_shop_backend.Models.DTOs.Voucher
 
         public string? VoucherName { get; set; }  // Tên voucher
 
+        public string VoucherType { get; set; }  // Loại voucher (percent/fixed)
+
         public decimal DiscountValue { get; set; }  // Giá trị giảm giá
 
         public string VoucherStatus { get; set; } = "active";  // Trạng thái voucher (active/disable)

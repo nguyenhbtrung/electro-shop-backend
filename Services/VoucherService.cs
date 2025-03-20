@@ -1,3 +1,4 @@
+using System;
 using electro_shop_backend.Data;
 using electro_shop_backend.Exceptions;
 using electro_shop_backend.Models.DTOs.Voucher;
@@ -17,7 +18,7 @@ namespace electro_shop_backend.Services
             _context = context;
         }
 
-        public async Task<List<AllVoucherDto>> GetAllVouchersAsyncs()
+        public async Task<List<AllVoucherDto>> GetAllVouchersAsyncs() 
         {
             return await _context.Vouchers
                 .AsNoTracking()
@@ -26,6 +27,24 @@ namespace electro_shop_backend.Services
                     VoucherId = item.VoucherId,
                     VoucherName = item.VoucherName,
                     VoucherCode = item.VoucherCode,
+                    VoucherType = item.VoucherType,
+                    DiscountValue = item.DiscountValue,
+                    VoucherStatus = item.VoucherStatus
+                })
+                .ToListAsync();
+        }
+
+        public async Task<List<AllVoucherDto>> GetVoucherAvailableAsync()
+        {
+            return await _context.Vouchers
+                .AsNoTracking()
+                .Where(item => item.VoucherStatus == "active")
+                .Select(item => new AllVoucherDto
+                {
+                    VoucherId = item.VoucherId,
+                    VoucherCode = item.VoucherCode,
+                    VoucherName = item.VoucherName,
+                    VoucherType = item.VoucherType,
                     DiscountValue = item.DiscountValue,
                     VoucherStatus = item.VoucherStatus
                 })
@@ -97,6 +116,20 @@ namespace electro_shop_backend.Services
             _context.Vouchers.Remove(voucher);
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        public async Task CheckAndUpdateVoucherStatusAsync()
+        {
+            DateTime utcVN = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.UtcNow, "SE Asia Standard Time");
+
+            var vouchers = await _context.Vouchers
+                .Where(voucher => voucher.VoucherStatus == "active" && voucher.EndDate < utcVN || voucher.UsageLimit.HasValue && voucher.UsageCount >= voucher.UsageLimit)
+                .ToListAsync();
+            foreach (var voucher in vouchers)
+            {
+                voucher.VoucherStatus = "disable";
+            }
+            await _context.SaveChangesAsync();
         }
     }
 }

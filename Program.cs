@@ -177,4 +177,10 @@ app.MapControllers();
 //app.UseRouting();
 app.MapHub<ChatHub>("/chathub");
 
+using (var scope = app.Services.CreateScope())
+{
+    var voucherService = scope.ServiceProvider.GetRequiredService<IVoucherService>();
+    await voucherService.CheckAndUpdateVoucherStatusAsync();
+}
+
 app.Run();

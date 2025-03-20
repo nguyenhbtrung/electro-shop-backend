@@ -18,10 +18,17 @@ namespace electro_shop_backend.Controllers
             _voucherService = voucherService;
         }
 
-        [HttpGet]
+        [HttpGet("all_voucher")]
         public async Task<IActionResult> GetAllVouchersAsyncs()
         {
             var listVoucher = await _voucherService.GetAllVouchersAsyncs();
+            return Ok(listVoucher);
+        }
+
+        [HttpGet("available_voucher")]
+        public async Task<IActionResult> GetAvailableVouchersAsync()
+        {
+            var listVoucher = await _voucherService.GetVoucherAvailableAsync();
             return Ok(listVoucher);
         }
 

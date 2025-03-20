@@ -29,6 +29,8 @@ namespace electro_shop_backend.Services
 
         public async Task<CartItemDto> AddToCartAsync(string userId, int productId, int quantity)
         {
+            DateTime utcVN = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.UtcNow, "SE Asia Standard Time");
+
             var cart = await _context.Carts
                 .Include(cartitem => cartitem.CartItems)
                 .FirstOrDefaultAsync(cart => cart.UserId == userId);
@@ -38,7 +40,7 @@ namespace electro_shop_backend.Services
                 cart = new Cart
                 {
                     UserId = userId,
-                    TimeStamp = DateTime.UtcNow
+                    TimeStamp = utcVN
                 };
                 _context.Carts.Add(cart);
                 await _context.SaveChangesAsync();
@@ -62,7 +64,6 @@ namespace electro_shop_backend.Services
             }
 
             await _context.SaveChangesAsync();
-
             return cartItem.ToCartItemDto(); 
         }
 
@@ -78,7 +79,9 @@ namespace electro_shop_backend.Services
                 throw new NotFoundException("Cart not found");
             }
 
-            return cart.CartItems.Select(cartitem => cartitem.UserCartDto()).ToList();
+            var availableProducts = cart.CartItems.Where(cartitem => cartitem.Product != null && cartitem.Product.Stock >0).ToList();
+
+            return availableProducts.Select(cartitem => cartitem.ToUserCartDto()).ToList();
         }
 
         public async Task<List<CartItemDto>> GetCartByUserIdForAdminAsync(string userId)

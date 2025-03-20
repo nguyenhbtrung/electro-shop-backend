@@ -25,7 +25,7 @@ namespace electro_shop_backend.Models.Mappers
             };
         }
 
-        public static UserCartDto UserCartDto(this CartItem cartitem)
+        public static UserCartDto ToUserCartDto(this CartItem cartitem)
         {
             return new UserCartDto
             {

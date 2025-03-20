@@ -27,6 +27,7 @@ namespace electro_shop_backend.Models.Mappers
 
         public static Voucher ToVoucherFromCreateVoucherDto(this CreateVoucherRequestDto requestDto) // Tạo voucher
         {
+            DateTime utcVN = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.UtcNow, "SE Asia Standard Time");
             return new Voucher
             {
                 VoucherCode = requestDto.VoucherCode,
@@ -38,7 +39,8 @@ namespace electro_shop_backend.Models.Mappers
                 UsageLimit = requestDto.UsageLimit,
                 VoucherStatus = requestDto.VoucherStatus,
                 StartDate = requestDto.StartDate,
-                EndDate = requestDto.EndDate
+                EndDate = requestDto.EndDate,
+                CreatedDate = utcVN
             };
         }
 
