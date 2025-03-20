@@ -1,6 +1,9 @@
-﻿namespace electro_shop_backend.Services.Interfaces
+﻿using electro_shop_backend.Models.DTOs.SupportMessage;
+
+namespace electro_shop_backend.Services.Interfaces
 {
     public interface ISupportMessageService
     {
+        Task<CreateMessageResponseDto> CreateMessageAsync(string senderId, CreateMessageRequestDto requestDto);
     }
 }
