@@ -1,5 +1,6 @@
 using electro_shop_backend.Configurations;
 using electro_shop_backend.Data;
+using electro_shop_backend.Hubs;
 using electro_shop_backend.Models.Entities;
 using electro_shop_backend.Services;
 using electro_shop_backend.Services.Interfaces;
@@ -96,6 +97,20 @@ builder.Services.AddAuthentication(options =>
             System.Text.Encoding.UTF8.GetBytes(builder.Configuration["JWT:SigningKey"])
             )
         };
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                var accessToken = context.Request.Query["access_token"];
+                var path = context.HttpContext.Request.Path;
+                if (!string.IsNullOrEmpty(accessToken) &&
+                    path.StartsWithSegments("/chathub"))
+                {
+                    context.Token = accessToken;
+                }
+                return Task.CompletedTask;
+            }
+        };
     });
 
 builder.Services.AddCors(options =>
@@ -103,8 +118,11 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowSpecificOrigin",
         builder => builder.WithOrigins("http://localhost:5173")
                           .AllowAnyHeader()
-                          .AllowAnyMethod());
+                          .AllowAnyMethod()
+                          .AllowCredentials());
 });
+
+builder.Services.AddSignalR();
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IProductService, ProductService>();
@@ -151,5 +169,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+//app.UseRouting();
+app.MapHub<ChatHub>("/chathub");
 
 app.Run();
