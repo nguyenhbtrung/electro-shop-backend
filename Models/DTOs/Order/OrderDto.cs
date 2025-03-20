@@ -17,6 +17,10 @@ namespace electro_shop_backend.Models.DTOs.Order
 
         public DateTime? TimeStamp { get; set; }
 
+        public string? PaymentMethod { get; set; }
+
+        public string? PaymentUrl { get; set; }
+
         public virtual List<OrderItemDto> OrderItems { get; set; } = new List<OrderItemDto>();
 
         public virtual List<UpdatePaymentRequestDto> Payments { get; set; } = new List<UpdatePaymentRequestDto>();

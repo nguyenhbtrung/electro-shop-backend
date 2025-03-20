@@ -9,11 +9,12 @@ namespace electro_shop_backend.Services.Interfaces
         Task<OrderDto> GetOrderByOrderIdAsync(int orderId);
         Task<List<OrderDto>> GetOrderByUserIdAsync(string userId);
 
-        Task<OrderDto> CreateOrderAsync(string userId, List<int> selectedCardItemIds, string voucherCode);
+        Task<OrderDto> CreateOrderAsync(string userId, List<int> selectedCardItemIds, string voucherCode, string paymentmethod);
 
         Task<OrderDto> UpdateOrderAddressAsync(string userId, OrderDto orderDto);
         Task<OrderDto> UpdateOrderStatusAsync(int orderId, OrderDto orderDto);
 
         Task<bool> CancelOrderAsync(int orderId);
+        Task<VnPayResponseDto> HandlePaymentCallbackAsync(IQueryCollection queryCollection);
     }
 }

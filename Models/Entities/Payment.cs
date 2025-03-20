@@ -23,7 +23,7 @@ public partial class Payment // Lưu lịch sử thanh toán
     public decimal Amount { get; set; }
 
     [Column("payment_method")]
-    public string? PaymentMethod { get; set; } // COD, Bank, Momo, ZaloPay
+    public string? PaymentMethod { get; set; } // COD, VNPay
 
     [Column("payment_status")]
     [StringLength(50)]

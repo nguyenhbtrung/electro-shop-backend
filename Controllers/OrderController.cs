@@ -1,4 +1,5 @@
-﻿using electro_shop_backend.Exceptions;
+﻿using System.Threading.Tasks;
+using electro_shop_backend.Exceptions;
 using electro_shop_backend.Extensions;
 using electro_shop_backend.Models.DTOs.Order;
 using electro_shop_backend.Models.Entities;
@@ -70,7 +71,7 @@ namespace electro_shop_backend.Controllers
 
         [HttpPost("user/createorder")]
         [Authorize(Policy = "UserPolicy")]
-        public async Task<IActionResult> CreateOrderAsync(List<int> selectedProductIds, string voucherCode = "")
+        public async Task<IActionResult> CreateOrderAsync(List<int> selectedProductIds, string voucherCode = "", string payment = "")
         {
             var username = User.GetUsername();
             var user = await _userManager.FindByNameAsync(username);
@@ -80,7 +81,7 @@ namespace electro_shop_backend.Controllers
             }
             try
             {
-                var order = await _orderService.CreateOrderAsync(user.Id, selectedProductIds, voucherCode);
+                var order = await _orderService.CreateOrderAsync(user.Id, selectedProductIds, voucherCode, payment);
                 return Ok(order);
             }
             catch (Exception)
@@ -136,6 +137,13 @@ namespace electro_shop_backend.Controllers
             {
                 throw;
             }
+        }
+
+        [HttpGet("vnpay-callback")]
+        public async Task<IActionResult> PaymentCallBack()
+        {
+            var result = await _orderService.HandlePaymentCallbackAsync(Request.Query);
+            return Ok(result);
         }
     }
 }

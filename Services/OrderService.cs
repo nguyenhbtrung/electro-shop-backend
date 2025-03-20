@@ -10,12 +10,15 @@ using System.Numerics;
 namespace electro_shop_backend.Services
 {
     public class OrderService : IOrderService
-    {
+    { 
+        private readonly DateTime utcVN = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.UtcNow, "SE Asia Standard Time");
         private readonly ApplicationDbContext _context;
+        private readonly IVnPayService _vnPayService;
 
-        public OrderService(ApplicationDbContext context)
+        public OrderService(ApplicationDbContext context, IVnPayService vnPayService)
         {
             _context = context;
+            _vnPayService = vnPayService;
         }
 
         public async Task<List<AllOrderDto>> GetAllOrdersAsync()
@@ -49,7 +52,7 @@ namespace electro_shop_backend.Services
                 .ToListAsync();
         }
 
-        public async Task<OrderDto> CreateOrderAsync(string userId, List<int> selectedProductIds, string voucherCode)
+        public async Task<OrderDto> CreateOrderAsync(string userId, List<int> selectedProductIds, string voucherCode, string paymentmethod)
         {
             decimal totalPrice = 0;
             var cartitems = await _context.CartItems
@@ -57,6 +60,8 @@ namespace electro_shop_backend.Services
                 .Include(cartitem => cartitem.Product)
                 .Include(cartitem => cartitem.Cart)
                 .ToListAsync();
+
+            var user = await _context.Users.FirstOrDefaultAsync(user => user.Id == userId);
 
             if (cartitems == null)
             {
@@ -92,6 +97,7 @@ namespace electro_shop_backend.Services
             if (!string.IsNullOrEmpty(voucherCode))
             {
                 var voucher = await _context.Vouchers.FirstOrDefaultAsync(voucher => voucher.VoucherCode == voucherCode);
+
                 if (voucher != null && totalPrice >= voucher.MinOrderValue)
                 {
                     if (voucher.VoucherType == "Percentage")
@@ -101,6 +107,17 @@ namespace electro_shop_backend.Services
                     else
                     {
                         discountAmount = voucher.DiscountValue;
+                    }
+
+                    if(voucher.UsageLimit > 0)
+                    {
+                        voucher.UsageCount+=1;
+                        voucher.UsageLimit-=1;
+                        if (voucher.UsageCount >= voucher.UsageLimit)
+                        {
+                            voucher.VoucherStatus = "disable";
+                        }
+                        _context.Vouchers.Update(voucher);
                     }
                 }
             }
@@ -113,12 +130,61 @@ namespace electro_shop_backend.Services
                 UserId = userId,
                 Total = finalTotal,
                 Status = "Pending",
-                TimeStamp = DateTime.UtcNow,
+                Address = user!.Address,
+                TimeStamp = utcVN,
                 OrderItems = orderItems
             };
 
             _context.Orders.Add(order);
             await _context.SaveChangesAsync();
+
+            var request = new VnPayRequestDto
+            {
+                OrderId = order.OrderId,
+            };
+
+            var payment = new Payment
+            {
+                OrderId = order.OrderId,
+                Amount = finalTotal,
+                PaymentMethod = paymentmethod,
+                PaymentStatus = "Pending",
+                CreatedAt = utcVN
+            };
+
+            _context.Payments.Add(payment);
+            await _context.SaveChangesAsync();
+
+            if (paymentmethod == "cod")
+            {
+                order.PaymentMethod = "COD";
+                payment.PaymentMethod = "COD";
+
+                _context.Orders.Update(order);
+                _context.Payments.Update(payment);
+                await _context.SaveChangesAsync();
+            }
+            else if (paymentmethod == "vnpay")
+            {
+                order.PaymentMethod = "VNPay";
+                payment.PaymentMethod = "VNPay";
+
+                _context.Orders.Update(order);
+                _context.Payments.Update(payment);
+                await _context.SaveChangesAsync();
+
+                var paymentUrl = _vnPayService.CreatePaymentUrl(request);
+
+                return new OrderDto
+                {
+                    OrderId = order.OrderId,
+                    UserId = order.UserId,
+                    Total = finalTotal,
+                    Status = "Pending",
+                    TimeStamp = order.TimeStamp,
+                    PaymentUrl = paymentUrl
+                };
+            }
             return order.ToOrderDto();
         }
 
@@ -158,6 +224,8 @@ namespace electro_shop_backend.Services
         {
             var order = await _context.Orders
                 .FirstOrDefaultAsync(order => order.OrderId == orderId);
+            var payment = await _context.Payments
+                .FirstOrDefaultAsync(payment => payment.OrderId == orderId);
 
             if (order == null)
             {
@@ -165,8 +233,28 @@ namespace electro_shop_backend.Services
             }
 
             order.Status = "Cancelled";
+            payment.PaymentStatus = "Cancelled";
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        public async Task<VnPayResponseDto> HandlePaymentCallbackAsync(IQueryCollection queryCollection)
+        {
+            var response = _vnPayService.PaymentExcecute(queryCollection);
+
+            if (response.Success)
+            {
+                var order = await _context.Orders.FirstOrDefaultAsync(order => order.OrderId == response.OrderId);
+                var payment = await _context.Payments.FirstOrDefaultAsync(payment => payment.OrderId == response.OrderId);
+                if (order != null)
+                {
+                    payment.PaymentStatus = "Paid";
+                    payment.PaidAt = utcVN;
+                    payment.TransactionId = response.TransactionId;
+                    await _context.SaveChangesAsync();
+                }
+            }
+            return response;
         }
     }
 }

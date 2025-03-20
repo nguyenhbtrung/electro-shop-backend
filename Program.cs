@@ -146,6 +146,9 @@ builder.Services.AddScoped<IStockService, StockService>();
 builder.Services.AddScoped<IReturnStatusHistoryService, ReturnStatusHistoryService>();
 builder.Services.AddScoped<IProductAttributeService, ProductAttributeService>();
 builder.Services.AddScoped<IProductPricingService, ProductPricingService>();
+builder.Services.AddScoped<IVnPayService, VnPayService>();
+builder.Services.AddHttpContextAccessor();
+
 var emailConfig = builder.Configuration
     .GetSection("EmailConfiguration")
     .Get<EmailConfiguration>();

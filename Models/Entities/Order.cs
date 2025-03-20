@@ -22,7 +22,8 @@ public partial class Order
 
     [Column("status")]
     [StringLength(50)]
-    public string? Status { get; set; }
+    public string? Status { get; set; } // Pending, Processing, Shipping, Completed, Cancelled
+                                        // Đang chờ xử lý, Đang xử lý, Đang giao hàng, Đã hoàn thành, Đã hủy
 
     [Column("address")]
     [StringLength(255)]
@@ -30,6 +31,9 @@ public partial class Order
 
     [Column("time_stamp", TypeName = "datetime")]
     public DateTime? TimeStamp { get; set; }
+
+    [Column("payment_method")]
+    public string? PaymentMethod { get; set; } // COD, VNPay
 
     [InverseProperty("Order")]
     public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();

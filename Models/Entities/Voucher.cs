@@ -26,7 +26,7 @@ public partial class Voucher
     [Required]
     [StringLength(10)]
     [Column("voucher_type")]
-    public string VoucherType { get; set; }  // Kiểu giảm giá ('percentage' hoặc 'fixed')
+    public string VoucherType { get; set; }  // Kiểu giảm giá ('Percentage' hoặc 'Fixed')
 
     [Required]
     [Column("discount_value", TypeName = "decimal(10,2)")]
