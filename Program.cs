@@ -147,6 +147,8 @@ builder.Services.AddScoped<IReturnStatusHistoryService, ReturnStatusHistoryServi
 builder.Services.AddScoped<IProductAttributeService, ProductAttributeService>();
 builder.Services.AddScoped<IProductPricingService, ProductPricingService>();
 builder.Services.AddScoped<IVnPayService, VnPayService>();
+builder.Services.AddScoped<ISupportMessageService, SupportMessageService>();
+
 builder.Services.AddHttpContextAccessor();
 
 var emailConfig = builder.Configuration
