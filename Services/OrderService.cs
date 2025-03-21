@@ -47,7 +47,8 @@ namespace electro_shop_backend.Services
             return await _context.Orders
                 .AsNoTracking()
                 .Where(order => order.UserId == userId)
-                .Include(orderitem => orderitem.OrderItems)
+                .Include(order => order.OrderItems)
+                .Include(order => order.Payments)
                 .Select(order => order.ToOrderDto())
                 .ToListAsync();
         }

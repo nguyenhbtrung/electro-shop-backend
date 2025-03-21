@@ -24,6 +24,7 @@ namespace electro_shop_backend.Models.Mappers
                 OrderId = order.OrderId,
                 UserId = order.UserId,
                 Total = order.Total,
+                PaymentStatus = order.Payments.FirstOrDefault(payment => payment.OrderId == order.OrderId)?.PaymentStatus,
                 Status = order.Status,
                 Address = order.Address,
                 TimeStamp = order.TimeStamp,

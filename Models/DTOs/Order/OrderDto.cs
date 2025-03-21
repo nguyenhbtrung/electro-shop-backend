@@ -13,6 +13,8 @@ namespace electro_shop_backend.Models.DTOs.Order
 
         public string? Status { get; set; }
 
+        public string? PaymentStatus { get; set; }
+
         public string? Address { get; set; }
 
         public DateTime? TimeStamp { get; set; }

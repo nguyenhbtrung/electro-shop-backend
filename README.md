@@ -27,7 +27,7 @@
 }
 ```
 ## test thanh toan bang vnpay
-B1: Đăng ký tài khoản tại https://sandbox.vnpayment.vn/devreg/
+B1: Đăng ký tài khoản tại https://sandbox.vnpayment.vn/devreg/ (tùy chọn)
 B2: Xác nhận email
 B3: Chỉnh sửa appsettings.json với thông số nhận được trong email
 ```json
@@ -45,4 +45,12 @@ B3: Chỉnh sửa appsettings.json với thông số nhận được trong email
 }
 ```
 B4: Chạy api CreateOrder với paymentmethod là "vnpay"
-B5: Truy cập https://sandbox.vnpayment.vn/apis/vnpay-demo/ để lấy tài khoản test
+B5: Truy cập https://sandbox.vnpayment.vn/apis/vnpay-demo/#th%C3%B4ng-tin-th%E1%BA%BB-test để lấy tài khoản test
+(
+Thanh toán bằng thẻ nội địa:
+- Ngân hàng: NCB
+- Số thẻ: 9704198526191432198
+- Tên chủ thẻ: NGUYEN VAN A
+- Ngày phát hành: 07/15
+- Mật khẩu OTP: 123456
+)
