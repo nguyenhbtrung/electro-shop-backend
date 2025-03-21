@@ -57,7 +57,7 @@ namespace electro_shop_backend.Controllers
         }
 
         [HttpPut("status/{id}")]
-        public async Task<IActionResult> UpdateStockStatus([FromRoute] int id, [FromBody] string status)
+        public async Task<IActionResult> UpdateStockStatus([FromRoute] int id, string status)
         {
             if (!ModelState.IsValid)
             {

@@ -12,6 +12,8 @@ namespace electro_shop_backend.Models.Mappers
                 StockImportId = stockImport.StockImportId,
                 StockImportName = stockImport.StockImportName,
                 SupplierName = stockImport.Supplier?.SupplierName,
+                SupplierId = stockImport.SupplierId,
+                StockImportStatus = stockImport.StockImportStatus,
                 TotalPrice = stockImport.TotalPrice,
                 ImportDate = stockImport.ImportDate,
                 CreatedAt = stockImport.CreatedAt,

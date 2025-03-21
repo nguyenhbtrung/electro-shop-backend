@@ -114,6 +114,10 @@ namespace electro_shop_backend.Services
         {
             try
             {
+                if (status != "Pending" && status != "Approved" && status != "Completed" && status != "Canceled" && status != "Returned")
+                {
+                    return new BadRequestObjectResult("Invalid status") { StatusCode = 400 };
+                }
                 var stockImport = await _context.StockImports.FindAsync(id);
                 if (stockImport == null)
                 {
