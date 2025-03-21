@@ -34,8 +34,8 @@ B3: Chỉnh sửa appsettings.json với thông số nhận được trong email
 {
     "VnPay": {
         "Url": "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html",
-        "TmnCode": "email",
-        "HashSecret": "email",
+        "TmnCode": "7662VTDW",
+        "HashSecret": "2C3T6AXPI4XHA47LOKBMYHO6EM8P2VWJ",
         "Version": "2.1.0",
         "Command": "pay",
         "CurrencyCode": "VND",
