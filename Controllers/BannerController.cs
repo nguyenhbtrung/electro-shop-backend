@@ -17,7 +17,7 @@ namespace electro_shop_backend.Controllers
         }
 
         [HttpPost]
-        [Authorize(Policy ="AdminPolicy")]
+        [Authorize(Policy = "AdminPolicy")]
         public async Task<IActionResult> CreateBanner(BannerDTO bannerDTO)
         {
             if (!ModelState.IsValid)
@@ -27,8 +27,8 @@ namespace electro_shop_backend.Controllers
             return await _bannerService.CreateBanner(bannerDTO);
         }
 
-        [HttpGet("id")]
-        public async Task<IActionResult> GetBanner(int id)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetBanner([FromRoute] int id)
         {
             return await _bannerService.GetBanner(id);
         }
@@ -39,9 +39,9 @@ namespace electro_shop_backend.Controllers
             return await _bannerService.GetAllBanner();
         }
 
-        [HttpDelete("id")]
+        [HttpDelete("{id}")]
         [Authorize(Policy = "AdminPolicy")]
-        public async Task<IActionResult> DeleteBanner(int id)
+        public async Task<IActionResult> DeleteBanner([FromRoute] int id)
         {
             return await _bannerService.DeleteBanner(id);
         }

@@ -63,7 +63,10 @@ namespace electro_shop_backend.Services
             {
                 return new NotFoundObjectResult("Banner not found");
             }
-            banner = bannerUpdate;
+            banner.Title = bannerUpdate.Title;
+            banner.ImageUrl = bannerUpdate.ImageUrl;
+            banner.Link = bannerUpdate.Link;
+            banner.Position = bannerUpdate.Position;
             await _dbContext.SaveChangesAsync();
             return new OkObjectResult(banner);
         }

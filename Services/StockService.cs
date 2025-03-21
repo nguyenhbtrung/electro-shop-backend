@@ -114,17 +114,64 @@ namespace electro_shop_backend.Services
         {
             try
             {
-                if (status != "Pending" && status != "Approved" && status != "Completed" && status != "Canceled" && status != "Returned")
+                var validStatusTransitions = new Dictionary<string, List<string>>
+                {
+                    { "Pending", new List<string> { "Approved", "Canceled" } },
+                    { "Approved", new List<string> { "Completed", "Canceled" } },
+                    { "Completed", new List<string> { "Returned" } },
+                    { "Canceled", new List<string>() },
+                    { "Returned", new List<string>() }
+                };
+
+                if (!validStatusTransitions.ContainsKey(status))
                 {
                     return new BadRequestObjectResult("Invalid status") { StatusCode = 400 };
                 }
-                var stockImport = await _context.StockImports.FindAsync(id);
+
+                var stockImport = await _context.StockImports
+                    .Include(si => si.StockImportDetails)
+                    .FirstOrDefaultAsync(si => si.StockImportId == id);
                 if (stockImport == null)
                 {
                     return new NotFoundResult();
                 }
+
+                if (!validStatusTransitions[stockImport.StockImportStatus].Contains(status))
+                {
+                    return new BadRequestObjectResult("Invalid status transition") { StatusCode = 400 };
+                }
+
+                if (status == "Returned")
+                {
+                    foreach (var stockImportDetail in stockImport.StockImportDetails)
+                    {
+                        var product = await _context.Products.FindAsync(stockImportDetail.ProductId);
+                        if (product.Stock < stockImportDetail.Quantity)
+                        {
+                            return new BadRequestObjectResult("Not enough stock to return") { StatusCode = 400 };
+                        }
+                    }
+
+                    foreach (var stockImportDetail in stockImport.StockImportDetails)
+                    {
+                        var product = await _context.Products.FindAsync(stockImportDetail.ProductId);
+                        product.Stock -= stockImportDetail.Quantity;
+                    }
+                }
+
                 stockImport.StockImportStatus = status;
                 await _context.SaveChangesAsync();
+
+                if (status == "Completed")
+                {
+                    foreach (var stockImportDetail in stockImport.StockImportDetails)
+                    {
+                        var product = await _context.Products.FindAsync(stockImportDetail.ProductId);
+                        product.Stock += stockImportDetail.Quantity;
+                    }
+                    await _context.SaveChangesAsync();
+                }
+
                 return new OkObjectResult("Stock status updated successfully");
             }
             catch (Exception ex)
