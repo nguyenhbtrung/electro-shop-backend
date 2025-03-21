@@ -90,7 +90,6 @@ namespace electro_shop_backend.Services
                 }
                 rating.RatingScore = requestDto.RatingScore;
                 rating.RatingContent = requestDto.RatingContent;
-                rating.Status = requestDto.Status;
                 rating.TimeStamp = requestDto.TimeStamp;
 
                 await _context.SaveChangesAsync();
