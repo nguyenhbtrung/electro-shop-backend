@@ -12,11 +12,11 @@ namespace electro_shop_backend.Services.Interfaces
         Task<List<CartItemDto>> GetCartByUserIdForAdminAsync(string userId);
         Task<List<CartItemDto>> GetCartByCartIdAsync(int cartId);
 
-        Task<CartItemDto> UpdateCartItemQuantityAsync(string userid, int cartItemId, int quantity);
-        Task<CartItemDto> UpdateCartItemQuantityForAdminAsync(string userid, int cartItemId, int quantity);
+        Task<CartItemDto> UpdateCartItemQuantityAsync(string userid, int productId, int quantity);
+        Task<CartItemDto> UpdateCartItemQuantityForAdminAsync(string userid, int productId, int quantity);
 
         Task<bool> DeleteCartAsync(string userId);
-        Task<bool> DeleteCartItemAsync(string userId, int cartItemId);
+        Task<bool> DeleteCartItemAsync(string userId, int productId);
 
         Task<bool> DeleteCartAdminAsync(string userId);
         Task<bool> DeleteCartItemAdminAsync(string userId, int cartItemId);

@@ -110,18 +110,19 @@ namespace electro_shop_backend.Services
             return cart.CartItems.Select(cartitem => cartitem.ToCartItemDto()).ToList();
         }
 
-        public async Task<CartItemDto> UpdateCartItemQuantityAsync(string userid, int cartItemId, int quantity)
+        public async Task<CartItemDto> UpdateCartItemQuantityAsync(string userid, int productId, int quantity)
         {
             var cart = await _context.Carts
                 .Include(cartitem => cartitem.CartItems)
+                .ThenInclude(cartitem => cartitem.Product)
                 .FirstOrDefaultAsync(cart => cart.UserId == userid);
 
-            if (cart == null) {
+            if (cart == null)
+            {
                 throw new NotFoundException("Cart not found");
             }
 
-            var cartItem = await _context.CartItems
-                .FirstOrDefaultAsync(cartitem => cartitem.CartItemId == cartItemId);
+            var cartItem = cart.CartItems.FirstOrDefault(cartitem => cartitem.ProductId == productId);
 
             if (cartItem == null)
             {
@@ -133,7 +134,7 @@ namespace electro_shop_backend.Services
             return cartItem.ToCartItemDto();
         }
 
-        public async Task<CartItemDto> UpdateCartItemQuantityForAdminAsync(string userid, int cartItemId, int quantity)
+        public async Task<CartItemDto> UpdateCartItemQuantityForAdminAsync(string userid, int productId, int quantity)
         {
             var cart = await _context.Carts
                 .Include(cartitem => cartitem.CartItems)
@@ -145,7 +146,7 @@ namespace electro_shop_backend.Services
             }
 
             var cartItem = await _context.CartItems
-                .FirstOrDefaultAsync(cartitem => cartitem.CartItemId == cartItemId);
+                .FirstOrDefaultAsync(cartitem => cartitem.ProductId == productId);
 
             if (cartItem == null)
             {
@@ -173,7 +174,7 @@ namespace electro_shop_backend.Services
             return true;
         }
 
-        public async Task<bool> DeleteCartItemAsync(string userId, int cartItemId)
+        public async Task<bool> DeleteCartItemAsync(string userId, int productId)
         {
             var cart = await _context.Carts
                 .Include(cartitem => cartitem.CartItems)
@@ -184,7 +185,7 @@ namespace electro_shop_backend.Services
                 throw new NotFoundException("Cart not found");
             }
 
-            var cartItem = cart.CartItems.FirstOrDefault(cartitem => cartitem.CartItemId == cartItemId);
+            var cartItem = cart.CartItems.FirstOrDefault(cartitem => cartitem.ProductId == productId);
 
             if (cartItem == null)
             {

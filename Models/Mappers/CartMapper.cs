@@ -32,6 +32,7 @@ namespace electro_shop_backend.Models.Mappers
                 ProductId = cartitem.ProductId,
                 Price = cartitem.Product?.Price??0,
                 Quantity = cartitem.Quantity,
+                Stock = cartitem.Product?.Stock ?? 0,
                 ProductName = cartitem.Product?.Name,
                 ProductImage = cartitem.Product?.ProductImages.FirstOrDefault()?.ImageUrl
             };

@@ -85,9 +85,9 @@ namespace electro_shop_backend.Controllers
             return Ok(cart);
         }
 
-        [HttpPut("user/editcartitem/{cartItemId}")]
+        [HttpPut("user/editcartitemquantity")]
         [Authorize(Policy = "UserPolicy")]
-        public async Task<IActionResult> UpdateCartItemQuantityAsync(int cartItemId, int quantity)
+        public async Task<IActionResult> UpdateCartItemQuantityAsync(int productId, int quantity)
         {
             var username = User.GetUsername();
             var user = await _userManager.FindByNameAsync(username);
@@ -97,7 +97,7 @@ namespace electro_shop_backend.Controllers
             }
             try
             {
-                var cartItem = await _cartService.UpdateCartItemQuantityAsync(user.Id, cartItemId, quantity);
+                var cartItem = await _cartService.UpdateCartItemQuantityAsync(user.Id, productId, quantity);
                 return Ok(cartItem);
             }
             catch (Exception)
@@ -107,11 +107,11 @@ namespace electro_shop_backend.Controllers
         }
 
         [HttpPut("admin/editcartitem/{cartItemId}")]
-        public async Task<IActionResult> UpdateCartItemQuantityAsync(string userId, int cartItemId, int quantity)
+        public async Task<IActionResult> UpdateCartItemQuantityAsync(string userId, int productId, int quantity)
         {
             try
             {
-                var cartItem = await _cartService.UpdateCartItemQuantityAsync(userId, cartItemId, quantity);
+                var cartItem = await _cartService.UpdateCartItemQuantityAsync(userId, productId, quantity);
                 return Ok(cartItem);
             }
             catch (Exception)
@@ -120,7 +120,7 @@ namespace electro_shop_backend.Controllers
             }
         }
 
-        [HttpDelete("user/delete")]
+        [HttpDelete("user/deletecart")]
         [Authorize(Policy = "UserPolicy")]
         public async Task<IActionResult> DeleteCartAsync()
         {
@@ -141,9 +141,9 @@ namespace electro_shop_backend.Controllers
             }
         }
 
-        [HttpDelete("user/deletecartitem/{cartItemId}")]
+        [HttpDelete("user/deletecartitem")]
         [Authorize(Policy = "UserPolicy")]
-        public async Task<IActionResult> DeleteCartItemAsync(int cartItemId)
+        public async Task<IActionResult> DeleteCartItemAsync(int productId)
         {
             var username = User.GetUsername();
             var user = await _userManager.FindByNameAsync(username);
@@ -153,7 +153,7 @@ namespace electro_shop_backend.Controllers
             }
             try
             {
-                await _cartService.DeleteCartItemAsync(user.Id, cartItemId);
+                await _cartService.DeleteCartItemAsync(user.Id, productId);
                 return Ok();
             }
             catch (Exception)
