@@ -53,6 +53,17 @@ namespace electro_shop_backend.Services
                 .ToListAsync();
         }
 
+        public async Task<List<OrderDto>> GetOrderByStatusAsync(string userId, string status)
+        {
+            return await _context.Orders
+                .AsNoTracking()
+                .Where(order => order.Status == status)
+                .Include(order => order.OrderItems)
+                .Include(order => order.Payments)
+                .Select(order => order.ToOrderDto())
+                .ToListAsync();
+        }
+
         public async Task<OrderDto> CreateOrderAsync(string userId, List<int> selectedProductIds, string voucherCode, string paymentmethod)
         {
             decimal totalPrice = 0;
@@ -101,7 +112,7 @@ namespace electro_shop_backend.Services
 
                 if (voucher != null && totalPrice >= voucher.MinOrderValue)
                 {
-                    if (voucher.VoucherType == "Percentage")
+                    if (voucher.VoucherType == "percentage")
                     {
                         discountAmount = (totalPrice * voucher.DiscountValue) / 100;
                     }
@@ -110,16 +121,12 @@ namespace electro_shop_backend.Services
                         discountAmount = voucher.DiscountValue;
                     }
 
-                    if(voucher.UsageLimit > 0)
+                    voucher.UsageCount += 1;
+                    if (voucher.UsageCount >= voucher.UsageLimit)
                     {
-                        voucher.UsageCount+=1;
-                        voucher.UsageLimit-=1;
-                        if (voucher.UsageCount >= voucher.UsageLimit)
-                        {
-                            voucher.VoucherStatus = "disable";
-                        }
-                        _context.Vouchers.Update(voucher);
+                        voucher.VoucherStatus = "disable";
                     }
+                    _context.Vouchers.Update(voucher);
                 }
             }
 
@@ -130,7 +137,7 @@ namespace electro_shop_backend.Services
             {
                 UserId = userId,
                 Total = finalTotal,
-                Status = "Pending",
+                Status = "pending",
                 Address = user!.Address,
                 TimeStamp = utcVN,
                 OrderItems = orderItems
@@ -149,7 +156,7 @@ namespace electro_shop_backend.Services
                 OrderId = order.OrderId,
                 Amount = finalTotal,
                 PaymentMethod = paymentmethod,
-                PaymentStatus = "Pending",
+                PaymentStatus = "pending",
                 CreatedAt = utcVN
             };
 
@@ -158,8 +165,8 @@ namespace electro_shop_backend.Services
 
             if (paymentmethod == "cod")
             {
-                order.PaymentMethod = "COD";
-                payment.PaymentMethod = "COD";
+                order.PaymentMethod = "cod";
+                payment.PaymentMethod = "cod";
 
                 _context.Orders.Update(order);
                 _context.Payments.Update(payment);
@@ -167,8 +174,8 @@ namespace electro_shop_backend.Services
             }
             else if (paymentmethod == "vnpay")
             {
-                order.PaymentMethod = "VNPay";
-                payment.PaymentMethod = "VNPay";
+                order.PaymentMethod = "vnpay";
+                payment.PaymentMethod = "vnpay";
 
                 _context.Orders.Update(order);
                 _context.Payments.Update(payment);
@@ -181,7 +188,7 @@ namespace electro_shop_backend.Services
                     OrderId = order.OrderId,
                     UserId = order.UserId,
                     Total = finalTotal,
-                    Status = "Pending",
+                    Status = "pending",
                     TimeStamp = order.TimeStamp,
                     PaymentUrl = paymentUrl
                 };
@@ -233,8 +240,8 @@ namespace electro_shop_backend.Services
                 throw new NotFoundException("Order not found");
             }
 
-            order.Status = "Cancelled";
-            payment.PaymentStatus = "Cancelled";
+            order.Status = "cancelled";
+            payment.PaymentStatus = "cancelled";
             await _context.SaveChangesAsync();
             return true;
         }
@@ -249,7 +256,7 @@ namespace electro_shop_backend.Services
                 var payment = await _context.Payments.FirstOrDefaultAsync(payment => payment.OrderId == response.OrderId);
                 if (order != null)
                 {
-                    payment.PaymentStatus = "Paid";
+                    payment.PaymentStatus = "paid";
                     payment.PaidAt = utcVN;
                     payment.TransactionId = response.TransactionId;
                     await _context.SaveChangesAsync();

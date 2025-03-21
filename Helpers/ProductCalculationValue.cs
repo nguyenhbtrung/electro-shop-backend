@@ -4,7 +4,7 @@ namespace electro_shop_backend.Helpers
 {
     public static class ProductCalculationValue
     {
-        public static (decimal discountedPrice, string discountType, decimal discountValue) CalculateDiscount(Product product, List<int> selectedAttributeDetailIds)
+        public static (decimal originalPrice, decimal discountedPrice, string discountType, decimal discountValue) CalculateDiscount(Product product, List<int> selectedAttributeDetailIds)
         {
             decimal totalModifier = product.ProductAttributeDetails
                 .Where(detail => selectedAttributeDetailIds.Contains(detail.AttributeDetailId))
@@ -46,7 +46,7 @@ namespace electro_shop_backend.Helpers
                 }
             }
 
-            return (discountedPrice, discountType, discountValue);
+            return (basePrice, discountedPrice, discountType, discountValue);
         }
 
         public static double CalculateAverageRating(Product product)
@@ -59,4 +59,3 @@ namespace electro_shop_backend.Helpers
         }
     }
 }
-

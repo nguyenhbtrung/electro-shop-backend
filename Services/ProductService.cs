@@ -21,6 +21,7 @@ namespace electro_shop_backend.Services
         {
             _context = context;
         }
+
         public async Task<List<ProductDto>> GetAllProductsAsync()
         {
             var products = await _context.Products
@@ -30,8 +31,9 @@ namespace electro_shop_backend.Services
                 .Include(p => p.Ratings)
                 .Include(p => p.ProductDiscounts)
                     .ThenInclude(pd => pd.Discount)
-                .Include(p=>p.Brand)
+                .Include(p => p.Brand)
                 .ToListAsync();
+
             var productDtos = products.Select(p =>
             {
                 var selectedAttributeDetailIds = new List<int>();
@@ -43,31 +45,36 @@ namespace electro_shop_backend.Services
                     .Select(CategoryMapper.ToCategoryIdDto)
                     .ToList();
                 productDto.Brand = p.Brand != null ? BrandMapper.ToBrandDto(p.Brand) : null;
-                var (discountedPrice, discountType, discountValue) = ProductCalculationValue.CalculateDiscount(p, selectedAttributeDetailIds);
+
+                var (originalPrice, discountedPrice, discountType, discountValue) = ProductCalculationValue.CalculateDiscount(p, selectedAttributeDetailIds);
+                productDto.OriginalPrice = originalPrice;
                 productDto.DiscountValue = discountValue;
                 productDto.DiscountType = discountType;
                 productDto.DiscountedPrice = discountedPrice;
-                productDto.AverageRating= ProductCalculationValue.CalculateAverageRating(p);
+                productDto.AverageRating = ProductCalculationValue.CalculateAverageRating(p);
                 return productDto;
             }).ToList();
 
             return productDtos;
         }
+
         public async Task<ProductDto?> GetProductByIdAsync(int productId)
         {
             var product = await _context.Products
-            .AsNoTracking()
-            .Include(p => p.ProductImages)
-            .Include(p => p.Categories)
-            .Include(p => p.Brand)
-            .Include(p=>p.Ratings)
-            .Include(p => p.ProductDiscounts)
-                .ThenInclude(pd => pd.Discount)
-            .Include(p=>p.ProductAttributeDetails)
-                .ThenInclude(d => d.ProductAttribute)
-            .FirstOrDefaultAsync(p => p.ProductId == productId); 
+                .AsNoTracking()
+                .Include(p => p.ProductImages)
+                .Include(p => p.Categories)
+                .Include(p => p.Brand)
+                .Include(p => p.Ratings)
+                .Include(p => p.ProductDiscounts)
+                    .ThenInclude(pd => pd.Discount)
+                .Include(p => p.ProductAttributeDetails)
+                    .ThenInclude(d => d.ProductAttribute)
+                .FirstOrDefaultAsync(p => p.ProductId == productId);
 
-            if (product == null) return null;
+            if (product == null)
+                return null;
+
             var selectedAttributeDetailIds = new List<int>();
             var productDto = ProductMapper.ToProductDto(product);
             productDto.ProductImages = product.ProductImages
@@ -86,14 +93,16 @@ namespace electro_shop_backend.Services
                     ProductAttributeName = d.ProductAttribute.Name
                 })
                 .ToList();
-            var (discountedPrice, discountType, discountValue) = ProductCalculationValue.CalculateDiscount(product, selectedAttributeDetailIds);
+            var (originalPrice, discountedPrice, discountType, discountValue) = ProductCalculationValue.CalculateDiscount(product, selectedAttributeDetailIds);
+            productDto.OriginalPrice = originalPrice;
             productDto.DiscountValue = discountValue;
             productDto.DiscountType = discountType;
             productDto.DiscountedPrice = discountedPrice;
             productDto.AverageRating = ProductCalculationValue.CalculateAverageRating(product);
-            productDto.Brand =product.Brand!=null?BrandMapper.ToBrandDto(product.Brand) : null;
+            productDto.Brand = product.Brand != null ? BrandMapper.ToBrandDto(product.Brand) : null;
             return productDto;
         }
+
         public async Task<ProductDto> CreateProductAsync(CreateProductRequestDto requestDto)
         {
             try
@@ -117,7 +126,7 @@ namespace electro_shop_backend.Services
                 await _context.SaveChangesAsync();
                 if (!string.IsNullOrWhiteSpace(requestDto.ImageUrl))
                 {
-                    var productImage = new ProductImage 
+                    var productImage = new ProductImage
                     {
                         ProductId = product.ProductId,
                         ImageUrl = requestDto.ImageUrl,
@@ -132,9 +141,10 @@ namespace electro_shop_backend.Services
                 throw;
             }
         }
+
         public async Task<ProductDto> UpdateProductAsync(int productId, UpdateProductRequestDto requestDto)
         {
-            var product = await _context.Products.Include(p=>p.Categories).FirstOrDefaultAsync(p=>p.ProductId==productId);
+            var product = await _context.Products.Include(p => p.Categories).FirstOrDefaultAsync(p => p.ProductId == productId);
             if (product == null)
             {
                 throw new NotFoundException("Không tìm thấy sản phẩm.");
@@ -142,7 +152,7 @@ namespace electro_shop_backend.Services
             product.UpdateProductFromDto(requestDto);
             if (requestDto.CategoryIds != null)
             {
-                var newCategories = await _context.Categories.Where(c=>requestDto.CategoryIds.Contains(c.CategoryId)).ToListAsync();
+                var newCategories = await _context.Categories.Where(c => requestDto.CategoryIds.Contains(c.CategoryId)).ToListAsync();
                 product.Categories.Clear();
                 foreach (var category in newCategories)
                 {
@@ -152,6 +162,7 @@ namespace electro_shop_backend.Services
             await _context.SaveChangesAsync();
             return product.ToProductDto();
         }
+
         public async Task<bool> DeleteProductAsync(int id)
         {
             var product = await _context.Products.Include(p => p.Categories).FirstOrDefaultAsync(p => p.ProductId == id);
@@ -168,8 +179,6 @@ namespace electro_shop_backend.Services
         public async Task<List<ProductCardDto>> GetAllProductsByUserAsync(ProductQuery productQuery)
         {
             int skipNumber = (productQuery.PageNumber - 1) * productQuery.PageSize;
-
-            // Query sản phẩm, bao gồm các quan hệ cần thiết
             var products = await _context.Products
                 .Include(p => p.ProductImages)
                 .Include(p => p.Ratings)
@@ -182,7 +191,7 @@ namespace electro_shop_backend.Services
             var productDtos = products.Select(product =>
             {
                 var selectedAttributeDetailIds = new List<int>();
-                var (discountedPrice, discountType, discountValue) = ProductCalculationValue.CalculateDiscount(product, selectedAttributeDetailIds);
+                var (originalPrice, discountedPrice, discountType, discountValue) = ProductCalculationValue.CalculateDiscount(product, selectedAttributeDetailIds);
                 double avgRating = ProductCalculationValue.CalculateAverageRating(product);
 
                 return new ProductCardDto
@@ -193,7 +202,7 @@ namespace electro_shop_backend.Services
                                 .Where(pi => !string.IsNullOrWhiteSpace(pi.ImageUrl))
                                 .Select(pi => pi.ImageUrl)
                                 .ToList() ?? new List<string>(),
-                    OriginalPrice = product.Price,
+                    OriginalPrice = originalPrice,
                     DiscountedPrice = discountedPrice,
                     DiscountType = discountType,
                     DiscountValue = discountValue,
@@ -206,11 +215,8 @@ namespace electro_shop_backend.Services
 
         public async Task<List<ProductCardDto>> GetDiscountedProductsAsync(ProductQuery productQuery)
         {
-            // Lấy thời điểm hiện tại
             var now = DateTime.Now;
             int skipNumber = (productQuery.PageNumber - 1) * productQuery.PageSize;
-
-            // Query các sản phẩm có discount đang hiệu lực
             var products = await _context.Products
                 .Include(p => p.ProductImages)
                 .Include(p => p.Ratings)
@@ -227,7 +233,7 @@ namespace electro_shop_backend.Services
             var productDtos = products.Select(product =>
             {
                 var selectedAttributeDetailIds = new List<int>();
-                var (discountedPrice, discountType, discountValue) = ProductCalculationValue.CalculateDiscount(product, selectedAttributeDetailIds);
+                var (originalPrice, discountedPrice, discountType, discountValue) = ProductCalculationValue.CalculateDiscount(product, selectedAttributeDetailIds);
                 double avgRating = ProductCalculationValue.CalculateAverageRating(product);
 
                 return new ProductCardDto
@@ -238,7 +244,7 @@ namespace electro_shop_backend.Services
                                 .Where(pi => !string.IsNullOrWhiteSpace(pi.ImageUrl))
                                 .Select(pi => pi.ImageUrl)
                                 .ToList() ?? new List<string>(),
-                    OriginalPrice = product.Price,
+                    OriginalPrice = originalPrice,
                     DiscountedPrice = discountedPrice,
                     DiscountType = discountType,
                     DiscountValue = discountValue,
@@ -284,4 +290,3 @@ namespace electro_shop_backend.Services
         }
     }
 }
-

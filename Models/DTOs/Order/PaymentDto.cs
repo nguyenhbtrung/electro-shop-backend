@@ -11,7 +11,7 @@ namespace electro_shop_backend.Models.DTOs.Order
 
         public decimal Amount { get; set; }
 
-        public string? PaymentMethod { get; set; } // COD, Bank, Momo, ZaloPay
+        public string? PaymentMethod { get; set; } // cod, vnpay
 
         public string? PaymentStatus { get; set; }
 
