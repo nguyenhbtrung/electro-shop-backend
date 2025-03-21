@@ -1,5 +1,6 @@
 ﻿using electro_shop_backend.Data;
 using electro_shop_backend.Exceptions;
+using electro_shop_backend.Hubs;
 using electro_shop_backend.Models.DTOs.SupportMessage;
 using electro_shop_backend.Models.Entities;
 using electro_shop_backend.Services.Interfaces;
@@ -18,7 +19,7 @@ namespace electro_shop_backend.Services
 
         public async Task<CreateMessageResponseDto> CreateMessageAsync(string senderId, CreateMessageRequestDto requestDto)
         {
-            var sender = await _context.Users.Select(u => new { u.Id }).FirstOrDefaultAsync(u => u.Id == senderId);
+            var sender = await _context.Users.Select(u => new { u.Id, u.UserName }).FirstOrDefaultAsync(u => u.Id == senderId);
             if (sender == null)
             {
                 throw new BadRequestException("Không tìm thấy người gửi");
@@ -44,6 +45,7 @@ namespace electro_shop_backend.Services
             {
                 Id = newMessage.MessageId,
                 SenderId = newMessage.SenderId,
+                SenderName = sender.UserName,
                 ReceiverId = newMessage.ReceiverId,
                 Message = newMessage.Message,
                 IsFromAdmin = newMessage.IsFromAdmin,
@@ -53,30 +55,39 @@ namespace electro_shop_backend.Services
 
         public async Task<List<UserLatestMessageDto>> GetAllUserLatestMessagesAsync()
         {
-            var dtos = await (
+            // Lấy dữ liệu từ DB với tin nhắn gần nhất của mỗi user có role "User"
+            var userMessages = await (
                 from user in _context.Users
-                    // join bảng UserRoles để lọc user có role là "User"
                 join userRole in _context.UserRoles on user.Id equals userRole.UserId
                 where userRole.RoleId == "User"
-                // Lấy tin nhắn gần nhất liên quan đến user (nơi user là Sender hoặc Receiver)
                 let latestMessage = _context.SupportMessages
                                         .Where(m => m.SenderId == user.Id || m.ReceiverId == user.Id)
                                         .OrderByDescending(m => m.SentAt)
                                         .FirstOrDefault()
-                select new UserLatestMessageDto
+                select new
                 {
-                    UserId = user.Id,
-                    UserName = user.UserName,
-                    FullName = user.FullName,
-                    // Nếu không có tin nhắn nào, các thuộc tính liên quan sẽ là null
-                    IsFromAdmin = latestMessage != null ? latestMessage.IsFromAdmin : null,
-                    SenderName = latestMessage != null && latestMessage.Sender != null ? latestMessage.Sender.UserName : null,
-                    Message = latestMessage != null ? latestMessage.Message : null
+                    User = user,
+                    LatestMessage = latestMessage
                 }
             ).ToListAsync();
 
+            // Map sang DTO, chuyển đổi trạng thái claim từ ConversationLocks thành AdminId
+            var dtos = userMessages.Select(um => new UserLatestMessageDto
+            {
+                UserId = um.User.Id,
+                UserName = um.User.UserName,
+                FullName = um.User.FullName,
+                IsFromAdmin = um.LatestMessage != null ? (bool?)um.LatestMessage.IsFromAdmin : null,
+                SenderName = um.LatestMessage != null && um.LatestMessage.Sender != null ? um.LatestMessage.Sender.UserName : null,
+                Message = um.LatestMessage != null ? um.LatestMessage.Message : null,
+                // Lấy adminId từ ConversationLocks, nếu có admin đang claim conversation của user này
+                AdminId = ChatHub.ConversationLocks.TryGetValue(um.User.Id, out string adminId) ? adminId : null
+            }).ToList();
+
             return dtos;
         }
+
+
 
         public async Task<List<SupportMessageDto>> GetMessagesByUserIdAsync(string userId)
         {

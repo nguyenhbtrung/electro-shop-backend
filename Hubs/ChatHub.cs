@@ -9,7 +9,7 @@ namespace electro_shop_backend.Hubs
     public class ChatHub : Hub
     {
         // Lưu trạng thái cuộc trò chuyện: key = userId, value = adminId đã claim
-        private static ConcurrentDictionary<string, string> ConversationLocks = new ConcurrentDictionary<string, string>();
+        public static ConcurrentDictionary<string, string> ConversationLocks = new ConcurrentDictionary<string, string>();
 
         /// <summary>
         /// Người dùng gửi tin nhắn cho admin.
@@ -19,8 +19,10 @@ namespace electro_shop_backend.Hubs
         public async Task SendMessageToAdmins(string message)
         {
             var userId = Context.UserIdentifier;
+            var userName = Context.User?.Identity?.Name;
+
             // Gửi tin nhắn tới group "Admins" để tất cả admin đều thông báo
-            await Clients.Group("Admins").SendAsync("ReceiveUserMessage", userId, message);
+            await Clients.Group("Admins").SendAsync("ReceiveUserMessage", userId, message, userName);
 
             // Nếu muốn, gửi lại cho chính user để cập nhật UI
             //await Clients.User(userId).SendAsync("ReceiveMessage", $"Bạn: {message}");
@@ -72,7 +74,7 @@ namespace electro_shop_backend.Hubs
                 if (assignedAdmin == adminId)
                 {
                     // Gửi tin nhắn cho user đã claim
-                    await Clients.User(userId).SendAsync("ReceiveAdminMessage", adminId, message);
+                    await Clients.User(userId).SendAsync("ReceiveAdminMessage", message);
                     // Phản hồi lại admin (update UI)
                     //await Clients.Caller.SendAsync("ReceiveMessage", $"Bạn: {message}");
                 }
@@ -120,5 +122,41 @@ namespace electro_shop_backend.Hubs
             }
             await base.OnConnectedAsync();
         }
+
+        public override async Task OnDisconnectedAsync(Exception? exception)
+        {
+            var userId = Context.UserIdentifier;
+
+            // Nếu user đang đóng vai trò Admin
+            if (Context.User.IsInRole("Admin"))
+            {
+                // Tìm tất cả các cuộc trò chuyện mà admin này đã claim (key = userId, value = adminId)
+                var lockedConversations = ConversationLocks
+                    .Where(lockItem => lockItem.Value == userId)
+                    .Select(lockItem => lockItem.Key)
+                    .ToList();
+
+                foreach (var conversationUserId in lockedConversations)
+                {
+                    // Loại bỏ lock của conversation
+                    ConversationLocks.TryRemove(conversationUserId, out _);
+                    // Thông báo cho group "Admins" và cho user tương ứng
+                    await Clients.Group("Admins").SendAsync("ConversationReleased", conversationUserId, userId);
+                    await Clients.User(conversationUserId).SendAsync("ConversationReleased", userId);
+                }
+            }
+            //else
+            //{
+            //    // Nếu người dùng ngắt kết nối và có lock liên quan, loại bỏ nó
+            //    if (ConversationLocks.TryRemove(userId, out string adminId))
+            //    {
+            //        await Clients.Group("Admins").SendAsync("ConversationReleased", userId, adminId);
+            //    }
+            //}
+
+            await base.OnDisconnectedAsync(exception);
+        }
+
+
     }
 }
