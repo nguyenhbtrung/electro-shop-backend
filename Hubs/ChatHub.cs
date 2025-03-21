@@ -69,6 +69,7 @@ namespace electro_shop_backend.Hubs
         public async Task SendAdminMessage(string userId, string message)
         {
             var adminId = Context.UserIdentifier;
+            var adminName = Context.User?.Identity?.Name;
             if (ConversationLocks.TryGetValue(userId, out string assignedAdmin))
             {
                 if (assignedAdmin == adminId)
@@ -77,6 +78,7 @@ namespace electro_shop_backend.Hubs
                     await Clients.User(userId).SendAsync("ReceiveAdminMessage", message);
                     // Phản hồi lại admin (update UI)
                     //await Clients.Caller.SendAsync("ReceiveMessage", $"Bạn: {message}");
+                    await Clients.Group("Admins").SendAsync("ReceiveAdminMessage", message, userId, adminName);
                 }
                 else
                 {

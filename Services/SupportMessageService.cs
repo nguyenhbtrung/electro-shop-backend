@@ -61,6 +61,7 @@ namespace electro_shop_backend.Services
                 join userRole in _context.UserRoles on user.Id equals userRole.UserId
                 where userRole.RoleId == "User"
                 let latestMessage = _context.SupportMessages
+                                        .Include(m => m.Sender)
                                         .Where(m => m.SenderId == user.Id || m.ReceiverId == user.Id)
                                         .OrderByDescending(m => m.SentAt)
                                         .FirstOrDefault()
