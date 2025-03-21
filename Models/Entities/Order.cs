@@ -33,7 +33,7 @@ public partial class Order
     public DateTime? TimeStamp { get; set; }
 
     [Column("payment_method")]
-    public string? PaymentMethod { get; set; } // COD, VNPay
+    public string? PaymentMethod { get; set; } // cod, vnpay
 
     [InverseProperty("Order")]
     public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();

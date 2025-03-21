@@ -23,11 +23,11 @@ public partial class Payment // Lưu lịch sử thanh toán
     public decimal Amount { get; set; }
 
     [Column("payment_method")]
-    public string? PaymentMethod { get; set; } // COD, VNPay
+    public string? PaymentMethod { get; set; } // cod, vnpay
 
     [Column("payment_status")]
     [StringLength(50)]
-    public string? PaymentStatus { get; set; } // Pending, Success, Failed
+    public string? PaymentStatus { get; set; } // pending, paid, failed
 
     [Column("created_time", TypeName = "datetime")]
     public DateTime? CreatedAt { get; set; }
