@@ -51,5 +51,20 @@ namespace electro_shop_backend.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+
+        [HttpGet("all-users")]
+        [Authorize(Policy = "AdminPolicy")]
+        public async Task<IActionResult> GetAllUserLatestMessages()
+        {
+            try
+            {
+                var result = await _supportMessageService.GetAllUserLatestMessagesAsync();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
     }
 }

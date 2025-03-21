@@ -39,8 +39,10 @@ namespace electro_shop_backend.Services
                 IsFromAdmin = requestDto.IsFromAdmin
             };
             await _context.SupportMessages.AddAsync(newMessage);
+            await _context.SaveChangesAsync();
             return new CreateMessageResponseDto
             {
+                Id = newMessage.MessageId,
                 SenderId = newMessage.SenderId,
                 ReceiverId = newMessage.ReceiverId,
                 Message = newMessage.Message,
@@ -48,5 +50,33 @@ namespace electro_shop_backend.Services
                 SentAt = newMessage.SentAt
             };
         }
+
+        public async Task<List<UserLatestMessageDto>> GetAllUserLatestMessagesAsync()
+        {
+            var dtos = await (
+                from user in _context.Users
+                    // join bảng UserRoles để lọc user có role là "User"
+                join userRole in _context.UserRoles on user.Id equals userRole.UserId
+                where userRole.RoleId == "User"
+                // Lấy tin nhắn gần nhất liên quan đến user (nơi user là Sender hoặc Receiver)
+                let latestMessage = _context.SupportMessages
+                                        .Where(m => m.SenderId == user.Id || m.ReceiverId == user.Id)
+                                        .OrderByDescending(m => m.SentAt)
+                                        .FirstOrDefault()
+                select new UserLatestMessageDto
+                {
+                    UserId = user.Id,
+                    UserName = user.UserName,
+                    FullName = user.FullName,
+                    // Nếu không có tin nhắn nào, các thuộc tính liên quan sẽ là null
+                    IsFromAdmin = latestMessage != null ? latestMessage.IsFromAdmin : null,
+                    SenderName = latestMessage != null && latestMessage.Sender != null ? latestMessage.Sender.UserName : null,
+                    Message = latestMessage != null ? latestMessage.Message : null
+                }
+            ).ToListAsync();
+
+            return dtos;
+        }
+
     }
 }
