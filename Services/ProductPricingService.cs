@@ -26,8 +26,8 @@ public class ProductPricingService : IProductPricingService
         {
             throw new Exception("Sản phẩm không tồn tại.");
         }
-        var (discountedPrice, discountType, discountValue) = ProductCalculationValue.CalculateDiscount(product, selectedAttributeDetailIds);
-        decimal originalPrice = product.Price;
+
+        var (originalPrice, discountedPrice, discountType, discountValue) = ProductCalculationValue.CalculateDiscount(product, selectedAttributeDetailIds);
 
         return new PriceResultDto
         {

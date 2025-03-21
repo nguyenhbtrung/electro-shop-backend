@@ -23,11 +23,11 @@ namespace electro_shop_backend.Models.Mappers
         public static ProductDto ToProductDto(this Product product)//show
         {
             return new ProductDto
-            {
+            {   
                 ProductId = product.ProductId,
                 Name = product.Name,
                 Info = product.Info,
-                OriginalPrice = product.Price,
+                OriginalPrice = product.Price ,
                 Stock = product.Stock,
                 UnitsSold=product.UnitsSold,
                 ProductImages = new(),

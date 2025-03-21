@@ -38,7 +38,7 @@ namespace electro_shop_backend.Services
                 if (processedName.Contains(processedQuery))
                 {
                     var selectedAttributeDetailIds = new List<int>();
-                    var (discountedPrice, discountType, discountValue) = ProductCalculationValue.CalculateDiscount(product, selectedAttributeDetailIds) ;
+                    var (originalPrice, discountedPrice, discountType, discountValue) = ProductCalculationValue.CalculateDiscount(product, selectedAttributeDetailIds);
                     double avgRating = ProductCalculationValue.CalculateAverageRating(product);
 
                     var dto = new ProductCardDto
@@ -49,7 +49,7 @@ namespace electro_shop_backend.Services
                                     .Where(pi => !string.IsNullOrWhiteSpace(pi.ImageUrl))
                                     .Select(pi => pi.ImageUrl)
                                     .ToList() ?? new List<string>(),
-                        OriginalPrice = product.Price,
+                        OriginalPrice = originalPrice,
                         DiscountedPrice = discountedPrice,
                         DiscountType = discountType,
                         DiscountValue = discountValue,
@@ -112,7 +112,7 @@ namespace electro_shop_backend.Services
                 products = products.Where(product =>
                 {
                     var selectedAttributeDetailIds = new List<int>();
-                    var (discountedPrice, discountType, discountValue) = ProductCalculationValue.CalculateDiscount(product, selectedAttributeDetailIds);
+                    var (originalPrice, discountedPrice, discountType, discountValue) = ProductCalculationValue.CalculateDiscount(product, selectedAttributeDetailIds);
                     bool meetsMin = !minPrice.HasValue || discountedPrice >= minPrice.Value;
                     bool meetsMax = !maxPrice.HasValue || discountedPrice <= maxPrice.Value;
                     return meetsMin && meetsMax;
@@ -160,7 +160,7 @@ namespace electro_shop_backend.Services
             var productDtos = products.Select(product =>
             {
                 var selectedAttributeDetailIds = new List<int>();
-                var (discountedPrice, discountType, discountValue) = ProductCalculationValue.CalculateDiscount(product,selectedAttributeDetailIds);
+                var (originalPrice, discountedPrice, discountType, discountValue) = ProductCalculationValue.CalculateDiscount(product, selectedAttributeDetailIds);
                 double avgRating = ProductCalculationValue.CalculateAverageRating(product);
                 return new ProductCardDto
                 {
@@ -170,7 +170,7 @@ namespace electro_shop_backend.Services
                                 .Where(pi => !string.IsNullOrWhiteSpace(pi.ImageUrl))
                                 .Select(pi => pi.ImageUrl)
                                 .ToList() ?? new List<string>(),
-                    OriginalPrice = product.Price,
+                    OriginalPrice = originalPrice,
                     DiscountedPrice = discountedPrice,
                     DiscountType = discountType,
                     DiscountValue = discountValue,
@@ -228,7 +228,7 @@ namespace electro_shop_backend.Services
                 products = products.Where(product =>
                 {
                     var selectedAttributeDetailIds = new List<int>();
-                    var (discountedPrice, discountType, discountValue) = ProductCalculationValue.CalculateDiscount(product, selectedAttributeDetailIds);
+                    var (originalPrice, discountedPrice, discountType, discountValue) = ProductCalculationValue.CalculateDiscount(product, selectedAttributeDetailIds);
                     bool meetsMin = !minPrice.HasValue || discountedPrice >= minPrice.Value;
                     bool meetsMax = !maxPrice.HasValue || discountedPrice <= maxPrice.Value;
                     return meetsMin && meetsMax;
@@ -276,7 +276,7 @@ namespace electro_shop_backend.Services
             var productDtos = products.Select(product =>
             {
                 var selectedAttributeDetailIds = new List<int>();
-                var (discountedPrice, discountType, discountValue) = ProductCalculationValue.CalculateDiscount(product, selectedAttributeDetailIds);
+                var (originalPrice, discountedPrice, discountType, discountValue) = ProductCalculationValue.CalculateDiscount(product, selectedAttributeDetailIds);
                 double avgRating = ProductCalculationValue.CalculateAverageRating(product);
                 return new ProductCardDto
                 {
@@ -286,7 +286,7 @@ namespace electro_shop_backend.Services
                                 .Where(pi => !string.IsNullOrWhiteSpace(pi.ImageUrl))
                                 .Select(pi => pi.ImageUrl)
                                 .ToList() ?? new List<string>(),
-                    OriginalPrice = product.Price,
+                    OriginalPrice = originalPrice,
                     DiscountedPrice = discountedPrice,
                     DiscountType = discountType,
                     DiscountValue = discountValue,
