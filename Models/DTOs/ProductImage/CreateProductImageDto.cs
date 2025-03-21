@@ -1,11 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;
 
 namespace electro_shop_backend.Models.DTOs.ProductImage
 {
     public class CreateProductImageDto
     {
         [Required]
-        [StringLength(255)]
-        public string? ImageUrl { get; set; }
+        public IFormFile[] Images { get; set; }
     }
 }

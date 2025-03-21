@@ -5,26 +5,13 @@ namespace electro_shop_backend.Models.Mappers
 {
     public static class ProductImageMapper
     {
-        public static ProductImageDto ToProductImageDto(this ProductImage imageproduct)//show
+        public static ProductImageDto ToProductImageDto(this ProductImage imageProduct)
         {
             return new ProductImageDto
             {
-                ProductImageId = imageproduct.ProductImageId,
-                ImageUrl = imageproduct.ImageUrl,
+                ProductImageId = imageProduct.ProductImageId,
+                ImageUrl = imageProduct.ImageUrl,
             };
         }
-        public static ProductImage ToProductImageFromCreate(this CreateProductImageDto requestDto)//tạo
-        {
-            return new ProductImage
-            {
-                ImageUrl = requestDto.ImageUrl,
-            };
-        }
-        public static void ToProductImageFromUpdate(this CreateProductImageDto requestDto, ProductImage productImage)
-        {
-            productImage.ImageUrl = requestDto.ImageUrl;
-        }
-
-
     }
 }

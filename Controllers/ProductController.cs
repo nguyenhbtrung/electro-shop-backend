@@ -93,17 +93,25 @@ namespace electro_shop_backend.Controllers
                 return StatusCode(500, "Lỗi khi cập nhật sản phẩm.");
             }
         }
-        [HttpPost("{id}/Image")]
-        [Authorize(Policy = "AdminPolicy")]
-        public async Task<IActionResult> CreateProductImage(int id ,[FromBody] CreateProductImageDto requestDto)
+        [HttpPost("{productId}/Image")]
+        [Authorize]
+        public async Task<IActionResult> UploadProductImages(int productId, [FromForm] CreateProductImageDto requestDto)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return BadRequest(ModelState);
+                var result = await _productimageService.CreateProductImagesAsync(productId, requestDto);
+                return Ok(result);
             }
-            var result = await _productimageService.CreateProductImageAsync(id,requestDto);
-            return Ok(result);
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
+
         [HttpPut("{id}/Image")]
         [Authorize(Policy = "AdminPolicy")]
         public async Task<IActionResult> UpdateProductImage(int id, [FromBody] CreateProductImageDto requestDto)
