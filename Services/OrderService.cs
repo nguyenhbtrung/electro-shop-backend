@@ -53,6 +53,17 @@ namespace electro_shop_backend.Services
                 .ToListAsync();
         }
 
+        public async Task<List<OrderDto>> GetOrderByStatusAsync(string userId, string status)
+        {
+            return await _context.Orders
+                .AsNoTracking()
+                .Where(order => order.Status == status)
+                .Include(order => order.OrderItems)
+                .Include(order => order.Payments)
+                .Select(order => order.ToOrderDto())
+                .ToListAsync();
+        }
+
         public async Task<OrderDto> CreateOrderAsync(string userId, List<int> selectedProductIds, string voucherCode, string paymentmethod)
         {
             decimal totalPrice = 0;

@@ -69,6 +69,27 @@ namespace electro_shop_backend.Controllers
             }
         }
 
+        [HttpGet("user/vieworderbystatus")]
+        [Authorize(Policy = "UserPolicy")]
+        public async Task<IActionResult> GetOrderByStatusAsync(string status)
+        {
+            var username = User.GetUsername();
+            var user = await _userManager.FindByNameAsync(username);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            try
+            {
+                var order = await _orderService.GetOrderByStatusAsync(user.Id, status);
+                return Ok(order);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         [HttpPost("user/createorder")]
         [Authorize(Policy = "UserPolicy")]
         public async Task<IActionResult> CreateOrderAsync(List<int> selectedProductIds, string voucherCode = "", string payment = "")

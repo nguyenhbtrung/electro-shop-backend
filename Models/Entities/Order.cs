@@ -22,7 +22,7 @@ public partial class Order
 
     [Column("status")]
     [StringLength(50)]
-    public string? Status { get; set; } // Pending, Processing, Shipping, Completed, Cancelled
+    public string? Status { get; set; } // Pending, Processing, Shipping, Successed, Cancelled
                                         // Đang chờ xử lý, Đang xử lý, Đang giao hàng, Đã hoàn thành, Đã hủy
 
     [Column("address")]
