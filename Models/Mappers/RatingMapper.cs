@@ -13,7 +13,6 @@ namespace electro_shop_backend.Models.Mappers
                 UserId = userId,
                 RatingScore = requestDto.RatingScore,
                 RatingContent = requestDto.RatingContent,
-                Status = requestDto.Status,
                 TimeStamp = requestDto.TimeStamp,
             };
         }
