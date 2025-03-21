@@ -78,5 +78,22 @@ namespace electro_shop_backend.Services
             return dtos;
         }
 
+        public async Task<List<SupportMessageDto>> GetMessagesByUserIdAsync(string userId)
+        {
+            var messages = await _context.SupportMessages
+                .Include(m => m.Sender)
+                .Where(m => m.SenderId == userId || m.ReceiverId == userId)
+                .Select(m => new SupportMessageDto
+                {
+                    Id = m.MessageId,
+                    SenderName = m.Sender!.UserName,
+                    Message = m.Message,
+                    IsFromAdmin = m.IsFromAdmin,
+                    SentAt = m.SentAt
+                })
+                .OrderBy(m => m.SentAt)
+                .ToListAsync();
+            return messages;
+        }
     }
 }

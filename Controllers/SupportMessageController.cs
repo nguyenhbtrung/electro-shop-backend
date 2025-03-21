@@ -52,13 +52,50 @@ namespace electro_shop_backend.Controllers
             }
         }
 
-        [HttpGet("all-users")]
+        [HttpGet("admin/all-users")]
         [Authorize(Policy = "AdminPolicy")]
         public async Task<IActionResult> GetAllUserLatestMessages()
         {
             try
             {
                 var result = await _supportMessageService.GetAllUserLatestMessagesAsync();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpGet("admin/{userId}")]
+        [Authorize(Policy = "AdminPolicy")]
+        public async Task<IActionResult> GetMessagesByUserId(string userId)
+        {
+            try
+            {
+                var result = await _supportMessageService.GetMessagesByUserIdAsync(userId);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpGet("user")]
+        [Authorize]
+        public async Task<IActionResult> GetUserMessages()
+        {
+            var username = User.GetUsername();
+            var user = await _userManager.FindByNameAsync(username);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+            try
+            {
+                var result = await _supportMessageService.GetMessagesByUserIdAsync(user.Id);
                 return Ok(result);
             }
             catch (Exception ex)

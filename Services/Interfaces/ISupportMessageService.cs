@@ -6,5 +6,6 @@ namespace electro_shop_backend.Services.Interfaces
     {
         Task<CreateMessageResponseDto> CreateMessageAsync(string senderId, CreateMessageRequestDto requestDto);
         Task<List<UserLatestMessageDto>> GetAllUserLatestMessagesAsync();
+        Task<List<SupportMessageDto>> GetMessagesByUserIdAsync(string userId);
     }
 }
