@@ -27,6 +27,7 @@ namespace electro_shop_backend.Services
         {
             return await _context.Returns
                 .AsNoTracking()
+                .OrderByDescending(r => r.TimeStamp)
                 .Select(p => new AllReturnDto
                 {
                     ReturnId = p.ReturnId,
@@ -278,6 +279,7 @@ namespace electro_shop_backend.Services
                 .Include(r => r.ReturnItems)
                 .ThenInclude(ri => ri.OrderItem)
                 .Where(r => r.Order!.UserId == userId)
+                .OrderByDescending(r => r.TimeStamp)
                 .Select(r => new ReturnUserHistoryDto
                 {
                     ReturnId = r.ReturnId,
