@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using electro_shop_backend.Models.DTOs.ProductImage;
 
 namespace electro_shop_backend.Models.DTOs.Order
 {
@@ -8,6 +9,8 @@ namespace electro_shop_backend.Models.DTOs.Order
         public int OrderId { get; set; }
 
         public string? UserId { get; set; }
+
+        public string? FullName { get; set; }
 
         public decimal Total { get; set; }
 
@@ -22,6 +25,8 @@ namespace electro_shop_backend.Models.DTOs.Order
         public string? PaymentMethod { get; set; }
 
         public string? PaymentUrl { get; set; }
+
+        public List<ProductImageDto> ProductImage { get; set; } = new List<ProductImageDto>();
 
         public virtual List<OrderItemDto> OrderItems { get; set; } = new List<OrderItemDto>();
 

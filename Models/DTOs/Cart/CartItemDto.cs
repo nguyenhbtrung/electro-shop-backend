@@ -1,4 +1,6 @@
-﻿namespace electro_shop_backend.Models.DTOs.Cart
+﻿using electro_shop_backend.Models.DTOs.ProductImage;
+
+namespace electro_shop_backend.Models.DTOs.Cart
 {
     public class CartItemDto
     {

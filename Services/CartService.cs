@@ -72,6 +72,7 @@ namespace electro_shop_backend.Services
             var cart = await _context.Carts
                 .Include(cart => cart.CartItems)
                 .ThenInclude(cartitem => cartitem.Product)
+                .ThenInclude(product => product.ProductImages)
                 .FirstOrDefaultAsync(cart => cart.UserId == userId);
 
             if (cart == null)

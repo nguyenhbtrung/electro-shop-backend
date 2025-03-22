@@ -49,7 +49,9 @@ namespace electro_shop_backend.Services
                 .Where(order => order.UserId == userId)
                 .Include(order => order.OrderItems)
                 .ThenInclude(OrderItem => OrderItem.Product)
+                .ThenInclude(Product => Product.ProductImages)
                 .Include(order => order.Payments)
+                .Include(order => order.User)
                 .Select(order => order.ToOrderDto())
                 .ToListAsync();
         }
@@ -58,7 +60,7 @@ namespace electro_shop_backend.Services
         {
             return await _context.Orders
                 .AsNoTracking()
-                .Where(order => order.Status == status)
+                .Where(order => order.Status == status && order.UserId == userId)
                 .Include(order => order.OrderItems)
                 .Include(order => order.Payments)
                 .Select(order => order.ToOrderDto())
