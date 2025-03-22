@@ -47,4 +47,7 @@ public partial class User : IdentityUser
     [InverseProperty("Receiver")]
     public virtual ICollection<SupportMessage> ReceivedMessages { get; set; } = new List<SupportMessage>();
 
+    [InverseProperty("User")]
+    public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();
+
 }

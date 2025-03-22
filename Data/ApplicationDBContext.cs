@@ -62,6 +62,8 @@ public partial class ApplicationDbContext : IdentityDbContext<User>
     public virtual DbSet<ProductAttribute> ProductAttributes { get; set; }
     public virtual DbSet<AttributeDetail> ProductAttributeDetails { get; set; }
     public virtual DbSet<SupportMessage> SupportMessages { get; set; }
+    public virtual DbSet<Notification> Notifications { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -345,6 +347,21 @@ public partial class ApplicationDbContext : IdentityDbContext<User>
                   .OnDelete(DeleteBehavior.ClientSetNull)
                   .HasConstraintName("FK__SupportMessage__receiverId");
         });
+
+        modelBuilder.Entity<Notification>(entity =>
+        {
+            entity.HasKey(e => e.NotiId)
+                  .HasName("PK__Notification__01");
+
+            entity.Property(e => e.CreateAt).HasDefaultValueSql("(getdate())");
+
+            entity.HasOne(d => d.User)
+                  .WithMany(p => p.Notifications)
+                  .HasForeignKey(d => d.UserId)
+                  .OnDelete(DeleteBehavior.Cascade)
+                  .HasConstraintName("FK__Notification__userId");
+        });
+
         OnModelCreatingPartial(modelBuilder);
     }
 
