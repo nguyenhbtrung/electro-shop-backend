@@ -50,7 +50,7 @@ namespace electro_shop_backend.Services
                 throw new BadRequestException("Đơn hàng không tồn tại hoặc không thuộc quyền sở hữu");
             }
 
-            if (order.Status != "Successed")
+            if (order.Status != "successed")
             {
                 throw new BadRequestException("Chỉ có thể yêu cầu hoàn trả cho đơn hàng đã giao");
             }
