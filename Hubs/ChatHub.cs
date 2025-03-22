@@ -51,7 +51,18 @@ namespace electro_shop_backend.Hubs
                 string currentAdmin = ConversationLocks[userId];
                 if (currentAdmin == adminId)
                 {
-                    await Clients.Caller.SendAsync("ClaimStatus", "Bạn đã claim cuộc trò chuyện này.");
+                    //await Task.Delay(TimeSpan.FromSeconds(2));
+                    //int tryCount = 0;
+                    bool claimedAgain = ConversationLocks.TryAdd(userId, adminId);
+                    //while (!claimedAgain && tryCount < 50)
+                    //{
+                    //    claimedAgain = ConversationLocks.TryAdd(userId, adminId);
+                    //    tryCount++;
+                    //}
+                    if (claimedAgain)
+                        await Clients.Caller.SendAsync("ClaimStatus", "Bạn đã claim lại thành công cuộc trò chuyện này.");
+                    else
+                        await Clients.Caller.SendAsync("ClaimStatus", "Claim lại cuộc trò chuyện này thất bại.");
                 }
                 else
                 {
