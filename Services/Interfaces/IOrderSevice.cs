@@ -4,7 +4,7 @@ namespace electro_shop_backend.Services.Interfaces
 {
     public interface IOrderService
     {
-        Task<List<AllOrderDto>> GetAllOrdersAsync();
+        Task<List<OrderDto>> GetAllOrdersAsync();
 
         Task<OrderDto> GetOrderByOrderIdAsync(int orderId);
         Task<List<OrderDto>> GetOrderByUserIdAsync(string userId);
@@ -13,7 +13,7 @@ namespace electro_shop_backend.Services.Interfaces
         Task<OrderDto> CreateOrderAsync(string userId, string voucherCode, string paymentmethod);
 
         Task<OrderDto> UpdateOrderAddressAsync(string userId, OrderDto orderDto);
-        Task<OrderDto> UpdateOrderStatusAsync(int orderId, OrderDto orderDto);
+        Task<OrderDto> UpdateOrderStatusAsync(int orderId, string orderStatus);
 
         Task<bool> CancelOrderAsync(int orderId);
         Task<VnPayResponseDto> HandlePaymentCallbackAsync(IQueryCollection queryCollection);

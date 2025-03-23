@@ -21,11 +21,16 @@ namespace electro_shop_backend.Services
             _vnPayService = vnPayService;
         }
 
-        public async Task<List<AllOrderDto>> GetAllOrdersAsync()
+        public async Task<List<OrderDto>> GetAllOrdersAsync()
         {
             return await _context.Orders
                 .AsNoTracking()
-                .Select(OrderDto => OrderDto.ToAllOrderDto())
+                .Include(order => order.OrderItems)
+                .ThenInclude(OrderItem => OrderItem.Product)
+                .ThenInclude(Product => Product.ProductImages)
+                .Include(order => order.Payments)
+                .Include(order => order.User)
+                .Select(order => order.ToOrderDto())
                 .ToListAsync();
         }
 
@@ -215,10 +220,9 @@ namespace electro_shop_backend.Services
             return order.ToOrderDto();
         }
 
-        public async Task<OrderDto> UpdateOrderStatusAsync(int orderId, OrderDto orderDto)
+        public async Task<OrderDto> UpdateOrderStatusAsync(int orderId, string orderStatus)
         {
             var order = await _context.Orders
-                .Include(orderitem => orderitem.OrderItems)
                 .FirstOrDefaultAsync(order => order.OrderId == orderId);
 
             if (order == null)
@@ -226,9 +230,9 @@ namespace electro_shop_backend.Services
                 throw new NotFoundException("Order not found");
             }
 
-            order.Status = orderDto.Status;
+            order.Status = orderStatus;
             await _context.SaveChangesAsync();
-            return order.ToOrderDto();
+            return order.ToOrderUpdateDto();
         }
 
         public async Task<bool> CancelOrderAsync(int orderId)
