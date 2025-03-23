@@ -132,12 +132,12 @@ namespace electro_shop_backend.Controllers
             }
         }
 
-        [HttpPut("admin/updateorderstatus/{orderId}")]
-        public async Task<IActionResult> UpdateOrderStatusAsync(int orderId, OrderDto orderDto)
+        [HttpPut("admin/updateorderstatus")]
+        public async Task<IActionResult> UpdateOrderStatusAsync(int orderId, string orderStatus)
         {
             try
             {
-                var order = await _orderService.UpdateOrderStatusAsync(orderId, orderDto);
+                var order = await _orderService.UpdateOrderStatusAsync(orderId, orderStatus);
                 return Ok(order);
             }
             catch (Exception)

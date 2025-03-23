@@ -18,19 +18,11 @@ namespace electro_shop_backend.Services
             _context = context;
         }
 
-        public async Task<List<AllVoucherDto>> GetAllVouchersAsyncs() 
+        public async Task<List<VoucherDto>> GetAllVouchersAsyncs() 
         {
             return await _context.Vouchers
                 .AsNoTracking()
-                .Select(item => new AllVoucherDto
-                {
-                    VoucherId = item.VoucherId,
-                    VoucherName = item.VoucherName,
-                    VoucherCode = item.VoucherCode,
-                    VoucherType = item.VoucherType,
-                    DiscountValue = item.DiscountValue,
-                    VoucherStatus = item.VoucherStatus
-                })
+                .Select(VoucherDto => VoucherDto.ToVoucherDto())
                 .ToListAsync();
         }
 

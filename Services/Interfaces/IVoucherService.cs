@@ -4,7 +4,7 @@ namespace electro_shop_backend.Services.Interfaces
 {
     public interface IVoucherService
     {
-        Task<List<AllVoucherDto>> GetAllVouchersAsyncs();
+        Task<List<VoucherDto>> GetAllVouchersAsyncs();
         Task<List<VoucherDto>> GetVoucherAvailableAsync();
         Task<VoucherDto?> GetVoucherByIdAsyncs(int voucherId);
         Task<VoucherDto> CreateVoucherAsync(CreateVoucherRequestDto requestDto);
