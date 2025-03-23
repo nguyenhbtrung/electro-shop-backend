@@ -354,6 +354,23 @@ namespace electro_shop_backend.Services
                 AdminComment = existingReturn.AdminComment
             };
         }
+
+        public async Task<PaymentDTO> GetPaymentByOrderIdAsync(int orderId)
+        {
+            var payment = await _context.Payments.FirstOrDefaultAsync(p => p.OrderId == orderId);
+            if (payment == null)
+            {
+                throw new BadRequestException("Không tìm thấy payment có orderId này");
+            }
+
+            return new PaymentDTO
+            {
+                OrderId = orderId,
+                Amount = payment.Amount,
+                PayDate = payment.PaidAt?.ToString("yyyyMMddHHmmss"),
+                PaymentMethod = payment.PaymentMethod
+            };
+        }
     }
 
     public enum ReturnStatus

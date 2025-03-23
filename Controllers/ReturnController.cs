@@ -201,6 +201,26 @@ namespace electro_shop_backend.Controllers
             return Ok("Rating deleted successfully");
         }
 
+        [HttpGet("payment/{orderId}")]
+        [Authorize(Policy = "AdminPolicy")]
+        public async Task<IActionResult> GetPaymentByOrderId([FromRoute] int orderId)
+        {
+            
+            try
+            {
+                var result = await _returnService.GetPaymentByOrderIdAsync(orderId);
+                return Ok(result);
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
         [HttpPost("Refund")]
         public async Task<IActionResult> RefundPayment([FromBody] RefundRequest refundRequest)
         {
