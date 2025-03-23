@@ -299,14 +299,18 @@ namespace electro_shop_backend.Services
 
             if (targetProduct == null)
                 throw new NotFoundException("Không tìm thấy sản phẩm tham chiếu.");
+
             var allProducts = await _context.Products
                 .AsNoTracking()
                 .Include(p => p.Brand)
                 .Include(p => p.Categories)
+                .Include(p => p.Ratings)
+                .Include(p => p.ProductImages)
                 .Include(p => p.ProductDiscounts)
                    .ThenInclude(pd => pd.Discount)
                 .Where(p => p.ProductId != productId)
                 .ToListAsync();
+
             double CalculateSimilarity(Product p1, Product p2)
             {
                 int score = 0;
@@ -344,6 +348,7 @@ namespace electro_shop_backend.Services
 
                 return score;
             }
+
             var recommendedProducts = allProducts
                 .Select(p => new { Product = p, SimilarityScore = CalculateSimilarity(targetProduct, p) })
                 .Where(x => x.SimilarityScore > 0)
@@ -362,10 +367,15 @@ namespace electro_shop_backend.Services
                 productDto.DiscountType = discountType;
                 productDto.DiscountValue = discountValue;
                 productDto.AverageRating = ProductCalculationValue.CalculateAverageRating(p);
+                productDto.ProductImages = p.ProductImages?
+                    .Select(pi => ProductImageMapper.ToProductImageDto(pi))
+                    .ToList();
+
                 return productDto;
             }).ToList();
 
             return recommendedDtos;
         }
+
     }
 }
