@@ -67,11 +67,11 @@ namespace electro_shop_backend.Services
                 .ToListAsync();
         }
 
-        public async Task<OrderDto> CreateOrderAsync(string userId, List<int> selectedProductIds, string voucherCode, string paymentmethod)
+        public async Task<OrderDto> CreateOrderAsync(string userId, string voucherCode, string paymentmethod)
         {
             decimal totalPrice = 0;
             var cartitems = await _context.CartItems
-                .Where(item => selectedProductIds.Contains(item.ProductId ?? 0) && item.Cart!.UserId == userId)
+                .Where(item => item.Cart!.UserId == userId)
                 .Include(cartitem => cartitem.Product)
                 .Include(cartitem => cartitem.Cart)
                 .ToListAsync();
@@ -244,7 +244,12 @@ namespace electro_shop_backend.Services
             }
 
             order.Status = "cancelled";
-            payment.PaymentStatus = "cancelled";
+            if (payment == null)
+            {
+                throw new NotFoundException("Payment not found");
+            }
+            payment.PaymentStatus = "failed";
+
             await _context.SaveChangesAsync();
             return true;
         }

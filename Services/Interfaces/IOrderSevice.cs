@@ -10,7 +10,7 @@ namespace electro_shop_backend.Services.Interfaces
         Task<List<OrderDto>> GetOrderByUserIdAsync(string userId);
         Task<List<OrderDto>> GetOrderByStatusAsync(string userId, string status);
 
-        Task<OrderDto> CreateOrderAsync(string userId, List<int> selectedCardItemIds, string voucherCode, string paymentmethod);
+        Task<OrderDto> CreateOrderAsync(string userId, string voucherCode, string paymentmethod);
 
         Task<OrderDto> UpdateOrderAddressAsync(string userId, OrderDto orderDto);
         Task<OrderDto> UpdateOrderStatusAsync(int orderId, OrderDto orderDto);
