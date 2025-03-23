@@ -1,4 +1,14 @@
-﻿## appsettings.json template
+## Run
+- Open the project in Visual Studio.
+- Add a file named appsettings.json to your project.
+- Use the template below.
+- Change DefaultSQLConnection to your database connection string.
+- Open Package Manager Console: Go to Tools -> NuGet Package Manager -> Package Manager Console.
+- Run the following command: update-database.
+- Run the project.
+
+
+## appsettings.json template
 ```json
 {
     "Logging": {
