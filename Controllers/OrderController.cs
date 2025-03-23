@@ -164,7 +164,65 @@ namespace electro_shop_backend.Controllers
         public async Task<IActionResult> PaymentCallBack()
         {
             var result = await _orderService.HandlePaymentCallbackAsync(Request.Query);
-            return Ok(result);
+
+            if (result.VnPayResponseCode == "00")
+            {
+                // Thanh toán thành công
+                var successHtml = @"
+            <html>
+            <head>
+                <style>
+                    body {
+                        margin: 0;
+                        background-color: #FFFFFF; /* Màu nền xanh nhạt */
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        height: 100vh;
+                    }
+                    img {
+                        max-width: 80%;
+                        max-height: 80%;
+                        object-fit: contain;
+                    }
+                </style>
+            </head>
+            <body>
+                <img src='/images/payment-success.png' alt='Payment Successful' />
+            </body>
+            </html>
+        ";
+                return Content(successHtml, "text/html");
+            }
+            else
+            {
+                // Thanh toán thất bại
+                var failureHtml = @"
+            <html>
+            <head>
+                <style>
+                    body {
+                        margin: 0;
+                        background-color: #f8d7da; /* Màu nền đỏ nhạt */
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        height: 100vh;
+                    }
+                    img {
+                        max-width: 80%;
+                        max-height: 80%;
+                        object-fit: contain;
+                    }
+                </style>
+            </head>
+            <body>
+                <img src='/images/payment-failure.png' alt='Payment Failed' />
+            </body>
+            </html>
+        ";
+                return Content(failureHtml, "text/html");
+            }
         }
     }
 }
