@@ -18,6 +18,7 @@ namespace electro_shop_backend.Services.Interfaces
         Task<ProductDto> UpdateProductAsync(int id,UpdateProductRequestDto requestDto);
         Task<bool> DeleteProductAsync(int id);
         Task<ProductGroupedDto> GetProductsByDiscountIdAsync(int? discountId, string? search);
+        Task<List<ProductDto>> GetRecommendedProductsAsync(int productId);
 
     }
 }

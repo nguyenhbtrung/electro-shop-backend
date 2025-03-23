@@ -27,19 +27,15 @@ namespace electro_shop_backend.Helpers
             {
                 discountType = effectiveDiscount.DiscountType;
                 discountValue = effectiveDiscount.DiscountValue ?? 0;
-
-                // Nếu discount theo phần trăm
                 if (string.Equals(discountType, "Percentage", StringComparison.OrdinalIgnoreCase))
                 {
                     discountedPrice = basePrice * (1 - discountValue / 100);
                 }
-                // Nếu discount theo số tiền cố định
                 else if (string.Equals(discountType, "Flat Amount", StringComparison.OrdinalIgnoreCase))
                 {
                     discountedPrice = basePrice - discountValue;
                 }
 
-                // Đảm bảo giá không âm
                 if (discountedPrice < 0)
                 {
                     discountedPrice = 0;

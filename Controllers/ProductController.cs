@@ -60,9 +60,8 @@ namespace electro_shop_backend.Controllers
             return Ok(products);
         }
 
-
         [HttpPost]
-        [Authorize(Policy ="AdminPolicy")]
+        [Authorize(Policy = "AdminPolicy")]
         public async Task<IActionResult> CreateProduct([FromBody] CreateProductRequestDto requestDto)
         {
             if (!ModelState.IsValid)
@@ -72,6 +71,7 @@ namespace electro_shop_backend.Controllers
             var result = await _productService.CreateProductAsync(requestDto);
             return Ok(result);
         }
+
         [HttpPut("{id}")]
         [Authorize(Policy = "AdminPolicy")]
         public async Task<IActionResult> UpdateProduct(int id, [FromBody] UpdateProductRequestDto requestDto)
@@ -93,6 +93,7 @@ namespace electro_shop_backend.Controllers
                 return StatusCode(500, "Lỗi khi cập nhật sản phẩm.");
             }
         }
+
         [HttpPost("{productId}/Image")]
         [Authorize]
         public async Task<IActionResult> UploadProductImages(int productId, [FromForm] CreateProductImageDto requestDto)
@@ -123,6 +124,7 @@ namespace electro_shop_backend.Controllers
             var result = await _productimageService.UpdateProductImageAsync(id, requestDto);
             return Ok(result);
         }
+
         [HttpDelete("{id}")]
         [Authorize(Policy = "AdminPolicy")]
         public async Task<IActionResult> DeleteProduct(int id)
@@ -141,6 +143,7 @@ namespace electro_shop_backend.Controllers
                 return new ObjectResult(e);
             }
         }
+
         [HttpDelete("Image/{imageId}")]
         [Authorize(Policy = "AdminPolicy")]
         public async Task<IActionResult> DeleteProductImage(int imageId)
@@ -159,10 +162,29 @@ namespace electro_shop_backend.Controllers
                 return StatusCode(500, "Lỗi khi xóa ảnh sản phẩm.");
             }
         }
+
         [HttpPost("{productId}/addAttributeId")]
         public async Task<IActionResult> AddAttributeDetails(int productId, [FromBody] AddAttributeDto dto)
         {
             return await _productAttributeService.AssignAttributeDetails(productId, dto.AttributeDetailId);
+        }
+
+        [HttpGet("recommend/{productId}")]
+        public async Task<IActionResult> GetRecommendedProducts(int productId)
+        {
+            try
+            {
+                var recommendedProducts = await _productService.GetRecommendedProductsAsync(productId);
+                return Ok(recommendedProducts);
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
     }
 }

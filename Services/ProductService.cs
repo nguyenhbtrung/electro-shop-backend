@@ -288,5 +288,71 @@ namespace electro_shop_backend.Services
                 Selected = selectedProducts.Select(p => p.ToProductDto())
             };
         }
+
+        public async Task<List<ProductDto>> GetRecommendedProductsAsync(int productId)
+        {
+            var targetProduct = await _context.Products
+                .AsNoTracking()
+                .Include(p => p.Brand)
+                .Include(p => p.Categories)
+                .FirstOrDefaultAsync(p => p.ProductId == productId);
+
+            if (targetProduct == null)
+                throw new NotFoundException("Không tìm thấy sản phẩm tham chiếu.");
+            var allProducts = await _context.Products
+                .AsNoTracking()
+                .Include(p => p.Brand)
+                .Include(p => p.Categories)
+                .Where(p => p.ProductId != productId)
+                .ToListAsync();
+            double CalculateSimilarity(Product p1, Product p2)
+            {
+                int score = 0;
+                if (!string.IsNullOrEmpty(p1.Name) && !string.IsNullOrEmpty(p2.Name))
+                {
+                    if (p1.Name.IndexOf(p2.Name, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        p2.Name.IndexOf(p1.Name, StringComparison.OrdinalIgnoreCase) >= 0)
+                    {
+                        score += 5;
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(p1.Info) && !string.IsNullOrEmpty(p2.Info))
+                {
+                    if (p1.Info.IndexOf(p2.Info, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        p2.Info.IndexOf(p1.Info, StringComparison.OrdinalIgnoreCase) >= 0)
+                    {
+                        score += 3;
+                    }
+                }
+
+                if (p1.Brand != null && p2.Brand != null)
+                {
+                    if (p1.Brand.BrandId == p2.Brand.BrandId)
+                    {
+                        score += 4;
+                    }
+                }
+                if (p1.Categories != null && p2.Categories != null)
+                {
+                    int commonCategories = p1.Categories.Count(c1 =>
+                        p2.Categories.Any(c2 => c1.CategoryId == c2.CategoryId));
+                    score += commonCategories * 3;
+                }
+
+                return score;
+            }
+
+            var recommendedProducts = allProducts
+                .Select(p => new { Product = p, SimilarityScore = CalculateSimilarity(targetProduct, p) })
+                .Where(x => x.SimilarityScore > 0)
+                .OrderByDescending(x => x.SimilarityScore)
+                .Take(5)
+                .Select(x => x.Product)
+                .ToList();
+            var recommendedDtos = recommendedProducts.Select(p => p.ToProductDto()).ToList();
+
+            return recommendedDtos;
+        }
     }
 }
