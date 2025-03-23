@@ -303,11 +303,14 @@ namespace electro_shop_backend.Services
                 .AsNoTracking()
                 .Include(p => p.Brand)
                 .Include(p => p.Categories)
+                .Include(p => p.ProductDiscounts)
+                   .ThenInclude(pd => pd.Discount)
                 .Where(p => p.ProductId != productId)
                 .ToListAsync();
             double CalculateSimilarity(Product p1, Product p2)
             {
                 int score = 0;
+
                 if (!string.IsNullOrEmpty(p1.Name) && !string.IsNullOrEmpty(p2.Name))
                 {
                     if (p1.Name.IndexOf(p2.Name, StringComparison.OrdinalIgnoreCase) >= 0 ||
@@ -325,7 +328,6 @@ namespace electro_shop_backend.Services
                         score += 3;
                     }
                 }
-
                 if (p1.Brand != null && p2.Brand != null)
                 {
                     if (p1.Brand.BrandId == p2.Brand.BrandId)
@@ -342,15 +344,26 @@ namespace electro_shop_backend.Services
 
                 return score;
             }
-
             var recommendedProducts = allProducts
                 .Select(p => new { Product = p, SimilarityScore = CalculateSimilarity(targetProduct, p) })
                 .Where(x => x.SimilarityScore > 0)
                 .OrderByDescending(x => x.SimilarityScore)
-                .Take(5)
+                .Take(4)
                 .Select(x => x.Product)
                 .ToList();
-            var recommendedDtos = recommendedProducts.Select(p => p.ToProductDto()).ToList();
+
+            var recommendedDtos = recommendedProducts.Select(p =>
+            {
+                var selectedAttributeDetailIds = new List<int>();
+                var productDto = p.ToProductDto();
+                var (originalPrice, discountedPrice, discountType, discountValue) = ProductCalculationValue.CalculateDiscount(p, selectedAttributeDetailIds);
+                productDto.OriginalPrice = originalPrice;
+                productDto.DiscountedPrice = discountedPrice;
+                productDto.DiscountType = discountType;
+                productDto.DiscountValue = discountValue;
+                productDto.AverageRating = ProductCalculationValue.CalculateAverageRating(p);
+                return productDto;
+            }).ToList();
 
             return recommendedDtos;
         }
