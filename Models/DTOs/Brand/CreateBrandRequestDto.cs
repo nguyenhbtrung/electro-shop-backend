@@ -11,7 +11,7 @@ namespace electro_shop_backend.Models.DTOs.Brand
         [Required]
         [StringLength(200)]
         public string? Country { get; set; }
-        [StringLength(255)]
+        [StringLength(1000)]
         public string? ImageUrl { get; set; }
         [Required]
         [StringLength(1000)]
