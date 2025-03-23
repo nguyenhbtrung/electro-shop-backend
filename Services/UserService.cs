@@ -33,7 +33,7 @@ namespace electro_shop_backend.Services
                     UserName = registerDTO.UserName,
                     Email = registerDTO.Email,
                     CreatedAt = DateTime.UtcNow,
-                    UserStatus = "Active"
+                    UserStatus = "Active",
                 };
                 var createUser = await _userManager.CreateAsync(user, registerDTO.Password);
 
@@ -302,6 +302,11 @@ namespace electro_shop_backend.Services
                 {
                     _context.Ratings.Remove(r);
                 }
+                var userTokens = await _context.UserTokens.Where(ut => ut.UserId == user.Id).ToListAsync();
+                foreach (var token in userTokens)
+                {
+                    _context.UserTokens.Remove(token);
+                }
                 var result = await _userManager.DeleteAsync(user);
                 if (result.Succeeded)
                 {
@@ -368,9 +373,14 @@ namespace electro_shop_backend.Services
             try
             {
                 var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-                var callbackUrl = "http://localhost:4200/reset-password?email=" + user.Email + "&token=" + token;
-                await _emailService.SendEmailAsync(user.Email, "Reset Password",
-                     $"Please reset your password by clicking here: <a href='{callbackUrl}'>link</a>");
+                var forgotPasswordLink = "http://localhost:5173/reset-password?token=" + token + "&email=" + user.Email;
+                await _emailService.SendEmailAsync(user.Email, "Đặt lại mật khẩu của bạn – GTG Shop",
+                     $"<div style='font-family: Time New Roman; font-size: 18px; color: black;'>Xin chào {user.UserName},  " +
+                    "<br><br>Vui lòng đặt lại mật khẩu của bạn bằng cách nhấp vào đường dẫn dưới đây:" +
+                    $"<br><br><a href='{forgotPasswordLink}'>Đổi lại mật khẩu</a>" +
+                    "<br><br>Nếu bạn không thực hiện, xin hãy bỏ qua email này." +
+                    "<br><br>Trân trọng,  <br>GTG Shop." +
+                    "</div>");
                 return new OkObjectResult("Email sent successfully!" + token);
             }
             catch (Exception ex)
@@ -411,14 +421,16 @@ namespace electro_shop_backend.Services
             try
             {
                 var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                var callbackUrl = "http://localhost:7169/reset-password?email=" + user.Email + "&token=" + token;
+                var confirmationLink = "http://localhost:5173/emailConfirmed?token=" + token + "&email=" + user.Email;
                 await _emailService.SendEmailAsync(user.Email, "Xác nhận email của bạn – GTG Shop",
                     $"<div style='font-family: Time New Roman; font-size: 18px; color: black;'>Xin chào {user.UserName},  " +
-                    "<br><br>Cảm ơn bạn đã đăng ký tài khoản tại GTG Shop. Vui lòng xác nhận email của bạn bằng cách nhấp vào nút dưới đây:" +
-                    "<br><br>Nếu bạn không thực hiện, vui lòng liên hệ ngay với chúng tôi tại dutshop66@gmail.com để bảo vệ tài khoản của bạn.  " +
+                    "<br><br>Cảm ơn bạn đã đăng ký tài khoản tại GTG Shop. Vui lòng xác nhận email của bạn bằng cách nhấp vào đường dẫn dưới đây:" +
+                    $"<br><br><a href='{confirmationLink}'>Xác nhận email</a>" +
+                    "<br><br>Nếu bạn không thực hiện, xin hãy bỏ qua email này." +
                     "<br><br>Trân trọng,  <br>GTG Shop." +
+                    token +
                     "</div>");
-                return new OkObjectResult("Confirmed email sent successfully!" + token);
+                return new OkObjectResult("Confirmed email sent successfully! " + token);
             }
             catch (Exception ex)
             {
