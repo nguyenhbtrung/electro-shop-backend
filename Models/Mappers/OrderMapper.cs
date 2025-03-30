@@ -19,13 +19,14 @@ namespace electro_shop_backend.Models.Mappers
 
         public static OrderDto ToOrderDto(this Order order)
         {
-            return new OrderDto
+            var orderDto = new OrderDto
             {
                 OrderId = order.OrderId,
                 UserId = order.UserId,
                 FullName = order.User?.FullName,
                 Total = order.Total,
-                PaymentMethod = order.PaymentMethod,
+                PaymentUrl = order.Payments.FirstOrDefault(payment => payment.OrderId == order.OrderId)?.PaymentUrl,
+                PaymentMethod = order.Payments.FirstOrDefault(payment => payment.OrderId == order.OrderId)?.PaymentMethod,
                 PaymentStatus = order.Payments.FirstOrDefault(payment => payment.OrderId == order.OrderId)?.PaymentStatus,
                 Status = order.Status,
                 Address = order.Address,
@@ -41,6 +42,12 @@ namespace electro_shop_backend.Models.Mappers
                     ProductImage = OrderItem.Product?.ProductImages.FirstOrDefault()?.ImageUrl
                 }).ToList(),
             };
+
+            if(orderDto.PaymentMethod == "vnpay" && orderDto.PaymentStatus == "paid")
+            {
+                orderDto.PaymentUrl = null;
+            }
+            return orderDto;
         }
 
         public static OrderDto ToOrderUpdateDto(this Order order)

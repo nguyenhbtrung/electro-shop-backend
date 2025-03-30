@@ -36,7 +36,7 @@ namespace electro_shop_backend.Services
             vnpay.AddRequestData("vnp_Command", _config["VnPay:Command"]);
             vnpay.AddRequestData("vnp_TmnCode", _config["VnPay:TmnCode"]);
             vnpay.AddRequestData("vnp_Amount", ((long)(order.Total*100)).ToString());
-            vnpay.AddRequestData("vnp_TxnRef", order.OrderId.ToString());
+            vnpay.AddRequestData("vnp_TxnRef", $"{order.OrderId}_{DateTime.UtcNow:yyyyMMddHHmmssfff}");
             // Mã tham chiếu của giao dịch tại hệ thống của merchant.Mã này là duy nhất dùng để phân biệt các
             // đơn hàng gửi sang VNPAY.Không được trùng lặp trong ngày
             vnpay.AddRequestData("vnp_CreateDate", DateTime.UtcNow.ToString("yyyyMMddHHmmss"));
@@ -63,7 +63,8 @@ namespace electro_shop_backend.Services
                 }
             }
 
-            var vnp_orderId = Convert.ToInt64(vnpay.GetResponseData("vnp_TxnRef"));
+            var vnp_TxnRef = vnpay.GetResponseData("vnp_TxnRef");
+            var vnp_orderId = int.Parse(vnp_TxnRef.Split('_')[0]);
             var vnp_transactionId = Convert.ToInt64(vnpay.GetResponseData("vnp_TransactionNo"));
             var vnp_secureHash = collection.FirstOrDefault(x => x.Key == "vnp_SecureHash").Value.ToString();
             var vnp_responseCode = vnpay.GetResponseData("vnp_ResponseCode");

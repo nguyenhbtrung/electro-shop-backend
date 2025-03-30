@@ -111,6 +111,20 @@ namespace electro_shop_backend.Controllers
             }
         }
 
+        [HttpPut("user/repayment/{orderId}")]
+        public async Task<IActionResult> RePaymentAsync(int orderId)
+        {
+            try
+            {
+                var order = await _orderService.RePayment(orderId);
+                return Ok(order);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         [HttpPut("user/updateorderaddress/{orderId}")]
         [Authorize(Policy = "UserPolicy")]
         public async Task<IActionResult> UpdateOrderAddressAsync(OrderDto orderDto)
@@ -146,12 +160,26 @@ namespace electro_shop_backend.Controllers
             }
         }
 
-        [HttpDelete("admin/cancelorder/{orderId}")]
+        [HttpPut("admin/cancelorder/{orderId}")]
         public async Task<IActionResult> CancelOrderAsync(int orderId)
         {
             try
             {
                 var result = await _orderService.CancelOrderAsync(orderId);
+                return Ok(result);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        [HttpDelete("admin/deleteorder/{orderId}")]
+        public async Task<IActionResult> DeleteOrderAsync(int orderId)
+        {
+            try
+            {
+                var result = await _orderService.DeleteOrderAsync(orderId);
                 return Ok(result);
             }
             catch (Exception)

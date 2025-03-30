@@ -182,25 +182,49 @@ namespace electro_shop_backend.Services
             }
             else if (paymentmethod == "vnpay")
             {
+                var paymentUrl = _vnPayService.CreatePaymentUrl(request);
+
                 order.PaymentMethod = "vnpay";
                 payment.PaymentMethod = "vnpay";
+                payment.PaymentUrl = paymentUrl;
 
                 _context.Orders.Update(order);
                 _context.Payments.Update(payment);
                 await _context.SaveChangesAsync();
-
-                var paymentUrl = _vnPayService.CreatePaymentUrl(request);
-
-                return new OrderDto
-                {
-                    OrderId = order.OrderId,
-                    UserId = order.UserId,
-                    Total = finalTotal,
-                    Status = "pending",
-                    TimeStamp = order.TimeStamp,
-                    PaymentUrl = paymentUrl
-                };
             }
+            return order.ToOrderDto();
+        }
+
+        public async Task<OrderDto> RePayment(int orderId)
+        {
+            Console.WriteLine(orderId);
+            var order = await _context.Orders
+                .Include(orderitem => orderitem.OrderItems)
+                .Include(payment => payment.Payments)
+                .FirstOrDefaultAsync(order => order.OrderId == orderId);
+
+            var payment = await _context.Payments
+                .FirstOrDefaultAsync(payment => payment.OrderId == orderId);
+
+            var request = new VnPayRequestDto
+            {
+                OrderId = order!.OrderId,
+            };
+
+            if (order == null)
+            {
+                throw new NotFoundException("Order not found");
+            }
+
+            if(order.PaymentMethod == "vnpay" && payment.PaymentStatus == "pending")
+            {
+                var paymentUrl = _vnPayService.CreatePaymentUrl(request);
+                Console.WriteLine(paymentUrl);
+                payment.PaymentUrl = paymentUrl;
+                _context.Entry(payment).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+            }
+
             return order.ToOrderDto();
         }
 
@@ -252,7 +276,27 @@ namespace electro_shop_backend.Services
             {
                 throw new NotFoundException("Payment not found");
             }
-            payment.PaymentStatus = "failed";
+            payment.PaymentStatus = "refund";
+
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> DeleteOrderAsync(int orderId)
+        {
+            var order = await _context.Orders
+                .Include(orderitem => orderitem.OrderItems)
+                .Include(payment => payment.Payments)
+                .FirstOrDefaultAsync(order => order.OrderId == orderId);
+
+            if (order == null)
+            {
+                throw new NotFoundException("Order not found");
+            }
+
+            _context.OrderItems.RemoveRange(order.OrderItems);
+            _context.Payments.RemoveRange(order.Payments);
+            _context.Orders.Remove(order);
 
             await _context.SaveChangesAsync();
             return true;
