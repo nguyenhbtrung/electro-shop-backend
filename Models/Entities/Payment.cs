@@ -26,6 +26,9 @@ public partial class Payment // Lưu lịch sử thanh toán
     [StringLength(2048)]
     public string? PaymentUrl { get; set; }
 
+    [Column("txn_ref")]
+    public string? TxnRef { get; set; }
+
     [Column("payment_method")]
     public string? PaymentMethod { get; set; } // cod, vnpay
 

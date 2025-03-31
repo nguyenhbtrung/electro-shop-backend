@@ -315,6 +315,7 @@ namespace electro_shop_backend.Services
                     payment.PaymentStatus = "paid";
                     payment.PaidAt = utcVN;
                     payment.TransactionId = response.TransactionId;
+                    payment.TxnRef = response.Txn_Ref;
                     await _context.SaveChangesAsync();
                 }
             }

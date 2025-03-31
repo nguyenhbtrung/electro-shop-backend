@@ -87,6 +87,7 @@ namespace electro_shop_backend.Services
                 TransactionId = vnp_transactionId.ToString(),
                 Token = vnpay.GetResponseData("vnp_SecureHash"),
                 VnPayResponseCode = vnp_responseCode,
+                Txn_Ref = vnp_TxnRef
             };
         }
     }
