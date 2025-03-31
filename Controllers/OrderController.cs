@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using electro_shop_backend.Exceptions;
 using electro_shop_backend.Extensions;
+using electro_shop_backend.Helpers;
 using electro_shop_backend.Models.DTOs.Order;
 using electro_shop_backend.Models.Entities;
 using electro_shop_backend.Services;
@@ -19,12 +20,14 @@ namespace electro_shop_backend.Controllers
         private readonly IOrderService _orderService;
         private readonly ILogger<OrderController> _logger;
         private readonly UserManager<User> _userManager;
+        private readonly IConfiguration _configuration;
 
-        public OrderController(IOrderService orderService, ILogger<OrderController> logger, UserManager<User> userManager)
+        public OrderController(IOrderService orderService, ILogger<OrderController> logger, UserManager<User> userManager, IConfiguration configuration)
         {
             _orderService = orderService;
             _logger = logger;
             _userManager = userManager;
+            _configuration = configuration;
         }
 
         [HttpGet("admin/allorders")]
@@ -192,65 +195,122 @@ namespace electro_shop_backend.Controllers
         public async Task<IActionResult> PaymentCallBack()
         {
             var result = await _orderService.HandlePaymentCallbackAsync(Request.Query);
+            string vnp_HashSecret = _configuration["VnPay:HashSecret"];
+            var vnpParams = HttpContext.Request.Query.ToDictionary(q => q.Key, q => q.Value.ToString());
+            VnPayLibrary vnpay = new VnPayLibrary();
 
-            if (result.VnPayResponseCode == "00")
+            // Thêm tất cả tham số bắt đầu bằng "vnp_"
+            foreach (var s in vnpParams)
             {
-                // Thanh toán thành công
-                var successHtml = @"
-            <html>
-            <head>
-                <style>
-                    body {
-                        margin: 0;
-                        background-color: #FFFFFF; /* Màu nền xanh nhạt */
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;
-                        height: 100vh;
-                    }
-                    img {
-                        max-width: 80%;
-                        max-height: 80%;
-                        object-fit: contain;
-                    }
-                </style>
-            </head>
-            <body>
-                <img src='/images/payment-success.png' alt='Payment Successful' />
-            </body>
-            </html>
-        ";
-                return Content(successHtml, "text/html");
+                if (!string.IsNullOrEmpty(s.Key) && s.Key.StartsWith("vnp_"))
+                {
+                    vnpay.AddResponseData(s.Key, s.Value);
+                }
+            }
+
+            string orderId = vnpay.GetResponseData("vnp_TxnRef");
+            string vnpayTranId = vnpay.GetResponseData("vnp_TransactionNo");
+            string vnp_ResponseCode = vnpay.GetResponseData("vnp_ResponseCode");
+            string vnp_TransactionStatus = vnpay.GetResponseData("vnp_TransactionStatus");
+            string vnp_SecureHash = vnpParams["vnp_SecureHash"];
+            string TerminalID = vnpParams["vnp_TmnCode"];
+            long vnp_Amount = Convert.ToInt64(vnpay.GetResponseData("vnp_Amount")) / 100;
+            string bankCode = vnpParams["vnp_BankCode"];
+            string payDate = vnpParams["vnp_PayDate"];
+
+            bool checkSignature = vnpay.ValidateSignature(vnp_SecureHash, vnp_HashSecret);
+
+            // Xác định URL frontend kết quả thanh toán (thay đổi theo domain của bạn)
+            string frontendUrl = "http://localhost:5173/payment-result";
+
+            // Xây dựng query string để chuyển thông tin giao dịch
+            var queryString = $"?orderId={orderId}" +
+                              $"&vnpayTranId={vnpayTranId}" +
+                              $"&TerminalID={TerminalID}" +
+                              $"&vnp_Amount={vnp_Amount}" +
+                              $"&bankCode={bankCode}" +
+                              $"&vnp_ResponseCode={vnp_ResponseCode}" +
+                              $"&payDate={payDate}";
+
+            // Nếu chữ ký hợp lệ, chuyển hướng về frontend với dữ liệu giao dịch
+            if (checkSignature)
+            {
+                // Giao dịch thành công nếu ResponseCode và TransactionStatus đều là "00"
+                if (vnp_ResponseCode == "00" && vnp_TransactionStatus == "00")
+                {
+                    return Redirect(frontendUrl + queryString);
+                }
+                else
+                {
+                    // Giao dịch không thành công, chuyển hướng với thông tin lỗi
+                    return Redirect(frontendUrl + queryString);
+                }
             }
             else
             {
-                // Thanh toán thất bại
-                var failureHtml = @"
-            <html>
-            <head>
-                <style>
-                    body {
-                        margin: 0;
-                        background-color: #f8d7da; /* Màu nền đỏ nhạt */
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;
-                        height: 100vh;
-                    }
-                    img {
-                        max-width: 80%;
-                        max-height: 80%;
-                        object-fit: contain;
-                    }
-                </style>
-            </head>
-            <body>
-                <img src='/images/payment-failure.png' alt='Payment Failed' />
-            </body>
-            </html>
-        ";
-                return Content(failureHtml, "text/html");
+                // Nếu chữ ký không hợp lệ, có thể chuyển hướng tới trang thông báo lỗi
+                return Redirect(frontendUrl + "?error=InvalidSignature");
             }
+            //    var result = await _orderService.HandlePaymentCallbackAsync(Request.Query);
+
+            //    if (result.VnPayResponseCode == "00")
+            //    {
+            //        // Thanh toán thành công
+            //        var successHtml = @"
+            //    <html>
+            //    <head>
+            //        <style>
+            //            body {
+            //                margin: 0;
+            //                background-color: #FFFFFF; /* Màu nền xanh nhạt */
+            //                display: flex;
+            //                justify-content: center;
+            //                align-items: center;
+            //                height: 100vh;
+            //            }
+            //            img {
+            //                max-width: 80%;
+            //                max-height: 80%;
+            //                object-fit: contain;
+            //            }
+            //        </style>
+            //    </head>
+            //    <body>
+            //        <img src='/images/payment-success.png' alt='Payment Successful' />
+            //    </body>
+            //    </html>
+            //";
+            //        return Content(successHtml, "text/html");
+            //    }
+            //    else
+            //    {
+            //        // Thanh toán thất bại
+            //        var failureHtml = @"
+            //    <html>
+            //    <head>
+            //        <style>
+            //            body {
+            //                margin: 0;
+            //                background-color: #f8d7da; /* Màu nền đỏ nhạt */
+            //                display: flex;
+            //                justify-content: center;
+            //                align-items: center;
+            //                height: 100vh;
+            //            }
+            //            img {
+            //                max-width: 80%;
+            //                max-height: 80%;
+            //                object-fit: contain;
+            //            }
+            //        </style>
+            //    </head>
+            //    <body>
+            //        <img src='/images/payment-failure.png' alt='Payment Failed' />
+            //    </body>
+            //    </html>
+            //";
+            //        return Content(failureHtml, "text/html");
+            //    }
         }
     }
 }

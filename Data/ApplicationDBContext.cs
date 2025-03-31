@@ -223,8 +223,8 @@ public partial class ApplicationDbContext : IdentityDbContext<User>
             entity.HasKey(e => e.HistoryId).HasName("PK__Product___096AA2E942A51BFF");
 
             entity.Property(e => e.TimeStamp).HasDefaultValueSql("(getdate())");
-            //entity.HasIndex(e => new { e.UserId, e.ProductId })
-            //    .IsUnique();
+            entity.HasIndex(e => new { e.UserId, e.ProductId })
+                .IsUnique();
 
             entity.HasOne(d => d.Product).WithMany(p => p.ProductViewHistories).HasConstraintName("FK__Product_V__produ__6D0D32F4");
 
