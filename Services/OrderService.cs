@@ -30,6 +30,7 @@ namespace electro_shop_backend.Services
                 .ThenInclude(Product => Product.ProductImages)
                 .Include(order => order.Payments)
                 .Include(order => order.User)
+                .OrderByDescending(h => h.TimeStamp)
                 .Select(order => order.ToOrderDto())
                 .ToListAsync();
         }
@@ -57,6 +58,7 @@ namespace electro_shop_backend.Services
                 .ThenInclude(Product => Product.ProductImages)
                 .Include(order => order.Payments)
                 .Include(order => order.User)
+                .OrderByDescending(h => h.TimeStamp)
                 .Select(order => order.ToOrderDto())
                 .ToListAsync();
         }
