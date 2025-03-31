@@ -148,6 +148,7 @@ builder.Services.AddScoped<IProductAttributeService, ProductAttributeService>();
 builder.Services.AddScoped<IProductPricingService, ProductPricingService>();
 builder.Services.AddScoped<IVnPayService, VnPayService>();
 builder.Services.AddScoped<ISupportMessageService, SupportMessageService>();
+builder.Services.AddScoped<IDashboardService, DashboardService>();
 
 builder.Services.AddHttpContextAccessor();
 
