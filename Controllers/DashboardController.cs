@@ -56,5 +56,26 @@ namespace electro_shop_backend.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+
+        [HttpGet("revenue/last-12-month")]
+        public async Task<IActionResult> GetLast12MonthsRevenue()
+        {
+            try
+            {
+                var result = await _dashboardService.GetLast12MonthsRevenueAsync();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpGet("top-selling")]
+        public async Task<IActionResult> GetTopSellingProducts([FromQuery] int topCount = 5)
+        {
+            var result = await _dashboardService.GetTopSellingProductsAsync(topCount);
+            return Ok(result);
+        }
     }
 }
