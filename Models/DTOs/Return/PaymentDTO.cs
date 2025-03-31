@@ -6,6 +6,7 @@
         public decimal Amount { get; set; }
         public string? PayDate { get; set; }
         public string? PaymentMethod { get; set; }
+        public string? TxnRef { get; set; }
 
     }
 }

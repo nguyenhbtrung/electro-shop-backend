@@ -235,7 +235,7 @@ namespace electro_shop_backend.Controllers
             var vnp_Command = "refund";
             var vnp_TransactionType = refundRequest.TransactionType; // Ví dụ: "FullRefund" hoặc giá trị khác theo VNPAY yêu cầu
             var vnp_Amount = refundRequest.Amount * 100;           // Quy đổi số tiền (nhân với 100)
-            var vnp_TxnRef = refundRequest.OrderId;                // Mã giao dịch tham chiếu cần hoàn tiền
+            var vnp_TxnRef = refundRequest.TxnRef;                // Mã giao dịch tham chiếu cần hoàn tiền
             var vnp_OrderInfo = "Hoan tien giao dich:" + refundRequest.OrderId;
             var vnp_TransactionNo = "";                            // Nếu không có, để rỗng
             var vnp_TransactionDate = refundRequest.PayDate;       // Ngày giao dịch gốc (định dạng yyyyMMddHHmmss)

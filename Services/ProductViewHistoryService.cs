@@ -21,34 +21,34 @@ namespace electro_shop_backend.Services
 
         public async Task<ProductViewHistory> CreateProductViewHistoryAsync(string userId, int productId)
         {
-            try
+            var existedProduct = await _context.Products.FirstOrDefaultAsync(p => p.ProductId == productId);
+            if (existedProduct == null)
             {
-                var  existedProduct = await _context.Products
-                    .FirstOrDefaultAsync(p => p.ProductId == productId);
-                if (existedProduct == null)
-                {
-                    throw new BadRequestException("Không tìm thấy sản phẩm");
-                }
-                var existedHistory = await _context.ProductViewHistories
-                    .FirstOrDefaultAsync(h => h.UserId == userId && h.ProductId == productId);
-                if (existedHistory != null)
-                {
-                    throw new ConflictException("Bản ghi đã tồn tại");
-                }
-                var newHistory = new ProductViewHistory
-                {
-                    UserId = userId,
-                    ProductId = productId
-                };
-                await _context.ProductViewHistories.AddAsync(newHistory);
+                throw new BadRequestException("Không tìm thấy sản phẩm");
+            }
+
+            var existedHistory = await _context.ProductViewHistories
+                .FirstOrDefaultAsync(h => h.UserId == userId && h.ProductId == productId);
+
+            if (existedHistory != null)
+            {
+                existedHistory.TimeStamp = DateTime.Now;
+                _context.ProductViewHistories.Update(existedHistory);
                 await _context.SaveChangesAsync();
-                return newHistory;
+                return existedHistory;
             }
-            catch (Exception)
+
+            var newHistory = new ProductViewHistory
             {
-                throw;
-            }
+                UserId = userId,
+                ProductId = productId,
+                TimeStamp = DateTime.Now 
+            };
+            await _context.ProductViewHistories.AddAsync(newHistory);
+            await _context.SaveChangesAsync();
+            return newHistory;
         }
+
 
         public async Task DeleteAllProductViewHistoriesAsync(string userId)
         {

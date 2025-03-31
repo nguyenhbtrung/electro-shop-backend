@@ -26,5 +26,6 @@
         /// Loại giao dịch hoàn tiền (ví dụ: "FullRefund" hoặc "PartialRefund")
         /// </summary>
         public string TransactionType { get; set; }
+        public string TxnRef {  get; set; }
     }
 }

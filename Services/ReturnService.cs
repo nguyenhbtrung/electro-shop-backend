@@ -368,7 +368,8 @@ namespace electro_shop_backend.Services
                 OrderId = orderId,
                 Amount = payment.Amount,
                 PayDate = payment.PaidAt?.ToString("yyyyMMddHHmmss"),
-                PaymentMethod = payment.PaymentMethod
+                PaymentMethod = payment.PaymentMethod,
+                TxnRef = payment.TxnRef
             };
         }
     }
