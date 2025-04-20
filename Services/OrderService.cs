@@ -173,6 +173,7 @@ namespace electro_shop_backend.Services
             _context.Payments.Add(payment);
             await _context.SaveChangesAsync();
 
+            string paymentUrl = null;
             if (paymentmethod == "cod")
             {
                 order.PaymentMethod = "cod";
@@ -184,17 +185,19 @@ namespace electro_shop_backend.Services
             }
             else if (paymentmethod == "vnpay")
             {
-                var paymentUrl = _vnPayService.CreatePaymentUrl(request);
+                paymentUrl = _vnPayService.CreatePaymentUrl(request);
 
                 order.PaymentMethod = "vnpay";
                 payment.PaymentMethod = "vnpay";
-                payment.PaymentUrl = paymentUrl;
 
                 _context.Orders.Update(order);
                 _context.Payments.Update(payment);
                 await _context.SaveChangesAsync();
             }
-            return order.ToOrderDto();
+            
+            var orderDto = order.ToOrderDto();
+            orderDto.PaymentUrl = paymentUrl;
+            return orderDto;
         }
 
         public async Task<OrderDto> RePayment(int orderId)
@@ -218,16 +221,17 @@ namespace electro_shop_backend.Services
                 throw new NotFoundException("Order not found");
             }
 
+            string paymentUrl = null;
             if(order.PaymentMethod == "vnpay" && payment.PaymentStatus == "pending")
             {
-                var paymentUrl = _vnPayService.CreatePaymentUrl(request);
-                Console.WriteLine(paymentUrl);
-                payment.PaymentUrl = paymentUrl;
+                paymentUrl = _vnPayService.CreatePaymentUrl(request);
                 _context.Entry(payment).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
             }
 
-            return order.ToOrderDto();
+            var orderDto = order.ToOrderDto();
+            orderDto.PaymentUrl = paymentUrl;
+            return orderDto;
         }
 
         public async Task<OrderDto> UpdateOrderAddressAsync(string userId, OrderDto orderDto)

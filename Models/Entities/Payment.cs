@@ -22,10 +22,6 @@ public partial class Payment // Lưu lịch sử thanh toán
     [Column("amount", TypeName = "decimal(18, 2)")]
     public decimal Amount { get; set; }
 
-    [Column("payment_url")]
-    [StringLength(2048)]
-    public string? PaymentUrl { get; set; }
-
     [Column("txn_ref")]
     public string? TxnRef { get; set; }
 

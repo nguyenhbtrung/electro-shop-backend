@@ -25,7 +25,6 @@ namespace electro_shop_backend.Models.Mappers
                 UserId = order.UserId,
                 FullName = order.User?.FullName,
                 Total = order.Total,
-                PaymentUrl = order.Payments.FirstOrDefault(payment => payment.OrderId == order.OrderId)?.PaymentUrl,
                 PaymentMethod = order.Payments.FirstOrDefault(payment => payment.OrderId == order.OrderId)?.PaymentMethod,
                 PaymentStatus = order.Payments.FirstOrDefault(payment => payment.OrderId == order.OrderId)?.PaymentStatus,
                 Status = order.Status,
@@ -42,11 +41,6 @@ namespace electro_shop_backend.Models.Mappers
                     ProductImage = OrderItem.Product?.ProductImages.FirstOrDefault()?.ImageUrl
                 }).ToList(),
             };
-
-            if(orderDto.PaymentMethod == "vnpay" && orderDto.PaymentStatus == "paid")
-            {
-                orderDto.PaymentUrl = null;
-            }
             return orderDto;
         }
 
