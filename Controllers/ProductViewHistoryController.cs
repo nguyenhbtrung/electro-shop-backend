@@ -1,4 +1,4 @@
-﻿using electro_shop_backend.Exceptions;
+﻿using electro_shop_backend.Exceptions.CustomExceptions;
 using electro_shop_backend.Extensions;
 using electro_shop_backend.Helpers;
 using electro_shop_backend.Models.DTOs.ProductViewHistory;

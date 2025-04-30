@@ -1,5 +1,6 @@
 ﻿using electro_shop_backend.Data;
 using electro_shop_backend.Exceptions;
+using electro_shop_backend.Exceptions.CustomExceptions;
 using electro_shop_backend.Helpers;
 using electro_shop_backend.Models.DTOs.Category;
 using electro_shop_backend.Models.DTOs.Product;

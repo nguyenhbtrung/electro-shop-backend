@@ -1,4 +1,4 @@
-﻿namespace electro_shop_backend.Exceptions
+﻿namespace electro_shop_backend.Exceptions.CustomExceptions
 {
     public class NotFoundException : Exception
     {

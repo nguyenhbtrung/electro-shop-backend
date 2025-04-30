@@ -1,4 +1,4 @@
-using electro_shop_backend.Exceptions;
+using electro_shop_backend.Exceptions.CustomExceptions;
 using electro_shop_backend.Models.DTOs.Voucher;
 using electro_shop_backend.Services;
 using electro_shop_backend.Services.Interfaces;

@@ -2,11 +2,11 @@
 using electro_shop_backend.Services.Interfaces;
 using electro_shop_backend.Models.DTOs.Product;
 using electro_shop_backend.Models.DTOs.ProductImage;
-using electro_shop_backend.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using electro_shop_backend.Helpers;
 using Microsoft.EntityFrameworkCore;
 using electro_shop_backend.Services;
+using electro_shop_backend.Exceptions.CustomExceptions;
 
 namespace electro_shop_backend.Controllers
 {

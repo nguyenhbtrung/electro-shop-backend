@@ -1,5 +1,6 @@
 using electro_shop_backend.Data;
 using electro_shop_backend.Exceptions;
+using electro_shop_backend.Exceptions.CustomExceptions;
 using electro_shop_backend.Models.DTOs.Order;
 using electro_shop_backend.Models.Entities;
 using electro_shop_backend.Models.Mappers;
