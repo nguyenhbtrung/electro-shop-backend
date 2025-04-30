@@ -43,20 +43,8 @@ namespace electro_shop_backend.Controllers
         [Authorize(Policy = "AdminPolicy")]
         public async Task<IActionResult> GetDiscountById([FromRoute] int discountId)
         {
-            try
-            {
-                var result = await _discountService.GetDiscountByIdAsync(discountId);
-                return Ok(result);
-            }
-            catch (NotFoundException ex)
-            {
-                return NotFound(ex.Message);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Lỗi không xác định xảy ra trong DiscountController.");
-                return StatusCode(500);
-            }
+            var result = await _discountService.GetDiscountByIdAsync(discountId);
+            return Ok(result);
         }
 
         [HttpGet("{discountId}/products")]

@@ -6,6 +6,7 @@ namespace electro_shop_backend.Exceptions.Mappers.Interfaces
     {
         bool CanMap(Exception ex);
         ProblemDetails ToProblemDetails(Exception ex);
-
+        object ToBasicError(Exception ex);
+        int GetStatusCode();
     }
 }

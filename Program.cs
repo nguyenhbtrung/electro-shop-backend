@@ -1,5 +1,8 @@
 using electro_shop_backend.Configurations;
 using electro_shop_backend.Data;
+using electro_shop_backend.Exceptions.Handlers;
+using electro_shop_backend.Exceptions.Mappers;
+using electro_shop_backend.Exceptions.Mappers.Interfaces;
 using electro_shop_backend.Hubs;
 using electro_shop_backend.Models.Entities;
 using electro_shop_backend.Services;
@@ -13,6 +16,11 @@ using Microsoft.OpenApi.Models;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+builder.Services.AddSingleton<IExceptionMapper, NotFoundExceptionMapper>();
+
+builder.Services.AddExceptionHandler<BasicExceptionHandler>();
+builder.Services.AddProblemDetails();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -94,7 +102,7 @@ builder.Services.AddAuthentication(options =>
             ValidAudience = builder.Configuration["JWT:Audience"],
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(
-            System.Text.Encoding.UTF8.GetBytes(builder.Configuration["JWT:SigningKey"])
+            System.Text.Encoding.UTF8.GetBytes(builder.Configuration["JWT:SigningKey"]!)
             )
         };
         options.Events = new JwtBearerEvents
@@ -165,6 +173,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseExceptionHandler();
 
 app.UseCors("AllowSpecificOrigin");
 
