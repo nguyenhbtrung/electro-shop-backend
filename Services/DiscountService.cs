@@ -51,52 +51,25 @@ namespace electro_shop_backend.Services
 
         public async Task<Discount> CreateDiscountAsync(CreateDiscountRequestDto requestDto)
         {
-            try
-            {
-                var discount = requestDto.ToDiscountFromCreate();
-                await _context.Discounts.AddAsync(discount);
-                await _context.SaveChangesAsync();
-                return discount;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            var discount = requestDto.ToDiscountFromCreate();
+            await _context.Discounts.AddAsync(discount);
+            await _context.SaveChangesAsync();
+            return discount;
         }
 
         public async Task DeleteDiscountAsync(int discountId)
         {
-            try
-            {
-                var discount = await _context.Discounts.FirstOrDefaultAsync(d => d.DiscountId == discountId);
-                if (discount == null)
-                {
-                    throw new NotFoundException("Không tìm thấy discount");
-                }
-                _context.Discounts.Remove(discount);
-                await _context.SaveChangesAsync();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            var discount = await _context.Discounts.FirstOrDefaultAsync(d => d.DiscountId == discountId) 
+                ?? throw new NotFoundException("Không tìm thấy discount");
+            _context.Discounts.Remove(discount);
+            await _context.SaveChangesAsync();
         }
 
         public async Task<DiscountDto> GetDiscountByIdAsync(int discountId)
         {
-            try
-            {
-                var discount = await _context.Discounts.AsNoTracking().FirstOrDefaultAsync(d => d.DiscountId == discountId);
-                if (discount == null)
-                {
-                    throw new NotFoundException("Không tìm thấy discount");
-                }
-                return discount.ToDiscountDto();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            var discount = await _context.Discounts.AsNoTracking().FirstOrDefaultAsync(d => d.DiscountId == discountId) 
+                ?? throw new NotFoundException("Không tìm thấy discount");
+            return discount.ToDiscountDto();
         }
 
         public async Task<DiscountProductsResponseDto> GetDiscountedProductsAsync(int discountId)
@@ -131,55 +104,38 @@ namespace electro_shop_backend.Services
 
         public async Task<ICollection<DiscountDto>> GetDiscountsAsync(DiscountQuery discountQuery)
         {
-            try
-            {
-                int skipNumber = (discountQuery.PageNumber - 1) * discountQuery.PageSize;
-                var discounts = await _context.Discounts
-                    .AsNoTracking()
-                    .Select(d => new DiscountDto
-                    {
-                        DiscountId = d.DiscountId,
-                        Name = d.Name,
-                        DiscountType = d.DiscountType,
-                        DiscountValue = d.DiscountValue,
-                        StartDate = d.StartDate,
-                        EndDate = d.EndDate,
-                        ProductCount = d.ProductDiscounts.Count()
-                    })
-                    .OrderByDescending(d => d.StartDate)
-                    .Skip(skipNumber)
-                    .Take(discountQuery.PageSize)
-                    .ToListAsync();
+            int skipNumber = (discountQuery.PageNumber - 1) * discountQuery.PageSize;
+            var discounts = await _context.Discounts
+                .AsNoTracking()
+                .Select(d => new DiscountDto
+                {
+                    DiscountId = d.DiscountId,
+                    Name = d.Name,
+                    DiscountType = d.DiscountType,
+                    DiscountValue = d.DiscountValue,
+                    StartDate = d.StartDate,
+                    EndDate = d.EndDate,
+                    ProductCount = d.ProductDiscounts.Count()
+                })
+                .OrderByDescending(d => d.StartDate)
+                .Skip(skipNumber)
+                .Take(discountQuery.PageSize)
+                .ToListAsync();
 
-                return discounts;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return discounts;
         }
 
         public async Task<DiscountDto> UpdateDiscountAsync(int discountId, CreateDiscountRequestDto requestDto)
         {
-            try
-            {
-                var discount = await _context.Discounts.FirstOrDefaultAsync(d => d.DiscountId == discountId);
-                if (discount == null)
-                {
-                    throw new NotFoundException("Không tìm thấy discount");
-                }
-                discount.Name = requestDto.Name;
-                discount.DiscountType = requestDto.DiscountType;
-                discount.DiscountValue = requestDto.DiscountValue;
-                discount.StartDate = requestDto.StartDate;
-                discount.EndDate = requestDto.EndDate;
-                await _context.SaveChangesAsync();
-                return discount.ToDiscountDto();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            var discount = await _context.Discounts.FirstOrDefaultAsync(d => d.DiscountId == discountId) 
+                ?? throw new NotFoundException("Không tìm thấy discount");
+            discount.Name = requestDto.Name;
+            discount.DiscountType = requestDto.DiscountType;
+            discount.DiscountValue = requestDto.DiscountValue;
+            discount.StartDate = requestDto.StartDate;
+            discount.EndDate = requestDto.EndDate;
+            await _context.SaveChangesAsync();
+            return discount.ToDiscountDto();
         }
     }
 }
