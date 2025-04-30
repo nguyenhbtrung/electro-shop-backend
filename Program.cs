@@ -18,6 +18,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddSingleton<IExceptionMapper, NotFoundExceptionMapper>();
+builder.Services.AddSingleton<IExceptionMapper, ArgumentExceptionMapper>();
 
 builder.Services.AddExceptionHandler<BasicExceptionHandler>();
 builder.Services.AddProblemDetails();
