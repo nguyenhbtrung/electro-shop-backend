@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace electro_shop_backend.Controllers
+namespace electro_shop_backend.Controllers.V1
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -64,8 +64,8 @@ namespace electro_shop_backend.Controllers
         public async Task<IActionResult> ApplyDiscountToProducts([FromBody] ApplyDiscountDto requestDto)
         {
             int productCount = await _discountService.ApplyDiscountToProductsAsync(requestDto);
-            return Ok(new 
-            { 
+            return Ok(new
+            {
                 Message = "Khuyến mãi đã được áp dụng thành công.",
                 ProductCount = productCount
             });

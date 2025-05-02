@@ -6,11 +6,11 @@ using electro_shop_backend.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace electro_shop_backend.Controllers
+namespace electro_shop_backend.Controllers.V1
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class BrandController:ControllerBase
+    public class BrandController : ControllerBase
     {
         private readonly IBrandService _brandService;
         public BrandController(IBrandService brandService)
@@ -77,7 +77,7 @@ namespace electro_shop_backend.Controllers
         [HttpGet("{id}/Product")]
         public async Task<IActionResult> GetAllProdcutByBrandId(int id)
         {
-            var brand =await _brandService.GetAllProdcutByBrandIdAsync(id);
+            var brand = await _brandService.GetAllProdcutByBrandIdAsync(id);
             if (brand == null) return NotFound("Không tìm thấy nhãn hàng naò");
             return Ok(brand);
         }

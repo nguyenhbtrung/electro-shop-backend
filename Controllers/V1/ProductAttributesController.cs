@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace electro_shop_backend.Controllers
+namespace electro_shop_backend.Controllers.V1
 {
     [ApiController]
     [Route("api/[controller]")]
@@ -147,7 +147,7 @@ namespace electro_shop_backend.Controllers
             _context.ProductAttributeDetails.Add(detail);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetAttributeDetail), new { attributeId = attributeId, detailId = detail.AttributeDetailId }, detail);
+            return CreatedAtAction(nameof(GetAttributeDetail), new { attributeId, detailId = detail.AttributeDetailId }, detail);
         }
 
         [HttpPut("{attributeId}/details/{detailId}")]

@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace electro_shop_backend.Controllers
+namespace electro_shop_backend.Controllers.V1
 {
     [Route("api/[controller]")]
     [ApiController]

@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using electro_shop_backend.Services;
 using electro_shop_backend.Exceptions.CustomExceptions;
 
-namespace electro_shop_backend.Controllers
+namespace electro_shop_backend.Controllers.V1
 {
     [Route("api/[controller]")]
     [ApiController]

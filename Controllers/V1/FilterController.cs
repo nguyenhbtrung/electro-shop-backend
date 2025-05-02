@@ -1,14 +1,14 @@
 ﻿using electro_shop_backend.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
-namespace electro_shop_backend.Controllers
+namespace electro_shop_backend.Controllers.V1
 {
     [Route("api/[controller]")]
     [ApiController]
     public class FilterController : ControllerBase
     {
         private readonly IFilterService _filterService;
-        public FilterController (IFilterService filterService)
+        public FilterController(IFilterService filterService)
         {
             _filterService = filterService;
         }
@@ -30,7 +30,7 @@ namespace electro_shop_backend.Controllers
             [FromQuery] int? brandId,
             [FromQuery] int? ratingFilter)
         {
-            var productDtos = await _filterService.FilterProductsInCategoryAsync(categoryId,priceFilter, brandId, ratingFilter);
+            var productDtos = await _filterService.FilterProductsInCategoryAsync(categoryId, priceFilter, brandId, ratingFilter);
             return Ok(productDtos);
         }
         [HttpGet("brand")]

@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace electro_shop_backend.Controllers
+namespace electro_shop_backend.Controllers.V1
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -95,7 +95,7 @@ namespace electro_shop_backend.Controllers
 
         [HttpPost("user/createorder")]
         [Authorize(Policy = "UserPolicy")]
-        public async Task<IActionResult> CreateOrderAsync( string voucherCode = "", string payment = "")
+        public async Task<IActionResult> CreateOrderAsync(string voucherCode = "", string payment = "")
         {
             var username = User.GetUsername();
             var user = await _userManager.FindByNameAsync(username);
