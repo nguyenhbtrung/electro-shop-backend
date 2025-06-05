@@ -9,6 +9,6 @@ namespace electro_shop_backend.Controllers.V2
     public class ExampleController : ControllerBase
     {
         [HttpGet]
-        public IActionResult Get() => Ok("Test API Version 2");
+        public IActionResult Get() => Ok(new { Message = "Test API Version 2"} );
     }
 }
