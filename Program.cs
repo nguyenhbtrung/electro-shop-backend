@@ -12,7 +12,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,7 +30,7 @@ builder.Services.AddApiVersioning(options =>
     options.AssumeDefaultVersionWhenUnspecified = true;
     options.ApiVersionReader = ApiVersionReader.Combine(
         new UrlSegmentApiVersionReader());
-        //new HeaderApiVersionReader("X-Api-Version"));
+    //new HeaderApiVersionReader("X-Api-Version"));
 })
 .AddMvc()
 .AddApiExplorer(options =>
@@ -64,6 +63,7 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddIdentity<User, IdentityRole>(options =>
 {
     //options.SignIn.RequireConfirmedAccount = true; // can phai confirm email khi dang ky
+    options.SignIn.RequireConfirmedEmail = false;
     options.Password.RequireDigit = true; // password phai co it nhat 1 chu so
     options.Password.RequireLowercase = true; // password phai co it nhat 1 chu thuong
     options.Password.RequireNonAlphanumeric = true; // password phai co it nhat 1 ky tu dac biet

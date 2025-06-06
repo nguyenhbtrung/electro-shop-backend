@@ -125,10 +125,10 @@ namespace electro_shop_backend.Services
                     return new UnauthorizedObjectResult("UserName or Password is incorrect!");
                 }
 
-                if (!user.EmailConfirmed)
-                {
-                    return new UnauthorizedObjectResult("Email not confirmed");
-                }
+                //if (!user.EmailConfirmed)
+                //{
+                //    return new UnauthorizedObjectResult("Email not confirmed");
+                //}
 
                 var result = await _signInManager.CheckPasswordSignInAsync(user, loginDTO.Password, false);
                 if (!result.Succeeded)
