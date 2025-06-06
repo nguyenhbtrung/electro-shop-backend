@@ -119,6 +119,10 @@ builder.Services.AddCors(options =>
                           .AllowAnyHeader()
                           .AllowAnyMethod()
                           .AllowCredentials());
+    options.AddPolicy("AllowAll",
+        builder => builder.AllowAnyOrigin()
+                          .AllowAnyHeader()
+                          .AllowAnyMethod());
 });
 
 builder.Services.AddSignalR();
@@ -178,11 +182,11 @@ if (app.Environment.IsDevelopment())
 
 app.UseExceptionHandler();
 
-app.UseCors("AllowSpecificOrigin");
+app.UseCors("AllowAll");
 
 app.UseStaticFiles();
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
