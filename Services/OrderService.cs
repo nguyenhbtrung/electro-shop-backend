@@ -255,6 +255,8 @@ namespace electro_shop_backend.Services
         {
             var order = await _context.Orders
                 .FirstOrDefaultAsync(order => order.OrderId == orderId);
+            var payment = await _context.Payments
+                .FirstOrDefaultAsync(payment => payment.OrderId == orderId);
 
             if (order == null)
             {
@@ -262,6 +264,14 @@ namespace electro_shop_backend.Services
             }
 
             order.Status = orderStatus;
+            if (orderStatus == "successed")
+            {
+                payment.PaymentStatus = "paid";
+            }
+            else if (orderStatus == "cancelled" && payment.PaymentStatus == "paid")
+            {
+                payment.PaymentStatus = "refund";
+            }
             await _context.SaveChangesAsync();
             return order.ToOrderUpdateDto();
         }
