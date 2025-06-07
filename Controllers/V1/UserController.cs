@@ -71,7 +71,19 @@ namespace electro_shop_backend.Controllers.V1
             }
             return await _userService.GetUserAsync(userName);
         }
+        [HttpGet("user/me")]
+        [Authorize(Policy = "UserPolicy")]
+        public async Task<IActionResult> GetCurrentUser()
+        {
+            var userName = User.Identity?.Name;
 
+            if (string.IsNullOrEmpty(userName))
+            {
+                return Unauthorized("User not authenticated.");
+            }
+
+            return await _userService.GetUserAsync(userName);
+        }
         [HttpPut("user")]
         [Authorize(Policy = "UserPolicy")]
         public async Task<IActionResult> UpdateUser(UserChangeUser userChangeUser)
