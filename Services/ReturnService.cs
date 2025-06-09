@@ -291,6 +291,10 @@ namespace electro_shop_backend.Services
                     {
                         ProductId = ri.OrderItem!.ProductId,
                         Name = ri.OrderItem.ProductName,
+                        Image = ri.OrderItem.Product!.ProductImages
+                            .OrderBy(pi => pi.ProductId)
+                            .Select(pi => pi.ImageUrl)
+                            .FirstOrDefault(),
                         ReturnQuantity = ri.ReturnQuantity
                     }).ToList()
                 })
