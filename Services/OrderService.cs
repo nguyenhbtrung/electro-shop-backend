@@ -175,25 +175,16 @@ namespace electro_shop_backend.Services
             await _context.SaveChangesAsync();
 
             string paymentUrl = null;
+            order.PaymentMethod = paymentmethod;
+            payment.PaymentMethod = paymentmethod;
+
             if (paymentmethod == "cod")
             {
-                order.PaymentMethod = "cod";
-                payment.PaymentMethod = "cod";
-
-                _context.Orders.Update(order);
-                _context.Payments.Update(payment);
-                await _context.SaveChangesAsync();
             }
             else if (paymentmethod == "vnpay")
             {
                 paymentUrl = _vnPayService.CreatePaymentUrl(request);
 
-                order.PaymentMethod = "vnpay";
-                payment.PaymentMethod = "vnpay";
-
-                _context.Orders.Update(order);
-                _context.Payments.Update(payment);
-                await _context.SaveChangesAsync();
             }
             else if (paymentmethod == "stripe")
             {
@@ -202,12 +193,16 @@ namespace electro_shop_backend.Services
                 order.Status = "pending";
                 payment.PaymentStatus= "successed";
                 
-                
+
 
                 _context.Orders.Update(order);
                 _context.Payments.Update(payment);
                 await _context.SaveChangesAsync();
             }
+
+            _context.Orders.Update(order);
+            _context.Payments.Update(payment);
+            await _context.SaveChangesAsync();
 
             var orderDto = order.ToOrderDto();
             orderDto.PaymentUrl = paymentUrl;
