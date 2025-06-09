@@ -177,12 +177,13 @@ namespace electro_shop_backend.Services
             return true;
         }
 
-        public async Task<List<ProductCardDto>> GetAllProductsByUserAsync(ProductQuery productQuery)
+        public async Task<List<ProductCardDto>> GetAllProductsByUserAsync(ProductQuery productQuery, string? userId)
         {
             int skipNumber = (productQuery.PageNumber - 1) * productQuery.PageSize;
             var products = await _context.Products
                 .Include(p => p.ProductImages)
                 .Include(p => p.Ratings)
+                .Include(p => p.Favorites)
                 .Include(p => p.ProductDiscounts)
                     .ThenInclude(pd => pd.Discount)
                 .Skip(skipNumber)
@@ -207,20 +208,22 @@ namespace electro_shop_backend.Services
                     DiscountedPrice = discountedPrice,
                     DiscountType = discountType,
                     DiscountValue = discountValue,
-                    AverageRating = avgRating
+                    AverageRating = avgRating,
+                    IsFavorite = userId != null && product.Favorites.Any(f => f.UserId == userId)
                 };
             }).ToList();
 
             return productDtos;
         }
 
-        public async Task<List<ProductCardDto>> GetDiscountedProductsAsync(ProductQuery productQuery)
+        public async Task<List<ProductCardDto>> GetDiscountedProductsAsync(ProductQuery productQuery, string? userId)
         {
             var now = DateTime.Now;
             int skipNumber = (productQuery.PageNumber - 1) * productQuery.PageSize;
             var products = await _context.Products
                 .Include(p => p.ProductImages)
                 .Include(p => p.Ratings)
+                .Include(p => p.Favorites)
                 .Include(p => p.ProductDiscounts)
                     .ThenInclude(pd => pd.Discount)
                 .Where(p => p.ProductDiscounts.Any(pd =>
@@ -249,7 +252,8 @@ namespace electro_shop_backend.Services
                     DiscountedPrice = discountedPrice,
                     DiscountType = discountType,
                     DiscountValue = discountValue,
-                    AverageRating = avgRating
+                    AverageRating = avgRating,
+                    IsFavorite = userId != null && product.Favorites.Any(f => f.UserId == userId)
                 };
             }).ToList();
 

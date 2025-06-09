@@ -7,6 +7,9 @@ using electro_shop_backend.Helpers;
 using Microsoft.EntityFrameworkCore;
 using electro_shop_backend.Services;
 using electro_shop_backend.Exceptions.CustomExceptions;
+using electro_shop_backend.Extensions;
+using Microsoft.AspNetCore.Identity;
+using electro_shop_backend.Models.Entities;
 
 namespace electro_shop_backend.Controllers.V1
 {
@@ -17,11 +20,14 @@ namespace electro_shop_backend.Controllers.V1
         private readonly IProductService _productService;
         private readonly IProductImageService _productimageService;
         private readonly IProductAttributeService _productAttributeService;
-        public ProductController(IProductService productService, IProductImageService productImageService, IProductAttributeService productAttributeService)
+        private readonly UserManager<User> _userManager;
+
+        public ProductController(IProductService productService, IProductImageService productimageService, IProductAttributeService productAttributeService, UserManager<User> userManager)
         {
             _productService = productService;
-            _productimageService = productImageService;
+            _productimageService = productimageService;
             _productAttributeService = productAttributeService;
+            _userManager = userManager;
         }
 
         [HttpGet]
@@ -49,14 +55,18 @@ namespace electro_shop_backend.Controllers.V1
         [HttpGet("by_user")]
         public async Task<IActionResult> GetAllProductsByUser([FromQuery] ProductQuery productQuery)
         {
-            var products = await _productService.GetAllProductsByUserAsync(productQuery);
+            var username = User.GetUsername();
+            var user = await _userManager.FindByNameAsync(username ?? "");
+            var products = await _productService.GetAllProductsByUserAsync(productQuery, user?.Id);
             return Ok(products);
         }
 
         [HttpGet("discounted")]
         public async Task<IActionResult> GetDiscountedProducts([FromQuery] ProductQuery productQuery)
         {
-            var products = await _productService.GetDiscountedProductsAsync(productQuery);
+            var username = User.GetUsername();
+            var user = await _userManager.FindByNameAsync(username ?? "");
+            var products = await _productService.GetDiscountedProductsAsync(productQuery, user?.Id);
             return Ok(products);
         }
 

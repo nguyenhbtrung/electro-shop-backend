@@ -16,6 +16,8 @@
         public decimal DiscountValue { get; set; }
 
         public double AverageRating { get; set; }
+
+        public bool IsFavorite { get; set; } = false;
     }
 
 }
