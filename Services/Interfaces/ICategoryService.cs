@@ -11,6 +11,6 @@ namespace electro_shop_backend.Services.Interfaces
         Task<CategoryDto> CreateCategoryAsync(CreateCategoryRequestDto requestDto);
         Task<CategoryDto> UpdateCategoryAsync(int categoryId, UpdateCategoryRequestDto requestDto);
         Task<bool> DeleteCategoryAsync(int id);
-        Task<List<ProductCardDto>> GetAllProductsByCategoryIdAsync(int categoryId);
+        Task<List<ProductCardDto>> GetAllProductsByCategoryIdAsync(int categoryId, string? userId);
     }
 }

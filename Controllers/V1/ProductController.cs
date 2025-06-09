@@ -40,7 +40,9 @@ namespace electro_shop_backend.Controllers.V1
         [HttpGet("{id}")]
         public async Task<IActionResult> GetProductById(int id)
         {
-            var product = await _productService.GetProductByIdAsync(id);
+            var username = User.GetUsername();
+            var user = await _userManager.FindByNameAsync(username ?? "");
+            var product = await _productService.GetProductByIdAsync(id, user?.Id);
             if (product == null) return NotFound("Không tìm thấy sản phẩm");
             return Ok(product);
         }

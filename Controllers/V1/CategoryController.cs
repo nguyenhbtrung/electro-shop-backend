@@ -1,8 +1,11 @@
 ﻿using electro_shop_backend.Exceptions.CustomExceptions;
+using electro_shop_backend.Extensions;
 using electro_shop_backend.Models.DTOs.Category;
+using electro_shop_backend.Models.Entities;
 using electro_shop_backend.Services;
 using electro_shop_backend.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace electro_shop_backend.Controllers.V1
@@ -12,10 +15,14 @@ namespace electro_shop_backend.Controllers.V1
     public class CategoryController : ControllerBase
     {
         private readonly ICategoryService _categoryService;
-        public CategoryController(ICategoryService categoryService)
+        private readonly UserManager<User> _userManager;
+
+        public CategoryController(ICategoryService categoryService, UserManager<User> userManager)
         {
             _categoryService = categoryService;
+            _userManager = userManager;
         }
+
         [HttpGet]
         public async Task<IActionResult> GetAllCategories()
         {
@@ -90,7 +97,9 @@ namespace electro_shop_backend.Controllers.V1
         [HttpGet("{id}/Product")]
         public async Task<IActionResult> GetAllProdcutByCategoryId(int id)
         {
-            var category = await _categoryService.GetAllProductsByCategoryIdAsync(id);
+            var username = User.GetUsername();
+            var user = await _userManager.FindByNameAsync(username ?? "");
+            var category = await _categoryService.GetAllProductsByCategoryIdAsync(id, user?.Id);
             if (category == null) return NotFound("Không tìm thấy danh mục sản phẩm");
             return Ok(category);
         }

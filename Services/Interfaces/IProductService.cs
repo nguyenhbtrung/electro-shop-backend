@@ -13,7 +13,7 @@ namespace electro_shop_backend.Services.Interfaces
         Task<List<ProductDto>> GetAllProductsAsync();
         Task<List<ProductCardDto>> GetAllProductsByUserAsync(ProductQuery productQuery, string? userId);
         Task<List<ProductCardDto>> GetDiscountedProductsAsync(ProductQuery productQuery, string? userId);
-        Task<ProductDto?> GetProductByIdAsync(int productId);
+        Task<ProductDto?> GetProductByIdAsync(int productId, string? userId);
         Task<ProductDto> CreateProductAsync(CreateProductRequestDto requestDto);
         Task<ProductDto> UpdateProductAsync(int id,UpdateProductRequestDto requestDto);
         Task<bool> DeleteProductAsync(int id);

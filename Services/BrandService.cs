@@ -76,13 +76,14 @@ namespace electro_shop_backend.Services
             }
         }
 
-        public async Task<List<ProductCardDto>> GetAllProdcutByBrandIdAsync(int brandid)
+        public async Task<List<ProductCardDto>> GetAllProdcutByBrandIdAsync(int brandid, string? userId)
         {
             var now = DateTime.Now;
             var products = await _context.Products
             .AsNoTracking()
             .Include(p=>p.ProductImages)
             .Include(p => p.Ratings)
+            .Include(p => p.Favorites)
             .Include(p => p.ProductDiscounts)
             .ThenInclude(pd => pd.Discount)
             .Where (c=>c.BrandId == brandid)
@@ -142,7 +143,8 @@ namespace electro_shop_backend.Services
                     DiscountedPrice = discountedPrice,
                     DiscountType = discountType,
                     DiscountValue = discountValue,
-                    AverageRating = avgRating
+                    AverageRating = avgRating,
+                    IsFavorite = product.Favorites != null && product.Favorites.Any(f => f.UserId == userId)
                 };
             }).ToList();
             return productDtos;

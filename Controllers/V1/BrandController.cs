@@ -1,9 +1,11 @@
 ﻿using electro_shop_backend.Exceptions.CustomExceptions;
+using electro_shop_backend.Extensions;
 using electro_shop_backend.Models.DTOs.Brand;
 using electro_shop_backend.Models.Entities;
 using electro_shop_backend.Services;
 using electro_shop_backend.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace electro_shop_backend.Controllers.V1
@@ -13,10 +15,14 @@ namespace electro_shop_backend.Controllers.V1
     public class BrandController : ControllerBase
     {
         private readonly IBrandService _brandService;
-        public BrandController(IBrandService brandService)
+        private readonly UserManager<User> _userManager;
+
+        public BrandController(IBrandService brandService, UserManager<User> userManager)
         {
             _brandService = brandService;
+            _userManager = userManager;
         }
+
         [HttpGet]
         public async Task<IActionResult> GetAllBrand()
         {
@@ -77,7 +83,9 @@ namespace electro_shop_backend.Controllers.V1
         [HttpGet("{id}/Product")]
         public async Task<IActionResult> GetAllProdcutByBrandId(int id)
         {
-            var brand = await _brandService.GetAllProdcutByBrandIdAsync(id);
+            var username = User.GetUsername();
+            var user = await _userManager.FindByNameAsync(username ?? "");
+            var brand = await _brandService.GetAllProdcutByBrandIdAsync(id, user?.Id);
             if (brand == null) return NotFound("Không tìm thấy nhãn hàng naò");
             return Ok(brand);
         }

@@ -9,6 +9,6 @@ namespace electro_shop_backend.Services.Interfaces
         Task<BrandDto> CreateBrandAsync(CreateBrandRequestDto requestDto);
         Task<BrandDto> UpdateBrandAsync(int BrandId, UpdateBrandRequestDto requestDto);
         Task<bool> DeleteBrandAsync(int id);
-        Task<List<ProductCardDto>> GetAllProdcutByBrandIdAsync(int brandid);
+        Task<List<ProductCardDto>> GetAllProdcutByBrandIdAsync(int brandid, string? userId);
     }
 }

@@ -59,7 +59,7 @@ namespace electro_shop_backend.Services
             return productDtos;
         }
 
-        public async Task<ProductDto?> GetProductByIdAsync(int productId)
+        public async Task<ProductDto?> GetProductByIdAsync(int productId, string? userId)
         {
             var product = await _context.Products
                 .AsNoTracking()
@@ -67,6 +67,7 @@ namespace electro_shop_backend.Services
                 .Include(p => p.Categories)
                 .Include(p => p.Brand)
                 .Include(p => p.Ratings)
+                .Include(p => p.Favorites)
                 .Include(p => p.ProductDiscounts)
                     .ThenInclude(pd => pd.Discount)
                 .Include(p => p.ProductAttributeDetails)
@@ -101,6 +102,7 @@ namespace electro_shop_backend.Services
             productDto.DiscountedPrice = discountedPrice;
             productDto.AverageRating = ProductCalculationValue.CalculateAverageRating(product);
             productDto.Brand = product.Brand != null ? BrandMapper.ToBrandDto(product.Brand) : null;
+            productDto.IsFavorite = userId != null && product.Favorites.Any(f => f.UserId == userId);
             return productDto;
         }
 

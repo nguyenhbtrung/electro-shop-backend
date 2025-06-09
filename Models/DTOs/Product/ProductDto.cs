@@ -15,6 +15,7 @@ namespace electro_shop_backend.Models.DTOs.Product
         public string? DiscountType { get; set; }
         public decimal DiscountValue { get; set; }
         public double AverageRating { get; set; }
+        public bool IsFavorite { get; set; } = false;
 
         public int Stock { get; set; }
         public int UnitsSold { get; set; }
