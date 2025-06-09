@@ -11,7 +11,7 @@ using System.Numerics;
 namespace electro_shop_backend.Services
 {
     public class OrderService : IOrderService
-    { 
+    {
         private readonly DateTime utcVN = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.UtcNow, "SE Asia Standard Time");
         private readonly ApplicationDbContext _context;
         private readonly IVnPayService _vnPayService;
@@ -100,7 +100,7 @@ namespace electro_shop_backend.Services
                     throw new BadRequestException("Product out of stock");
                 }
 
-                cartitem.Product!.Stock -= cartitem.Quantity; 
+                cartitem.Product!.Stock -= cartitem.Quantity;
                 cartitem.Product.UnitsSold += cartitem.Quantity;
                 OrderItem orderItem = new OrderItem
                 {
@@ -195,7 +195,20 @@ namespace electro_shop_backend.Services
                 _context.Payments.Update(payment);
                 await _context.SaveChangesAsync();
             }
-            
+            else if (paymentmethod == "stripe")
+            {
+                paymentUrl = _vnPayService.CreatePaymentUrl(request);
+
+                order.Status = "pending";
+                payment.PaymentStatus= "successed";
+                
+                
+
+                _context.Orders.Update(order);
+                _context.Payments.Update(payment);
+                await _context.SaveChangesAsync();
+            }
+
             var orderDto = order.ToOrderDto();
             orderDto.PaymentUrl = paymentUrl;
             return orderDto;
@@ -223,7 +236,7 @@ namespace electro_shop_backend.Services
             }
 
             string paymentUrl = null;
-            if(order.PaymentMethod == "vnpay" && payment.PaymentStatus == "pending")
+            if (order.PaymentMethod == "vnpay" && payment.PaymentStatus == "pending")
             {
                 paymentUrl = _vnPayService.CreatePaymentUrl(request);
                 _context.Entry(payment).State = EntityState.Modified;
