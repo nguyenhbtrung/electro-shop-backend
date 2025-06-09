@@ -50,4 +50,7 @@ public partial class User : IdentityUser
     [InverseProperty("User")]
     public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();
 
+    [InverseProperty("User")]
+    public virtual ICollection<Favorite> Favorites { get; set; } = new List<Favorite>();
+
 }

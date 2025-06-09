@@ -63,6 +63,8 @@ public partial class ApplicationDbContext : IdentityDbContext<User>
     public virtual DbSet<AttributeDetail> ProductAttributeDetails { get; set; }
     public virtual DbSet<SupportMessage> SupportMessages { get; set; }
     public virtual DbSet<Notification> Notifications { get; set; }
+    public virtual DbSet<Favorite> Favorites { get; set; }
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -364,7 +366,31 @@ public partial class ApplicationDbContext : IdentityDbContext<User>
                   .HasConstraintName("FK__Notification__userId");
         });
 
+        modelBuilder.Entity<Favorite>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.HasIndex(e => new { e.UserId, e.ProductId }).IsUnique();
+
+            entity.Property(e => e.CreatedAt)
+                  .HasDefaultValueSql("(getdate())");
+
+            entity.HasOne(e => e.User)
+                  .WithMany(u => u.Favorites)
+                  .HasForeignKey(e => e.UserId)
+                  .OnDelete(DeleteBehavior.Cascade)
+                  .HasConstraintName("FK_Favorite_User");
+
+            entity.HasOne(e => e.Product)
+                  .WithMany(p => p.Favorites)
+                  .HasForeignKey(e => e.ProductId)
+                  .OnDelete(DeleteBehavior.Cascade)
+                  .HasConstraintName("FK_Favorite_Product");
+        });
+
         OnModelCreatingPartial(modelBuilder);
+
+       
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);

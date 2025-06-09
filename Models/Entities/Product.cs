@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace electro_shop_backend.Models.Entities;
 
@@ -58,5 +54,8 @@ public partial class Product
     [InverseProperty("Products")]
     public virtual Brand? Brand { get; set; }
     public virtual ICollection<AttributeDetail> ProductAttributeDetails { get; set; } = new List<AttributeDetail>();
+
+    [InverseProperty("Product")]
+    public virtual ICollection<Favorite> Favorites { get; set; } = new List<Favorite>();
 
 }
