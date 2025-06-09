@@ -1,4 +1,5 @@
 ﻿using electro_shop_backend.Data;
+using electro_shop_backend.Helpers;
 using electro_shop_backend.Models.DTOs.Favorite;
 using electro_shop_backend.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -19,20 +20,34 @@ namespace electro_shop_backend.Services
                 .Where(f => f.UserId == userId)
                 .Include(f => f.Product)
                     .ThenInclude(p => p.ProductImages)
-                .Select(f => new GetFavoriteDTO
-                {
-                    ProductId = f.Product.ProductId,
-                    Name = f.Product.Name,
-                    Price = f.Product.Price,
-                    ImageUrl = f.Product.ProductImages != null
-                        ? f.Product.ProductImages
-                            .OrderBy(pi => pi.ProductImageId)
-                            .Select(pi => pi.ImageUrl)
-                            .FirstOrDefault() ?? string.Empty
-                        : string.Empty
-                })
+                .Include(f => f.Product.ProductDiscounts)
+                    .ThenInclude(pd => pd.Discount)
+                .AsNoTracking()
                 .ToListAsync();
-            return favorites;
+
+            var result = favorites.Select(f =>
+            {
+                var product = f.Product;
+
+                var selectedAttributeDetailIds = new List<int>(); // để trống nếu không có phân loại
+                var (originalPrice, discountedPrice, _, _) =
+                    ProductCalculationValue.CalculateDiscount(product, selectedAttributeDetailIds);
+
+                return new GetFavoriteDTO
+                {
+                    ProductId = product.ProductId,
+                    Name = product.Name,
+                    ImageUrl = product.ProductImages?
+                        .OrderBy(pi => pi.ProductImageId)
+                        .Select(pi => pi.ImageUrl)
+                        .FirstOrDefault() ?? string.Empty,
+                    OriginalPrice = originalPrice,
+                    DiscountedPrice = discountedPrice
+                };
+            });
+
+            return result;
+
         }
 
         public async Task<bool> ToggleFavoriteAsync(string userId, int productId)
