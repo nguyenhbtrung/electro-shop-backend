@@ -117,11 +117,12 @@ The API will be available at:
 
 1. Register at [VNPay Sandbox](https://sandbox.vnpayment.vn/devreg/)
 2. Configure VNPay settings in `appsettings.json`
-3. Test with these credentials:
+3. Visit https://sandbox.vnpayment.vn/apis/vnpay-demo/#th%C3%B4ng-tin-th%E1%BA%BB-test to get test credentials, or test with these credentials:
    - Bank: NCB
    - Card Number: 9704198526191432198
    - Card Holder: NGUYEN VAN A
    - Issue Date: 07/15
+   - OTP: 123456
 
 ---
 
