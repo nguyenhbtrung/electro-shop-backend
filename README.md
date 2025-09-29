@@ -59,7 +59,7 @@ Create an `appsettings.json` file in the project root and configure as follows:
     "BaseUrl": "https://localhost:7169",
     "AllowedHosts": "*",
     "ConnectionStrings": {
-        "DefaultSQLConnection": "Server=Your-Server;Database=ThreadCity2.0;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True"
+        "DefaultSQLConnection": "Server=Your-Server;Database=ElectroShop;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True"
     },
     "JWT": {
         "Issuer": "https://localhost:7169",
