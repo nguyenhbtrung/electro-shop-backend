@@ -64,7 +64,7 @@ Create an `appsettings.json` file in the project root and configure as follows:
     "JWT": {
         "Issuer": "https://localhost:7169",
         "Audience": "https://localhost:7169",
-        "SigningKey": "Your-Key"
+        "SigningKey": "Your-512-bit-Key"
     }
 }
 ```
