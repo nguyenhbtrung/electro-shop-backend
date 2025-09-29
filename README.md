@@ -61,6 +61,9 @@ Create an `appsettings.json` file in the project root and configure as follows:
     "ConnectionStrings": {
         "DefaultSQLConnection": "Server=Your-Server;Database=ElectroShop;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True"
     },
+    "ClientUrls": [
+        "http://localhost:5173"
+    ]
     "JWT": {
         "Issuer": "https://localhost:7169",
         "Audience": "https://localhost:7169",
@@ -157,7 +160,7 @@ SignalR hub is available at:
 The frontend application is available at: [electro-shop-frontend](https://github.com/nguyenhbtrung/electro-shop-frontend)
 
 The frontend is expected to run at:
-[http://localhost:5173](http://localhost:5173).
+[http://localhost:5173](http://localhost:5173) (configured in `appsettings.json`).
 
 ---
 

@@ -112,10 +112,15 @@ builder.Services.AddAuthentication(options =>
         };
     });
 
+
+var clientUrlsSection = builder.Configuration.GetSection("ClientUrls");
+string[] allowedOrigins = (clientUrlsSection.Exists() && clientUrlsSection.Get<string[]>() is string[] origins && origins.Length > 0)
+    ? origins
+    : ["http://localhost:5173"];
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin",
-        builder => builder.WithOrigins("http://localhost:5173")
+        builder => builder.WithOrigins(allowedOrigins)
                           .AllowAnyHeader()
                           .AllowAnyMethod()
                           .AllowCredentials());
@@ -183,7 +188,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseExceptionHandler();
 
-app.UseCors("AllowAll");
+app.UseCors("AllowSpecificOrigin");
 
 app.UseStaticFiles();
 
