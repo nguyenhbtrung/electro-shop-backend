@@ -1,9 +1,11 @@
-using Asp.Versioning;
+﻿using Asp.Versioning;
+using CloudinaryDotNet;
 using electro_shop_backend.Configurations;
 using electro_shop_backend.Data;
 using electro_shop_backend.Exceptions.Handlers;
 using electro_shop_backend.Exceptions.Mappers;
 using electro_shop_backend.Exceptions.Mappers.Interfaces;
+using electro_shop_backend.Helpers;
 using electro_shop_backend.Hubs;
 using electro_shop_backend.Models.Entities;
 using electro_shop_backend.Services;
@@ -11,6 +13,7 @@ using electro_shop_backend.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -132,6 +135,36 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddSignalR();
 
+
+var imageStorage = builder.Configuration["ImageStorage"];
+
+if (imageStorage == "Cloudinary")
+{
+    // Bind CloudinarySettings
+    builder.Services.Configure<CloudinarySettings>(
+        builder.Configuration.GetSection("CloudinarySettings")
+    );
+
+    // Register Cloudinary as Singleton
+    builder.Services.AddSingleton(sp =>
+    {
+        var config = sp.GetRequiredService<IOptions<CloudinarySettings>>().Value;
+
+        if (string.IsNullOrEmpty(config.CloudName) || string.IsNullOrEmpty(config.ApiKey) || string.IsNullOrEmpty(config.ApiSecret))
+        {
+            throw new InvalidOperationException("Cloudinary config không hợp lệ. Vui lòng kiểm tra appsettings.json.");
+        }
+
+        return new Cloudinary(new Account(config.CloudName, config.ApiKey, config.ApiSecret));
+    });
+
+    builder.Services.AddScoped<IImageService, CloudinaryImageService>();
+}
+else
+{
+    builder.Services.AddScoped<IImageService, ImageService>();
+}
+
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
@@ -148,7 +181,7 @@ builder.Services.AddScoped<IReturnService, ReturnService>();
 builder.Services.AddScoped<IReturnReasonService, ReturnReasonService>();
 builder.Services.AddScoped<IBrandService, BrandService>();
 builder.Services.AddScoped<IFilterService, FilterService>();
-builder.Services.AddScoped<IImageService, ImageService>();
+//builder.Services.AddScoped<IImageService, ImageService>();
 builder.Services.AddScoped<ISupplierService, SupplierService>();
 builder.Services.AddScoped<IStockService, StockService>();
 builder.Services.AddScoped<IReturnStatusHistoryService, ReturnStatusHistoryService>();
