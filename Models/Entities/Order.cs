@@ -29,7 +29,7 @@ public partial class Order
     [StringLength(255)]
     public string? Address { get; set; }
 
-    [Column("time_stamp", TypeName = "datetime")]
+    [Column("time_stamp")]
     public DateTime? TimeStamp { get; set; }
 
     [Column("payment_method")]

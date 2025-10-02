@@ -51,13 +51,13 @@ public partial class Voucher
 
     [Required]
     [Column("start_date")]
-    public DateTime StartDate { get; set; } // Ngày bắt đầu hiệu lực
+    public DateTime StartDate { get; set; } = DateTime.UtcNow;    // Ngày bắt đầu hiệu lực
 
     [Required]
     [Column("end_date")]
-    public DateTime EndDate { get; set; }  // Ngày hết hạn
+    public DateTime EndDate { get; set; } = DateTime.UtcNow.AddDays(7);    // Ngày hết hạn
 
     [Required]
     [Column("created_date")]
-    public DateTime CreatedDate { get; set; }  // Ngày tạo
+    public DateTime CreatedDate { get; set; } = DateTime.UtcNow;    // Ngày tạo
 }

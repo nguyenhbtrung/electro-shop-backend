@@ -29,7 +29,7 @@ public partial class Rating
     [StringLength(50)]
     public string? Status { get; set; }
 
-    [Column("time_stamp", TypeName = "datetime")]
+    [Column("time_stamp")]
     public DateTime? TimeStamp { get; set; }
 
     [ForeignKey("ProductId")]

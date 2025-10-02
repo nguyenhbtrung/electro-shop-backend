@@ -1,4 +1,5 @@
-﻿using electro_shop_backend.Models.Entities;
+﻿using electro_shop_backend.Extensions;
+using electro_shop_backend.Models.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -65,7 +66,21 @@ public partial class ApplicationDbContext : IdentityDbContext<User>
     public virtual DbSet<Notification> Notifications { get; set; }
     public virtual DbSet<Favorite> Favorites { get; set; }
 
+    //protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+    //{
+    //    base.ConfigureConventions(configurationBuilder);
+    //    Console.WriteLine(">>>Database Provider: " + Database.ProviderName);
+    //    if (Database.ProviderName == "Npgsql.EntityFrameworkCore.PostgreSQL")
+    //    {
+    //        configurationBuilder
+    //            .Properties<DateTime>()
+    //            .HaveColumnType("timestamp without time zone");
 
+    //        configurationBuilder
+    //            .Properties<DateTime?>()
+    //            .HaveColumnType("timestamp without time zone");
+    //    }
+    //}
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -86,7 +101,7 @@ public partial class ApplicationDbContext : IdentityDbContext<User>
         {
             entity.HasKey(e => e.CartId).HasName("PK__Cart__2EF52A277B4AE6E4");
 
-            entity.Property(e => e.TimeStamp).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.TimeStamp).HasDefaultValueSql("CURRENT_TIMESTAMP");
 
             entity.HasOne(d => d.User).WithMany(p => p.Carts).HasConstraintName("FK__Cart__user_id__48CFD27E");
         });
@@ -116,7 +131,7 @@ public partial class ApplicationDbContext : IdentityDbContext<User>
         {
             entity.HasKey(e => e.OrderId).HasName("PK__Order__4659622958867F33");
 
-            entity.Property(e => e.TimeStamp).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.TimeStamp).HasDefaultValueSql("CURRENT_TIMESTAMP");
 
             entity.HasOne(d => d.User).WithMany(p => p.Orders).HasConstraintName("FK__Order__user_id__5070F446");
         });
@@ -134,7 +149,7 @@ public partial class ApplicationDbContext : IdentityDbContext<User>
         {
             entity.HasKey(e => e.PaymentId).HasName("PK__Payment__ED1FC9EAE0EEEFC3");
 
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
 
             entity.HasOne(d => d.Order).WithMany(p => p.Payments).HasConstraintName("FK__Payment__order_i__5812160E");
         });
@@ -224,7 +239,7 @@ public partial class ApplicationDbContext : IdentityDbContext<User>
         {
             entity.HasKey(e => e.HistoryId).HasName("PK__Product___096AA2E942A51BFF");
 
-            entity.Property(e => e.TimeStamp).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.TimeStamp).HasDefaultValueSql("CURRENT_TIMESTAMP");
             entity.HasIndex(e => new { e.UserId, e.ProductId })
                 .IsUnique();
 
@@ -237,7 +252,7 @@ public partial class ApplicationDbContext : IdentityDbContext<User>
         {
             entity.HasKey(e => new { e.UserId, e.ProductId }).HasName("PK__Rating__FDCE10D0498D2AD9");
 
-            entity.Property(e => e.TimeStamp).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.TimeStamp).HasDefaultValueSql("CURRENT_TIMESTAMP");
 
             entity.HasOne(d => d.Product).WithMany(p => p.Ratings)
                 .OnDelete(DeleteBehavior.Cascade)
@@ -252,7 +267,7 @@ public partial class ApplicationDbContext : IdentityDbContext<User>
         {
             entity.HasKey(e => e.ReturnId).HasName("PK__Return__35C23473531189E9");
 
-            entity.Property(e => e.TimeStamp).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.TimeStamp).HasDefaultValueSql("CURRENT_TIMESTAMP");
 
             entity.HasOne(d => d.Order).WithMany(p => p.Returns).HasConstraintName("FK__Return__order_id__5DCAEF64");
         });
@@ -274,7 +289,7 @@ public partial class ApplicationDbContext : IdentityDbContext<User>
         modelBuilder.Entity<ReturnImage>(entity =>
         {
             entity.HasKey(e => e.ReturnImageId).HasName("PK__Return_Img");
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
             entity.HasOne(d => d.Return).WithMany(p => p.ReturnImages)
                 .HasForeignKey(d => d.ReturnId)
                 .OnDelete(DeleteBehavior.Cascade)
@@ -284,7 +299,7 @@ public partial class ApplicationDbContext : IdentityDbContext<User>
         modelBuilder.Entity<ReturnHistory>(entity =>
         {
             entity.HasKey(e => e.ReturnHistoryId).HasName("PK__Return_history");
-            entity.Property(e => e.ChangedAt).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.ChangedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
             entity.HasOne(d => d.Return).WithMany(p => p.ReturnHistories)
                 .HasForeignKey(d => d.ReturnId)
                 .OnDelete(DeleteBehavior.Cascade)
@@ -294,18 +309,12 @@ public partial class ApplicationDbContext : IdentityDbContext<User>
         modelBuilder.Entity<Voucher>(entity =>
         {
             entity.HasKey(e => e.VoucherId).HasName("PK__Voucher__80B6FFA89952A5CC");
-
-            entity.Property(e => e.StartDate).HasDefaultValueSql("GETDATE()");
-
-            entity.Property(e => e.EndDate).HasDefaultValueSql("DATEADD(day, 7, GETDATE())");
-
-            entity.Property(e => e.CreatedDate).HasDefaultValueSql("GETDATE()");
         });
 
         modelBuilder.Entity<StockImport>(entity =>
         {
             entity.HasKey(e => e.StockImportId).HasName("PK__StockImp__D3A3E3A3D3A3E3A3");
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
             entity.HasOne(d => d.Supplier)
                   .WithMany(p => p.StockImports)
                   .HasForeignKey(d => d.SupplierId)
@@ -337,7 +346,7 @@ public partial class ApplicationDbContext : IdentityDbContext<User>
             entity.HasKey(e => e.MessageId)
                   .HasName("PK__Support_Message");
 
-            entity.Property(e => e.SentAt).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.SentAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
 
             entity.HasOne(d => d.Sender)
                   .WithMany(p => p.SentMessages)
@@ -357,7 +366,7 @@ public partial class ApplicationDbContext : IdentityDbContext<User>
             entity.HasKey(e => e.NotiId)
                   .HasName("PK__Notification__01");
 
-            entity.Property(e => e.CreateAt).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.CreateAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
 
             entity.HasOne(d => d.User)
                   .WithMany(p => p.Notifications)
@@ -373,7 +382,7 @@ public partial class ApplicationDbContext : IdentityDbContext<User>
             entity.HasIndex(e => new { e.UserId, e.ProductId }).IsUnique();
 
             entity.Property(e => e.CreatedAt)
-                  .HasDefaultValueSql("(getdate())");
+                  .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
             entity.HasOne(e => e.User)
                   .WithMany(u => u.Favorites)
@@ -390,7 +399,8 @@ public partial class ApplicationDbContext : IdentityDbContext<User>
 
         OnModelCreatingPartial(modelBuilder);
 
-       
+        string providerName = Database.ProviderName ?? "";
+        modelBuilder.UseUtcDateTimeWithProviderAdjustment(providerName);
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);

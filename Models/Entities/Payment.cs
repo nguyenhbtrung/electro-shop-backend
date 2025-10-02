@@ -32,10 +32,10 @@ public partial class Payment // Lưu lịch sử thanh toán
     [StringLength(50)]
     public string? PaymentStatus { get; set; } // pending, paid, failed
 
-    [Column("created_time", TypeName = "datetime")]
+    [Column("created_time")]
     public DateTime? CreatedAt { get; set; }
 
-    [Column("paid_time", TypeName = "datetime")]
+    [Column("paid_time")]
     public DateTime? PaidAt { get; set; }
 
     [Column("error_code")]

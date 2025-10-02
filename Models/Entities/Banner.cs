@@ -28,9 +28,9 @@ public partial class Banner
     [Column("position")]
     public int? Position { get; set; }
 
-    [Column("start_date", TypeName = "datetime")]
+    [Column("start_date")]
     public DateTime? StartDate { get; set; }
 
-    [Column("end_date", TypeName = "datetime")]
+    [Column("end_date")]
     public DateTime? EndDate { get; set; }
 }

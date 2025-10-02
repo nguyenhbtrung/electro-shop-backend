@@ -21,7 +21,7 @@ namespace electro_shop_backend.Models.Entities
         [InverseProperty("ReturnImages")]
         public virtual Return? Return { get; set; }
 
-        [Column("created_at", TypeName = "datetime")]
+        [Column("created_at")]
         public DateTime? CreatedAt { get; set; }
     }
 }

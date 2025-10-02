@@ -37,7 +37,7 @@ public partial class Return
     [Column("admin_comment")]
     public string? AdminComment { get; set; }
 
-    [Column("time_stamp", TypeName = "datetime")]
+    [Column("time_stamp")]
     public DateTime? TimeStamp { get; set; }
 
     [ForeignKey("OrderId")]

@@ -20,7 +20,7 @@ public partial class ProductViewHistory
     [Column("product_id")]
     public int? ProductId { get; set; }
 
-    [Column("time_stamp", TypeName = "datetime")]
+    [Column("time_stamp")]
     public DateTime? TimeStamp { get; set; } = DateTime.Now;
 
     [ForeignKey("ProductId")]

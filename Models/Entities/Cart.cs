@@ -17,7 +17,7 @@ public partial class Cart
     [StringLength(450)]
     public string? UserId { get; set; }
 
-    [Column("time_stamp", TypeName = "datetime")]
+    [Column("time_stamp")]
     public DateTime? TimeStamp { get; set; }
 
     [InverseProperty("Cart")]

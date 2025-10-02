@@ -23,7 +23,7 @@ namespace electro_shop_backend.Models.Entities
         [Column("is_from_admin")]
         public bool IsFromAdmin { get; set; }
 
-        [Column("sent_at", TypeName = "datetime")]
+        [Column("sent_at")]
         public DateTime SentAt { get; set; }
 
         [ForeignKey("SenderId")]

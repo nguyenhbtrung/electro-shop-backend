@@ -24,10 +24,10 @@ public partial class Discount
     [Column("discount_value", TypeName = "decimal(18, 2)")]
     public decimal? DiscountValue { get; set; }
 
-    [Column("start_date", TypeName = "datetime")]
+    [Column("start_date")]
     public DateTime? StartDate { get; set; }
 
-    [Column("end_date", TypeName = "datetime")]
+    [Column("end_date")]
     public DateTime? EndDate { get; set; }
 
     [InverseProperty("Discount")]

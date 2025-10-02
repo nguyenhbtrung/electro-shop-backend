@@ -27,7 +27,7 @@ public partial class User : IdentityUser
     [StringLength(50)]
     public string? UserStatus { get; set; }
 
-    [Column("created_at", TypeName = "datetime")]
+    [Column("created_at")]
     public DateTime? CreatedAt { get; set; }
 
     [InverseProperty("User")]

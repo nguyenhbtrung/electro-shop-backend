@@ -17,7 +17,7 @@ public class Favorite
     [Required]
     public int ProductId { get; set; }
 
-    [Column("created_at", TypeName = "datetime")]
+    [Column("created_at")]
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     [ForeignKey("UserId")]

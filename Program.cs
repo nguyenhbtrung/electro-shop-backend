@@ -48,8 +48,31 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.ConfigureOptions<ConfigureSwaggerOptions>();
 
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultSQLConnection")));
+var dbProvider = builder.Configuration["DatabaseProvider"] ?? "SqlServer";
+
+if (dbProvider.Equals("SqlServer", StringComparison.OrdinalIgnoreCase))
+{
+    builder.Services.AddDbContext<ApplicationDbContext>(options =>
+        options.UseSqlServer(
+            builder.Configuration.GetConnectionString("SqlServerConnection"),
+            sqlOptions => sqlOptions.MigrationsAssembly("electro-shop-backend")
+        ));
+}
+else if (dbProvider.Equals("Postgres", StringComparison.OrdinalIgnoreCase))
+{
+    builder.Services.AddDbContext<ApplicationDbContext>(options =>
+        options.UseNpgsql(
+            builder.Configuration.GetConnectionString("PostgresConnection"),
+            npgsqlOptions => npgsqlOptions.MigrationsAssembly("Migrations.PostgreSQL")
+        ));
+}
+else
+{
+    throw new Exception($"Unsupported DatabaseProvider: {dbProvider}");
+}
+
+//builder.Services.AddDbContext<ApplicationDbContext>(options =>
+//    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultSQLConnection")));
 
 builder.Services.AddControllers().AddNewtonsoftJson(options =>
 {

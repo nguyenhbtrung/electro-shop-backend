@@ -16,7 +16,7 @@ namespace electro_shop_backend.Models.Entities
         [StringLength(50)]
         public string? Status { get; set; }
 
-        [Column("changed_at", TypeName = "datetime")]
+        [Column("changed_at")]
         public DateTime? ChangedAt { get; set; }
         [ForeignKey("ReturnId")]
         [InverseProperty("ReturnHistories")]
