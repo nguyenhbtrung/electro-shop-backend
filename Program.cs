@@ -63,7 +63,14 @@ else if (dbProvider.Equals("Postgres", StringComparison.OrdinalIgnoreCase))
     builder.Services.AddDbContext<ApplicationDbContext>(options =>
         options.UseNpgsql(
             builder.Configuration.GetConnectionString("PostgresConnection"),
-            npgsqlOptions => npgsqlOptions.MigrationsAssembly("Migrations.PostgreSQL")
+            npgsqlOptions =>
+            {
+                npgsqlOptions.MigrationsAssembly("Migrations.PostgreSQL");
+                npgsqlOptions.EnableRetryOnFailure(
+                    maxRetryCount: 5,
+                    maxRetryDelay: TimeSpan.FromSeconds(10),
+                    errorCodesToAdd: null);
+            }
         ));
 }
 else
