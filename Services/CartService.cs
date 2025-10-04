@@ -71,10 +71,14 @@ namespace electro_shop_backend.Services
         public async Task<List<UserCartDto>> GetCartByUserIdAsync(string userId)
         {
             var cart = await _context.Carts
-                .Include(cart => cart.CartItems)
-                .ThenInclude(cartitem => cartitem.Product)
-                .ThenInclude(product => product.ProductImages)
-                .FirstOrDefaultAsync(cart => cart.UserId == userId);
+                .Include(c => c.CartItems)
+                    .ThenInclude(ci => ci.Product)
+                        .ThenInclude(p => p.ProductImages)
+                .Include(c => c.CartItems)
+                    .ThenInclude(ci => ci.Product)
+                        .ThenInclude(p => p.ProductDiscounts)
+                            .ThenInclude(pd => pd.Discount)
+                .FirstOrDefaultAsync(c => c.UserId == userId);
 
             if (cart == null)
             {

@@ -5,6 +5,9 @@
         public int? ProductId { get; set; }
 
         public decimal Price { get; set; }
+        public decimal DiscountedPrice { get; set; }
+        public string DiscountType { get; set; } = string.Empty;
+        public decimal DiscountValue { get; set; }
 
         public int Quantity { get; set; }
 

@@ -36,7 +36,7 @@ namespace electro_shop_backend.Models.Mappers
                     OrderItemId = OrderItem.OrderItemId,
                     ProductId = OrderItem.ProductId,
                     Quantity = OrderItem.Quantity,
-                    Price = OrderItem.Product?.Price ?? 0,
+                    Price = OrderItem.Price,
                     ProductName = OrderItem.Product?.Name,
                     ProductImage = OrderItem.Product?.ProductImages.FirstOrDefault()?.ImageUrl
                 }).ToList(),
@@ -61,7 +61,7 @@ namespace electro_shop_backend.Models.Mappers
                     OrderItemId = OrderItem.OrderItemId,
                     ProductId = OrderItem.ProductId,
                     Quantity = OrderItem.Quantity,
-                    Price = OrderItem.Product?.Price ?? 0,
+                    Price = OrderItem.Price,
                     ProductName = OrderItem.Product?.Name,
                     ProductImage = OrderItem.Product?.ProductImages.FirstOrDefault()?.ImageUrl
                 }).ToList(),

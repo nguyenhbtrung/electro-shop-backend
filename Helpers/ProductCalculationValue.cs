@@ -4,8 +4,10 @@ namespace electro_shop_backend.Helpers
 {
     public static class ProductCalculationValue
     {
-        public static (decimal originalPrice, decimal discountedPrice, string discountType, decimal discountValue) CalculateDiscount(Product product, List<int> selectedAttributeDetailIds)
+        public static (decimal originalPrice, decimal discountedPrice, string discountType, decimal discountValue) CalculateDiscount(Product product, List<int>? selectedAttributeDetailIds = null)
         {
+            selectedAttributeDetailIds ??= [];
+
             decimal totalModifier = product.ProductAttributeDetails
                 .Where(detail => selectedAttributeDetailIds.Contains(detail.AttributeDetailId))
                 .Sum(detail => detail.PriceModifier);

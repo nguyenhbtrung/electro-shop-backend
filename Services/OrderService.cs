@@ -1,6 +1,7 @@
 using electro_shop_backend.Data;
 using electro_shop_backend.Exceptions;
 using electro_shop_backend.Exceptions.CustomExceptions;
+using electro_shop_backend.Helpers;
 using electro_shop_backend.Models.DTOs.Order;
 using electro_shop_backend.Models.Entities;
 using electro_shop_backend.Models.Mappers;
@@ -81,6 +82,8 @@ namespace electro_shop_backend.Services
             var cartitems = await _context.CartItems
                 .Where(item => item.Cart!.UserId == userId)
                 .Include(cartitem => cartitem.Product)
+                    .ThenInclude(p => p.ProductDiscounts)
+                        .ThenInclude(pd => pd.Discount)
                 .Include(cartitem => cartitem.Cart)
                 .ToListAsync();
 
@@ -102,12 +105,15 @@ namespace electro_shop_backend.Services
 
                 cartitem.Product!.Stock -= cartitem.Quantity;
                 cartitem.Product.UnitsSold += cartitem.Quantity;
+
+                var (originalPrice, discountedPrice, discountType, discountValue)
+                    = ProductCalculationValue.CalculateDiscount(cartitem.Product);
                 OrderItem orderItem = new OrderItem
                 {
                     ProductId = cartitem.ProductId,
                     ProductName = cartitem.Product!.Name,
                     Quantity = cartitem.Quantity,
-                    Price = cartitem.Product!.Price,
+                    Price = discountedPrice,
                 };
                 totalPrice += orderItem.Price * orderItem.Quantity;
                 cartitem.Cart!.CartItems.Remove(cartitem);
