@@ -195,7 +195,7 @@ namespace electro_shop_backend.Controllers.V1
         public async Task<IActionResult> PaymentCallBack()
         {
             var result = await _orderService.HandlePaymentCallbackAsync(Request.Query);
-            string vnp_HashSecret = _configuration["VnPay:HashSecret"];
+            string vnp_HashSecret = _configuration["VnPay:HashSecret"] ?? string.Empty;
             var vnpParams = HttpContext.Request.Query.ToDictionary(q => q.Key, q => q.Value.ToString());
             VnPayLibrary vnpay = new VnPayLibrary();
 
@@ -220,8 +220,7 @@ namespace electro_shop_backend.Controllers.V1
 
             bool checkSignature = vnpay.ValidateSignature(vnp_SecureHash, vnp_HashSecret);
 
-            // Xác định URL frontend kết quả thanh toán (thay đổi theo domain của bạn)
-            string frontendUrl = "http://localhost:5173/payment-result";
+            string frontendUrl = _configuration["VnPay:PaymentResultUrl"] ?? "http://localhost:5173/payment-result";
 
             // Xây dựng query string để chuyển thông tin giao dịch
             var queryString = $"?orderId={orderId}" +
