@@ -22,8 +22,6 @@ namespace electro_shop_backend.Helpers
             string discountType = string.Empty;
             decimal discountValue = 0;
             decimal discountedPrice = basePrice;
-            Console.WriteLine(">>> Check discountType: " + effectiveDiscount?.DiscountType);
-            Console.WriteLine(">>> Check DiscountValue: " + effectiveDiscount?.DiscountValue);
             if (effectiveDiscount != null)
             {
                 discountType = effectiveDiscount.DiscountType;
