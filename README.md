@@ -1,8 +1,13 @@
 # Electro Shop Backend - .NET 8 Web API
 
 ## 📌 Overview
-This is a backend API built with **.NET 8**, using **Entity Framework Core** with **SQL Server** as the database.
-The system supports real-time chat with **SignalR**, authentication with **JWT**, and email services.
+This is a backend API built with **.NET 8**, using **Entity Framework Core** with **SQL Server** or **PostgreSQL** as the database.
+The system supports:
+
+- Real-time chat with **SignalR**
+- Authentication and authorization using **JWT**
+- **VNPay** payment gateway integration
+- Flexible image storage using either **Cloudinary** (cloud-based) or **local file storage**.
 
 Frontend repository: [electro-shop-frontend](https://github.com/nguyenhbtrung/electro-shop-frontend)
 
@@ -12,10 +17,13 @@ Frontend repository: [electro-shop-frontend](https://github.com/nguyenhbtrung/el
 - [.NET 8](https://dotnet.microsoft.com/download/dotnet/8.0)
 - [Entity Framework Core](https://docs.microsoft.com/ef/core/)
 - [SQL Server](https://www.microsoft.com/sql-server)
+- [PostgreSQL](https://www.postgresql.org/)
 - [SignalR](https://dotnet.microsoft.com/apps/aspnet/signalr)
 - [ASP.NET Core Identity](https://docs.microsoft.com/aspnet/core/security/authentication/identity)
 - [JWT Authentication](https://jwt.io/)
 - [VNPay Integration](https://sandbox.vnpayment.vn/apis/docs/gioi-thieu/)
+- [Cloudinary](https://cloudinary.com/) (optional — used for cloud image storage)
+- **Local file storage** (alternative to Cloudinary`)
 
 ---
 
@@ -23,57 +31,80 @@ Frontend repository: [electro-shop-frontend](https://github.com/nguyenhbtrung/el
 
 ```
 .
-├── Controllers/       # API Controllers
-├── Services/          # Business Logic Services
-├── Models/            # Data Models & DTOs
-├── Data/              # DbContext & Database Configuration
-├── Configurations/    # Application Configuration
-├── Exceptions/        # Custom Exception Handling
-├── Extensions/        # Extension Methods
-├── Hubs/              # SignalR Hubs
-└── Program.cs         # Application Entry Point
+├── Controllers/               # API Controllers
+├── Services/                  # Business Logic Services
+├── Models/                    # Data Models & DTOs & Mappers
+├── Data/                      # DbContext & Database Configuration
+├── Configurations/            # Application Configuration
+├── Exceptions/                # Custom Exception Handling
+├── Extensions/                # Extension Methods
+├── Hubs/                      # SignalR Hubs
+├── Migrations/                # Migrations for SQL Server
+├── Migrations.PostgreSQL/     # Migrations for PostgresSQL
+└── Program.cs                 # Application Entry Point
 ```
 
 ---
 
 ## ⚙️ Configuration
 
-### 1. Database & JWT Setup
+### 1. Core Configuration — General settings such as logging, email, and JWT.
 Create an `appsettings.json` file in the project root and configure as follows:
 
 ```
 {
-    "Logging": {
-        "LogLevel": {
-            "Default": "Information",
-            "Microsoft.AspNetCore": "Warning"
-        }
-    },
-    "EmailConfiguration": {
-        "From": "dutshop66@gmail.com",
-        "SmtpServer": "smtp.gmail.com",
-        "Port": 587,
-        "Username": "dutshop66@gmail.com",
-        "Password": "your_password"
-    },
-    "BaseUrl": "https://localhost:7169",
-    "AllowedHosts": "*",
-    "ConnectionStrings": {
-        "DefaultSQLConnection": "Server=Your-Server;Database=ElectroShop;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True"
-    },
-    "ClientUrls": [
-        "http://localhost:5173"
-    ]
-    "JWT": {
-        "Issuer": "https://localhost:7169",
-        "Audience": "https://localhost:7169",
-        "SigningKey": "Your-512-bit-Key"
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
     }
+  },
+  "EmailConfiguration": {
+    "From": "your-email",
+    "SmtpServer": "smtp.gmail.com",
+    "Port": 587,
+    "Username": "your-email",
+    "Password": "your_password"
+  },
+  "BaseUrl": "https://localhost:7169",
+  "AllowedHosts": "*",
+  "ClientUrls": [
+    "http://localhost:5173"
+  ],
+  "JWT": {
+    "Issuer": "https://localhost:7169",
+    "Audience": "https://localhost:7169",
+    "SigningKey": "Your-512-bit-Key"
+  }
+}
+```
+### 2. Database connection configration
+- Set `"DatabaseProvider"` to `"Postgres"` or `"SqlServer"` depending on the database provider you use.
+- set connection string for database connection.
+
+```
+"DatabaseProvider": "SqlServer", // or "Postgres"
+"ConnectionStrings": {
+  "SqlServerConnection": "Server=your-server;Database=ElectroShop;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True",
+  "PostgresConnection": "Host=localhost;Database=ElectroShop;Username=postgres;Password=your-password"
 }
 ```
 
-### 2. VNPay Integration Setup
-Add the following to your `appsettings.json`:
+### 3. Cloudinary Configuration — Optional cloud image storage setup.
+- Set `"ImageStorage": "Cloudinary"` to use Cloudinary.  
+- Set `"ImageStorage": "Local"` to save images locally.
+
+```
+"ImageStorage": "Cloudinary", // or "Local"
+  "CloudinarySettings": {
+    "CloudName": "your-cloud-name",
+    "ApiKey": "your-api-key",
+    "ApiSecret": "your-api-secret"
+}
+```
+
+### 4. VNPay Configuration 
+Payment gateway credentials and callback URLs
 
 ```
 "VnPay": {
@@ -95,7 +126,7 @@ Add the following to your `appsettings.json`:
 ### 1. Prerequisites
 - Visual Studio 2022
 - .NET 8 SDK
-- SQL Server
+- SQL Server or PostgreSQL
 
 ### 2. Database Setup
 1. Open Package Manager Console in Visual Studio
@@ -167,6 +198,6 @@ The frontend is expected to run at:
 ## 📝 Notes
 
 - Ensure proper CORS configuration for your production environment
-- Secure your JWT signing key and database connection strings
+- Secure your JWT signing key, database connection strings, and secret keys
 - Configure email settings with valid SMTP credentials
 - For production deployment, update the JWT issuer and audience URLs
