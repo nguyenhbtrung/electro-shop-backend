@@ -269,4 +269,6 @@ using (var scope = app.Services.CreateScope())
     await voucherService.CheckAndUpdateVoucherStatusAsync();
 }
 
+app.MapHealthChecks("/health");
+
 app.Run();
