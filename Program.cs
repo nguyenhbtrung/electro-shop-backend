@@ -224,6 +224,8 @@ builder.Services.AddScoped<IFavoriteService, FavoriteService>();
 
 builder.Services.AddHttpContextAccessor();
 
+builder.Services.AddHealthChecks();
+
 var emailConfig = builder.Configuration
     .GetSection("EmailConfiguration")
     .Get<EmailConfiguration>();
