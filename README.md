@@ -1,6 +1,6 @@
 # Electro Shop Backend - .NET 8 Web API
 
-## 📌 Overview
+## Overview
 This is a backend API built with **.NET 8**, using **Entity Framework Core** with **SQL Server** or **PostgreSQL** as the database.
 The system supports:
 
@@ -13,7 +13,7 @@ Frontend repository: [electro-shop-frontend](https://github.com/nguyenhbtrung/el
 
 ---
 
-## 🚀 Tech Stack
+## Tech Stack
 - [.NET 8](https://dotnet.microsoft.com/download/dotnet/8.0)
 - [Entity Framework Core](https://docs.microsoft.com/ef/core/)
 - [SQL Server](https://www.microsoft.com/sql-server)
@@ -27,7 +27,7 @@ Frontend repository: [electro-shop-frontend](https://github.com/nguyenhbtrung/el
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 ```
 .
@@ -121,7 +121,7 @@ Payment gateway credentials and callback URLs
 
 ---
 
-## 📦 Installation & Setup
+## Installation & Setup
 
 ### 1. Prerequisites
 - Visual Studio 2022
@@ -133,7 +133,6 @@ Payment gateway credentials and callback URLs
 2. Run the following command:
 ```
 update-database
-
 ```
 
 ### 3. Running the Application
@@ -147,7 +146,7 @@ The API will be available at:
 
 ---
 
-## 💳 VNPay Test Integration
+## VNPay Test Integration
 
 1. Register at [VNPay Sandbox](https://sandbox.vnpayment.vn/devreg/)
 2. Configure VNPay settings in `appsettings.json`
@@ -160,7 +159,7 @@ The API will be available at:
 
 ---
 
-## 🔑 Authentication
+## Authentication
 
 * The backend uses **JWT** for authentication.
 * On successful login, the server returns a **JWT token**.
@@ -169,24 +168,23 @@ The API will be available at:
 Authorization: Bearer <token>
 ```
 
-## 👥 Authorization Policies
+## Authorization Policies
 
 - `AdminPolicy`: Requires "Admin" role
 - `UserPolicy`: Requires "User" or "Admin" role
 
 ---
 
-## 📡 Real-time Communication
+## Real-time Communication
 
 SignalR hub is available at:
 ```
 /chathub
-
 ```
 
 ---
 
-## 🌐 Client Integration
+## Client Integration
 
 The frontend application is available at: [electro-shop-frontend](https://github.com/nguyenhbtrung/electro-shop-frontend)
 
@@ -195,7 +193,7 @@ The frontend is expected to run at:
 
 ---
 
-## 📝 Notes
+## Notes
 
 - Ensure proper CORS configuration for your production environment
 - Secure your JWT signing key, database connection strings, and secret keys
