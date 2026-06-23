@@ -46,7 +46,7 @@ Frontend repository: [electro-shop-frontend](https://github.com/nguyenhbtrung/el
 
 ---
 
-## ⚙️ Configuration
+## Configuration
 
 ### 1. Core Configuration — General settings such as logging, email, and JWT.
 Create an `appsettings.json` file in the project root and configure as follows:
